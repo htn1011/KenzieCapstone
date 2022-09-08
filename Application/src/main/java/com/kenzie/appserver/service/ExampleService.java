@@ -4,24 +4,24 @@ import com.kenzie.appserver.repositories.model.ExampleRecord;
 import com.kenzie.appserver.repositories.ExampleRepository;
 import com.kenzie.appserver.service.model.Example;
 
-import com.kenzie.capstone.service.client.LambdaServiceClient;
-import com.kenzie.capstone.service.model.ExampleData;
+import com.kenzie.capstone.service.client.UserServiceClient;
+import com.kenzie.capstone.service.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ExampleService {
     private ExampleRepository exampleRepository;
-    private LambdaServiceClient lambdaServiceClient;
+    private UserServiceClient userServiceClient;
 
-    public ExampleService(ExampleRepository exampleRepository, LambdaServiceClient lambdaServiceClient) {
+    public ExampleService(ExampleRepository exampleRepository, UserServiceClient userServiceClient) {
         this.exampleRepository = exampleRepository;
-        this.lambdaServiceClient = lambdaServiceClient;
+        this.userServiceClient = userServiceClient;
     }
 
     public Example findById(String id) {
 
         // Example getting data from the lambda
-        ExampleData dataFromLambda = lambdaServiceClient.getExampleData(id);
+        User dataFromLambda = userServiceClient.getExampleData(id);
 
         // Example getting data from the local repository
         Example dataFromDynamo = exampleRepository
@@ -34,7 +34,7 @@ public class ExampleService {
 
     public Example addNewExample(String name) {
         // Example sending data to the lambda
-        ExampleData dataFromLambda = lambdaServiceClient.setExampleData(name);
+        User dataFromLambda = userServiceClient.setExampleData(name);
 
         // Example sending data to the local repository
         ExampleRecord exampleRecord = new ExampleRecord();
