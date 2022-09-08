@@ -1,8 +1,8 @@
 package com.kenzie.capstone.service.lambda;
 
-import com.kenzie.capstone.service.LambdaService;
+import com.kenzie.capstone.service.UserService;
+import com.kenzie.capstone.service.converter.JsonToRequestConverter;
 import com.kenzie.capstone.service.dependency.ServiceComponent;
-import com.kenzie.capstone.service.model.ExampleData;
 import com.kenzie.capstone.service.dependency.DaggerServiceComponent;
 
 import com.amazonaws.services.lambda.runtime.Context;
@@ -11,31 +11,36 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kenzie.capstone.service.model.User;
+import com.kenzie.capstone.service.model.UserCreateRequest;
+import com.kenzie.capstone.service.model.UserRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SetExampleData implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class AddNewUser implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     static final Logger log = LogManager.getLogger();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+        JsonToRequestConverter converter = new JsonToRequestConverter();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
         log.info(gson.toJson(input));
 
         ServiceComponent serviceComponent = DaggerServiceComponent.create();
-        LambdaService lambdaService = serviceComponent.provideLambdaService();
+        UserService userService = serviceComponent.provideLambdaService();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
+        // input body will be the UserRequest Model - need to be converted from JSON
         String data = input.getBody();
 
         if (data == null || data.length() == 0) {
@@ -45,8 +50,10 @@ public class SetExampleData implements RequestHandler<APIGatewayProxyRequestEven
         }
 
         try {
-            ExampleData exampleData = lambdaService.setExampleData(data);
-            String output = gson.toJson(exampleData);
+            UserCreateRequest userCreateRequest = converter.convert(data);
+            User newUser = userService.addUser(userCreateRequest);
+            // do I need a user response instead of the user? - Marika
+            String output = gson.toJson(newUser);
 
             return response
                     .withStatusCode(200)
