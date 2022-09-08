@@ -38,11 +38,11 @@ public class ExampleService {
 
         // Example sending data to the local repository
         ExampleRecord exampleRecord = new ExampleRecord();
-        exampleRecord.setId(dataFromLambda.getId());
-        exampleRecord.setName(dataFromLambda.getData());
+        exampleRecord.setId(dataFromLambda.getUserId());
+        exampleRecord.setName(dataFromLambda.getUsername());
         exampleRepository.save(exampleRecord);
 
-        Example example = new Example(dataFromLambda.getId(), name);
+        Example example = new Example(dataFromLambda.getUserId(), name);
         return example;
     }
 }
