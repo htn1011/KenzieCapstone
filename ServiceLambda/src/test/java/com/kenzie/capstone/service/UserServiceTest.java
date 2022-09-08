@@ -52,8 +52,8 @@ class UserServiceTest {
         assertEquals(data, dataCaptor.getValue(), "The data is saved");
 
         assertNotNull(response, "A response is returned");
-        assertEquals(idCaptor.getValue(), response.getId(), "The response id should match");
-        assertEquals(data, response.getData(), "The response data should match");
+        assertEquals(idCaptor.getValue(), response.getUserId(), "The response id should match");
+        assertEquals(data, response.getUsername(), "The response data should match");
     }
 
     @Test
@@ -79,8 +79,8 @@ class UserServiceTest {
         assertEquals(id, idCaptor.getValue(), "The correct id is used");
 
         assertNotNull(response, "A response is returned");
-        assertEquals(id, response.getId(), "The response id should match");
-        assertEquals(data, response.getData(), "The response data should match");
+        assertEquals(id, response.getUserId(), "The response id should match");
+        assertEquals(data, response.getUsername(), "The response data should match");
     }
 
     // Write additional tests here
