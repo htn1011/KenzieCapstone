@@ -1,8 +1,8 @@
 package com.kenzie.capstone.service.lambda;
 
-import com.kenzie.capstone.service.LambdaService;
+import com.kenzie.capstone.service.UserService;
 import com.kenzie.capstone.service.dependency.ServiceComponent;
-import com.kenzie.capstone.service.model.ExampleData;
+import com.kenzie.capstone.service.model.User;
 import com.kenzie.capstone.service.dependency.DaggerServiceComponent;
 
 import com.amazonaws.services.lambda.runtime.Context;
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GetExampleData implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class VerifyUser implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     static final Logger log = LogManager.getLogger();
 
@@ -29,24 +29,24 @@ public class GetExampleData implements RequestHandler<APIGatewayProxyRequestEven
         log.info(gson.toJson(input));
 
         ServiceComponent serviceComponent = DaggerServiceComponent.create();
-        LambdaService lambdaService = serviceComponent.provideLambdaService();
+        UserService userService = serviceComponent.provideLambdaService();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-        String id = input.getPathParameters().get("id");
+        String userId = input.getPathParameters().get("userId");
 
-        if (id == null || id.length() == 0) {
+        if (userId == null || userId.length() == 0) {
             return response
                     .withStatusCode(400)
-                    .withBody("Id is invalid");
+                    .withBody("userId is invalid");
         }
 
         try {
-            ExampleData exampleData = lambdaService.getExampleData(id);
-            String output = gson.toJson(exampleData);
+            User user = userService.findUser(userId);
+            String output = gson.toJson(user);
 
             return response
                     .withStatusCode(200)
