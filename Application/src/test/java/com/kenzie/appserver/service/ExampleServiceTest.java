@@ -1,7 +1,7 @@
 package com.kenzie.appserver.service;
 
-import com.kenzie.appserver.repositories.ExampleRepository;
-import com.kenzie.appserver.repositories.model.ExampleRecord;
+import com.kenzie.appserver.repositories.GameRepository;
+import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 import com.kenzie.appserver.service.model.Example;
 import com.kenzie.capstone.service.client.UserServiceClient;
 import org.junit.jupiter.api.Assertions;
@@ -15,15 +15,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ExampleServiceTest {
-    private ExampleRepository exampleRepository;
+    private GameRepository gameRepository;
     private ExampleService exampleService;
     private UserServiceClient userServiceClient;
 
     @BeforeEach
     void setup() {
-        exampleRepository = mock(ExampleRepository.class);
+        gameRepository = mock(GameRepository.class);
         userServiceClient = mock(UserServiceClient.class);
-        exampleService = new ExampleService(exampleRepository, userServiceClient);
+        exampleService = new ExampleService(gameRepository, userServiceClient);
     }
     /** ------------------------------------------------------------------------
      *  exampleService.findById
@@ -34,18 +34,18 @@ public class ExampleServiceTest {
         // GIVEN
         String id = randomUUID().toString();
 
-        ExampleRecord record = new ExampleRecord();
+        GameSummaryRecord record = new GameSummaryRecord();
         record.setId(id);
         record.setName("concertname");
 
         // WHEN
-        when(exampleRepository.findById(id)).thenReturn(Optional.of(record));
+        when(gameRepository.findById(id)).thenReturn(Optional.of(record));
         Example example = exampleService.findById(id);
 
         // THEN
         Assertions.assertNotNull(example, "The object is returned");
         Assertions.assertEquals(record.getId(), example.getId(), "The id matches");
-        Assertions.assertEquals(record.getName(), example.getName(), "The name matches");
+        Assertions.assertEquals(record.getDate(), example.getName(), "The name matches");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ExampleServiceTest {
         // GIVEN
         String id = randomUUID().toString();
 
-        when(exampleRepository.findById(id)).thenReturn(Optional.empty());
+        when(gameRepository.findById(id)).thenReturn(Optional.empty());
 
         // WHEN
         Example example = exampleService.findById(id);
