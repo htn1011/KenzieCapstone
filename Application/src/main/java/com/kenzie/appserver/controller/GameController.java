@@ -3,6 +3,7 @@ package com.kenzie.appserver.controller;
 
 import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 import com.kenzie.appserver.controller.model.SummaryResponse;
+import com.kenzie.appserver.service.GameSummaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,9 @@ import java.util.UUID;
 @RequestMapping("/game")
 public class GameController {
 
-    private GameService gameService;
+    private GameSummaryService gameService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameSummaryService gameService) {
         this.gameService = gameService;
     }
 
