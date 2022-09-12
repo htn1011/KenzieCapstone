@@ -12,7 +12,7 @@ public class GameSummaryConversion {
         GameSummaryRecord summaryRecord = new GameSummaryRecord();
 
         summaryRecord.setUserId(createSummaryRequest.getUserId());
-        summaryRecord.setId(createSummaryRequest.getGameId());
+        summaryRecord.setId(createSummaryRequest.getGameName());
         summaryRecord.setResults(createSummaryRequest.getResults());
         summaryRecord.setTimeStamp(String.valueOf(LocalDateTime.now()));
 
