@@ -20,7 +20,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.3'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.6.3'
 
-    implementation 'com.github.derjust:spring-data-dynamodb:5.1.0'
+//    implementation 'com.github.derjust:spring-data-dynamodb:5.1.0'
+//    https://medium.com/@leohoc/dynamodb-and-spring-data-a81c546a1305
+    implementation group: 'io.github.boostchicken', name: 'spring-data-dynamodb', version: '5.2.1'
     implementation 'io.springfox:springfox-swagger2:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     implementation 'com.google.guava:guava:31.1-jre'
