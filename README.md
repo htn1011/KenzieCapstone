@@ -12,7 +12,7 @@ The repo owner should confirm that all team members have been added to collabora
 You must do this for the ServiceLambda to work!
 
 ```
-aws cloudformation create-stack --stack-name lambda-table --template-body file://LambdaExampleTable.yml --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name user-table --template-body file://LambdaExampleTable.yml --capabilities CAPABILITY_IAM
 ```
 
 ### To deploy the Development Environment
