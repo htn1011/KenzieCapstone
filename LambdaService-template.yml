@@ -10,9 +10,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ServiceLambda/build/distributions/ServiceLambda.zip
-      Handler: com.kenzie.capstone.service.lambda.GetExampleData
+      Handler: com.kenzie.capstone.service.lambda.VerifyUser
       Runtime: java11
-      Description: Get Example Data for given id
+      Description: Verify that a user with the given ID exists in the database
       MemorySize: 512
       Timeout: 240
       # Function's execution role
@@ -28,15 +28,15 @@ Resources:
         UpdateResource:
           Type: Api
           Properties:
-            Path: /example/{id}
+            Path: /user/{userId}
             Method: get
   SetExampleDataFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ServiceLambda/build/distributions/ServiceLambda.zip
-      Handler: com.kenzie.capstone.service.lambda.SetExampleData
+      Handler: com.kenzie.capstone.service.lambda.AddNewUser
       Runtime: java11
-      Description: Set Example Data
+      Description: Adds a new user
       MemorySize: 512
       Timeout: 240
       # Function's execution role
@@ -52,6 +52,6 @@ Resources:
         UpdateResource:
           Type: Api
           Properties:
-            Path: /example/
+            Path: /user/
             Method: post
 
