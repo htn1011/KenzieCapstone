@@ -10,9 +10,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ServiceLambda/build/distributions/ServiceLambda.zip
-      Handler: com.kenzie.capstone.service.lambda.VerifyUser
+      Handler: com.kenzie.capstone.service.lambda.FindExistingUser
       Runtime: java11
-      Description: Verify that a user with the given ID exists in the database
+      Description: Find an existing user with the given ID exists in the database
       MemorySize: 512
       Timeout: 240
       # Function's execution role
