@@ -7,8 +7,8 @@ import javax.validation.constraints.NotEmpty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SummaryResponse {
-    @JsonProperty("gameId")
-    private String gameId;
+    @JsonProperty("summaryId")
+    private String summaryId;   // @TODO to be formatted and created in the GameSummaryService
 
     @JsonProperty("userId")
     private String userId;
@@ -19,12 +19,20 @@ public class SummaryResponse {
     @JsonProperty("results")
     private String results;
 
-    public String getGameId() {
-        return gameId;
+
+    public SummaryResponse(String summaryId, String userId, String timestamp, String results) {
+        this.summaryId = summaryId;
+        this.userId = userId;
+        this.timestamp = timestamp;
+        this.results = results;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
+    public String getSummaryId() {
+        return summaryId;
+    }
+
+    public void setSummaryId(String summaryId) {
+        this.summaryId = summaryId;
     }
 
     public String getUserId() {

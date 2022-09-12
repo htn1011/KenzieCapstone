@@ -6,8 +6,8 @@ import javax.validation.constraints.NotEmpty;
 
 public class UpdateSummaryRequest {
     @NotEmpty
-    @JsonProperty("gameId")
-    private String gameId;
+    @JsonProperty("summaryId")
+    private String summaryId;
     // the user doesnt have to remember this - can be saved on button click when selecting which summary to update
 
     @JsonProperty("userId")
@@ -16,12 +16,18 @@ public class UpdateSummaryRequest {
     @JsonProperty("results")
     private String results;
 
-    public String getGameId() {
-        return gameId;
+    public UpdateSummaryRequest(String summaryId, String userId, String results) {
+        this.summaryId = summaryId;
+        this.userId = userId;
+        this.results = results;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
+    public String getSummaryId() {
+        return summaryId;
+    }
+
+    public void setSummaryId(String summaryId) {
+        this.summaryId = summaryId;
     }
 
     public String getUserId() {
