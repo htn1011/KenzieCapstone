@@ -2,13 +2,11 @@ package com.kenzie.capstone.service;
 
 import com.kenzie.capstone.service.model.User;
 import com.kenzie.capstone.service.dao.UserDao;
-import com.kenzie.capstone.service.model.UserCreateRequest;
+import com.kenzie.capstone.service.model.UserCreateRequestLambda;
 import com.kenzie.capstone.service.model.UserRecord;
 
 import javax.inject.Inject;
 
-import java.net.http.HttpResponse;
-import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -20,23 +18,18 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public User findUser(String id) {
-        // List<UserRecord> records = userDao.findUserName(id);
-        // if (records.size() > 0) {
-        //     return new User(records.get(0).getUserId(), records.get(0).getUsername());
-        // }
-        // return null;
-        UserRecord userRecord = Optional.ofNullable(userDao.findByUserId(id))
-                // check type of exception - custom?
-                .orElseThrow(IllegalAccessError::new);
+    public Optional<User> findUser(String id) {
 
-        return new User(userRecord.getUserId(), userRecord.getUsername());
+        return Optional.of(userDao.findByUserId(id))
+                .map(userRecord -> new User(
+                        userRecord.getUserId(),
+                        userRecord.getUsername(),
+                        userRecord.getFriendsList()));
 
     }
 
-    public User addUser(UserCreateRequest createRequest) {
-        // String id = UUID.randomUUID().toString();
+    public User addUser(UserCreateRequestLambda createRequest) {
         UserRecord record = userDao.addNewUser(createRequest.getUserId(), createRequest.getUsername());
-        return new User(record.getUserId(), record.getUsername());
+        return new User(record.getUserId(), record.getUsername(), record.getFriendsList());
     }
 }
