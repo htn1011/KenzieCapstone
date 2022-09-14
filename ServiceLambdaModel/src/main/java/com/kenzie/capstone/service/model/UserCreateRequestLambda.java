@@ -1,10 +1,10 @@
 package com.kenzie.capstone.service.model;
 
-public class UserCreateRequest {
+public class UserCreateRequestLambda {
     private String userId;
     private String username;
 
-    public UserCreateRequest(String userId, String username) {
+    public UserCreateRequestLambda(String userId, String username) {
         this.userId = userId;
         this.username = username;
     }
