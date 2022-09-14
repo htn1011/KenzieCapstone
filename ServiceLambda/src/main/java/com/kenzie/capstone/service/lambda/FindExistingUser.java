@@ -16,8 +16,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-public class VerifyUser implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class FindExistingUser implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     static final Logger log = LogManager.getLogger();
 
@@ -41,16 +42,20 @@ public class VerifyUser implements RequestHandler<APIGatewayProxyRequestEvent, A
         if (userId == null || userId.length() == 0) {
             return response
                     .withStatusCode(400)
-                    .withBody("userId is invalid");
+                    .withBody("No UserId was provided");
         }
 
         try {
-            User user = userService.findUser(userId);
-            String output = gson.toJson(user);
+            Optional<User> user = userService.findUser(userId);
+            // String output = gson.toJson(user);
 
-            return response
-                    .withStatusCode(200)
-                    .withBody(output);
+            return user.isPresent() ?
+                    response
+                            .withStatusCode(200)
+                            .withBody(gson.toJson(user.get())) :
+                    response
+                            .withStatusCode(404)
+                            .withBody("No user was found with userID: " + userId);
 
         } catch (Exception e) {
             return response

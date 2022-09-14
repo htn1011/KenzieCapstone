@@ -1,20 +1,19 @@
 package com.kenzie.appserver.controller.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Date;
 
-public class CreateSummaryRequest {
-    @NotEmpty
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class GameSummaryResponse {
+
     @JsonProperty("game")
     private String game;
 
-    @NotEmpty
     @JsonProperty("userId")
     private String userId;
 
-    @NotEmpty
     @JsonProperty("date")
     private String date;
 
@@ -24,7 +23,7 @@ public class CreateSummaryRequest {
     @JsonProperty("results")
     private String results;
 
-    public CreateSummaryRequest(String game, String userId, String date, String sessionNumber, String results) {
+    public GameSummaryResponse(String game, String userId, String date, String sessionNumber, String results) {
         this.game = game;
         this.userId = userId;
         this.date = date;
@@ -71,6 +70,4 @@ public class CreateSummaryRequest {
     public void setResults(String results) {
         this.results = results;
     }
-
-
 }
