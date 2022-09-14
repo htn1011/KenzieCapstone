@@ -3,47 +3,41 @@ package com.kenzie.appserver.controller.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
-
+import java.util.Date;
 
 public class CreateSummaryRequest {
     @NotEmpty
-    @JsonProperty("gameId")
-    private String gameId;
-    // since we decided to format the key for the game ID in some concatination, when the incoming request comes in
-    // it should contain the raw data the key will be formatted from in the service class
-    // @TODO I think can pass in seperately in the request and it will format as concatenated key in response
+    @JsonProperty("game")
+    private String game;
 
     @NotEmpty
-    @JsonProperty("sessionId")
-    private String sessionId;
-
     @JsonProperty("userId")
     private String userId;
+
+    @NotEmpty
+    @JsonProperty("date")
+    private String date;
+
+    @JsonProperty("sessionNumber")
+    private String sessionNumber;
 
     @JsonProperty("results")
     private String results;
 
-    public CreateSummaryRequest(String gameId, String sessionId, String userId, String results) {
-        this.gameId = gameId;
-        this.sessionId = sessionId;
+    public CreateSummaryRequest(String game, String userId, String date, String sessionNumber, String results) {
+        this.game = game;
         this.userId = userId;
+        this.date = date;
+        this.sessionNumber = sessionNumber;
         this.results = results;
     }
 
-    public String getGameId() {
-        return gameId;
+    public String getGame() {
+        return game;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setGame(String game) {
+        this.game = game;
     }
 
     public String getUserId() {
@@ -54,6 +48,22 @@ public class CreateSummaryRequest {
         this.userId = userId;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getSessionNumber() {
+        return sessionNumber;
+    }
+
+    public void setSessionNumber(String sessionNumber) {
+        this.sessionNumber = sessionNumber;
+    }
+
     public String getResults() {
         return results;
     }
@@ -61,4 +71,6 @@ public class CreateSummaryRequest {
     public void setResults(String results) {
         this.results = results;
     }
+
+
 }
