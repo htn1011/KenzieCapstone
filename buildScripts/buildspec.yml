@@ -15,23 +15,23 @@ phases:
       - aws cloudformation package --template-file Application-template.yml --s3-bucket $ARTIFACT_BUCKET --output-template-file application.yml
       - rm -rf Frontend/node_modules
       - rm -rf Frontend/.gradle
-reports:
-  app-jacoco-report:
-    files:
-      - 'Application/build/reports/jacoco/test/jacocoTestReport.xml'
-    file-format: 'JACOCOXML'
-  app-junit-reports:
-    files:
-      - 'Application/build/test-results/test/*.xml'
-    file-format: "JUNITXML"
-  service-jacoco-report:
-    files:
-      - 'ServiceLambda/build/reports/jacoco/test/jacocoTestReport.xml'
-    file-format: 'JACOCOXML'
-  service-junit-reports:
-    files:
-      - 'ServiceLambda/build/test-results/test/*.xml'
-    file-format: "JUNITXML"
+#reports:
+#  app-jacoco-report:
+#    files:
+#      - 'Application/build/reports/jacoco/test/jacocoTestReport.xml'
+#    file-format: 'JACOCOXML'
+#  app-junit-reports:
+#    files:
+#      - 'Application/build/test-results/test/*.xml'
+#    file-format: "JUNITXML"
+#  service-jacoco-report:
+#    files:
+#      - 'ServiceLambda/build/reports/jacoco/test/jacocoTestReport.xml'
+#    file-format: 'JACOCOXML'
+#  service-junit-reports:
+#    files:
+#      - 'ServiceLambda/build/test-results/test/*.xml'
+#    file-format: "JUNITXML"
 artifacts:
   files:
     - '**/*'
