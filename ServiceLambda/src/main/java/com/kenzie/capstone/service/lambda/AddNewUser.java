@@ -12,6 +12,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenzie.capstone.service.model.User;
+import com.kenzie.capstone.service.model.UserAlreadyExistsException;
 import com.kenzie.capstone.service.model.UserCreateRequestLambda;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +59,12 @@ public class AddNewUser implements RequestHandler<APIGatewayProxyRequestEvent, A
                     .withStatusCode(200)
                     .withBody(output);
 
-        } catch (Exception e) {
+        } catch (UserAlreadyExistsException e) {
+            return response
+                    .withStatusCode(409)
+                    .withBody(e.getMessage());
+        }
+        catch (Exception e) {
             return response
                     .withStatusCode(400)
                     .withBody(gson.toJson(e.getMessage()));
