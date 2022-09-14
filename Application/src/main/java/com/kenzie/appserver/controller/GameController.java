@@ -2,24 +2,33 @@ package com.kenzie.appserver.controller;
 
 
 import com.kenzie.appserver.controller.model.CreateSummaryRequest;
-import com.kenzie.appserver.controller.model.UserCreateRequest;
-import com.kenzie.appserver.controller.model.SummaryResponse;
+import com.kenzie.appserver.controller.model.GameSummaryResponse;
+import com.kenzie.appserver.controller.model.InvalidUserException;
+import com.kenzie.appserver.controller.model.NoExistingGameSummaryException;
 import com.kenzie.appserver.controller.model.UpdateSummaryRequest;
+import com.kenzie.appserver.controller.model.UserCreateRequest;
+import com.kenzie.appserver.controller.model.UserResponse;
 import com.kenzie.appserver.service.GameSummaryService;
-import com.kenzie.capstone.service.model.UserResponse;
+import com.kenzie.capstone.service.client.ApiGatewayException;
+import com.kenzie.capstone.service.model.UserResponseLambda;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 //import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/game")
+@RequestMapping("/game/wordle")
 public class GameController {
+
+    // game mapping always wordle at this time - future consideration for different games
+    private final String GAME = "wordle";
 
     private GameSummaryService gameService;
 
@@ -28,73 +37,83 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<SummaryResponse> postNewSummary(@RequestBody CreateSummaryRequest createSummaryRequest) {
+    public ResponseEntity<GameSummaryResponse> postNewSummary(@RequestBody CreateSummaryRequest createSummaryRequest) {
 
-        if (createSummaryRequest.getGameId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game");
+        // removed these checks because annotation prevent from being null
+            // if (createSummaryRequest.getGame() == null) {
+            //     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game");
+            // }
+            // if (createSummaryRequest.getSessionNumber() == null) {
+            //     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Session");
+            // }
+        // removed this check -> user validated in service -> if exception throw -> handle in the front end
+            // if (createSummaryRequest.getUserId().length() == 0) {
+            //     createSummaryRequest.setUserId(UUID.randomUUID().toString());
+            // }
+        if (createSummaryRequest == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request to create a new game summary");
         }
-
-        if (createSummaryRequest.getSessionId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Session");
+        try {
+            GameSummaryResponse response = gameService.addSummary(createSummaryRequest);
+            // status code 201 if successful
+            return ResponseEntity.created(
+                    URI.create("/game/wordle/date" + response.getDate() + "/" + response.getUserId())).body(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
         }
-
-        // If the userId is an empty string, then provide random userId
-        if (createSummaryRequest.getUserId().length() == 0) {
-            createSummaryRequest.setUserId(UUID.randomUUID().toString());
-        }
-
-        SummaryResponse response = gameService.addSummary(createSummaryRequest);
-
-        // destruct summaryId into gameId and sessionId, use elsewhere
-//        String[] splitSummaryId = response.getSummaryId().split("::");
-//        String gameId = splitSummaryId[0];
-//        String sessionId = splitSummaryId[1];
-
-        return ResponseEntity.created(URI.create("/game/" + response.getSummaryId() + "/" + response.getUserId())).body(response);
     }
 
-    @GetMapping("/{summaryId}/{userId}")
-    public ResponseEntity<SummaryResponse> findGameSummaryFromUser(@PathVariable("summaryId") String summaryId,
-                                                      @PathVariable("userId") String userId) {
-        SummaryResponse summaryResponse = gameService.getSummary(summaryId, userId);
-        if (summaryResponse == null) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/{summaryDate}/{userId}")
+    public ResponseEntity<GameSummaryResponse> findGameSummaryFromUser(
+            @PathVariable("summaryDate") String summaryDate,
+            @PathVariable("userId") String userId) {
+        try {
+            GameSummaryResponse gameSummaryResponse = gameService.getSummary(GAME, summaryDate, userId);
+            return ResponseEntity.ok(gameSummaryResponse);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
         }
-        return ResponseEntity.ok(summaryResponse);
-    }
-    @PutMapping
-    public ResponseEntity<SummaryResponse> updateGameSummary(@RequestBody UpdateSummaryRequest updateSummaryRequest) {
-
-        SummaryResponse summaryResponse = gameService.updateSummary(updateSummaryRequest.getSummaryId(), updateSummaryRequest.getUserId());
-
-        return ResponseEntity.ok(summaryResponse);;
     }
 
-    @DeleteMapping("/{summaryId}/{userId}")
-    public ResponseEntity deleteSummaryBySummaryId(@PathVariable("summaryId") String summaryId) {
-        gameService.deleteSummary(summaryId);
+    @PutMapping("/editSummary")
+    public ResponseEntity<GameSummaryResponse> updateGameSummary(
+            @RequestBody UpdateSummaryRequest updateSummaryRequest) {
+        try {
+            GameSummaryResponse gameSummaryResponse = gameService.updateSummary(updateSummaryRequest);
+            return ResponseEntity.ok(gameSummaryResponse);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
+        }
+    }
 
+    @DeleteMapping("/{summaryDate}/{userId}")
+    public ResponseEntity deleteSummaryBySummaryId(
+            @PathVariable("summaryDate") String summaryDate,
+            @PathVariable("userId") String userId) {
+        gameService.deleteSummary(GAME, summaryDate, userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{summaryId}")  // not sure if this one is needed in the controller
-    public ResponseEntity<List<SummaryResponse>> findAllSummaries() {
-        List<SummaryResponse> leaderboard = customerService.getAllSummaries();
-
+    @GetMapping("/{summaryDate}")
+    public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForDate(
+            @PathVariable("summaryDate") String summaryDate) {
+        List<GameSummaryResponse> leaderboard = gameService.getAllSummariesForDate(summaryDate);
         return ResponseEntity.ok(leaderboard);
     }
 
-    @GetMapping("/{summaryId}/{userId}")  // not sure if this one is needed in the controller
-    public ResponseEntity<List<SummaryResponse>> findAllSummariesFromUser(@PathVariable("userId") String userId) {
-        List<SummaryResponse> summaryResponseList = gameService.getAllSummariesFromUser();  //@TODO implement in service
-        if (summaryResponseList == null || summaryResponseList.isEmpty()) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForUser(@PathVariable("userId") String userId) {
+        List<GameSummaryResponse> gameSummaryResponseList = gameService.getAllSummariesFromUser(userId);
+        if (gameSummaryResponseList == null || gameSummaryResponseList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-
-        return ResponseEntity.ok(summaryResponseList);
+        return ResponseEntity.ok(gameSummaryResponseList);
     }
 
-    @PostMapping // not sure about this request body -> may need to be changed to a spring based model for annotations
+    @PostMapping("/user")
     public ResponseEntity<UserResponse> addNewUser(@RequestBody UserCreateRequest userCreateRequest) {
         if (userCreateRequest.getUserId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empty UserId");
@@ -103,23 +122,28 @@ public class GameController {
         if (userCreateRequest.getUserName() == null) {
             userCreateRequest.setUserName(userCreateRequest.getUserId().substring(0,8));
         }
-
         UserResponse userResponse = gameService.addNewUser(userCreateRequest);
-        return ResponseEntity.created(URI.create("/users/" + userResponse.getUserId())).body(userResponse);;
+        return ResponseEntity.created(URI.create("/users/" + userResponse.getUserId())).body(userResponse);
     }
 
-    @GetMapping("/users/{userId}")  // not sure if this one is needed in the controller
+    @GetMapping("/user/{userId}")  // not sure if this one is needed in the controller
     public ResponseEntity<UserResponse> findUser(@PathVariable("userId") String userId) {
-        UserResponse userResponse = gameService.getUser(userId);
+        UserResponseLambda userResponse = gameService.verifyUser(userId);
 
         if (userResponse == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(new UserResponse(userResponse));
     }
 
-
-
-
+    // this will handle all ApiGatewayExceptions if they are caught within this class
+    @ExceptionHandler({ApiGatewayException.class})
+    public ResponseEntity<String> handleException(HttpServletRequest req, ApiGatewayException ex) {
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(ex.getMessage());
+        // throw new ResponseStatusException(
+        //         ex.getStatusCode(), req.getMethod() + " request to: " + req.getRequestURL() + " failed.", ex);
+    }
 }
