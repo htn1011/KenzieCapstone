@@ -78,7 +78,7 @@ public class EndpointUtility {
             if (statusCode == 200) {
                 return httpResponse.body();
             } else {
-                throw new ApiGatewayException("POST request failed: " + statusCode + " status code received: "
+                throw new ApiGatewayException(statusCode, "POST request failed: " + statusCode + " status code received: "
                         + httpResponse.body());
             }
         } catch (IOException | InterruptedException e) {
@@ -104,8 +104,34 @@ public class EndpointUtility {
             if (statusCode == 200) {
                 return httpResponse.body();
             } else {
-                throw new ApiGatewayException("GET request failed: " + statusCode + " status code received: "
+                throw new ApiGatewayException(statusCode, "GET request failed: " + statusCode + " status code received: "
                 + httpResponse.body());
+            }
+        } catch (IOException | InterruptedException e) {
+            return e.getMessage();
+        }
+    }
+
+    public String putEndpoint(String endpoint, String data) {
+        String api = getApiEndpint();
+        String url = api + endpoint;
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI uri = URI.create(url);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Accept", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(data))
+                .build();
+        try {
+            HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            int statusCode = httpResponse.statusCode();
+            if (statusCode == 200) {
+                return httpResponse.body();
+            } else {
+                throw new ApiGatewayException(statusCode, "PUT request failed: " + statusCode + " status code received: "
+                        + httpResponse.body());
             }
         } catch (IOException | InterruptedException e) {
             return e.getMessage();
