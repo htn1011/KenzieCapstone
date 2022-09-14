@@ -2,6 +2,7 @@ package com.kenzie.appserver.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kenzie.capstone.service.model.UserResponseLambda;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -23,6 +24,12 @@ public class UserResponse {
         this.userId = userId;
         this.userName = userName;
         this.friendsList = friendsList;
+    }
+
+    public UserResponse(UserResponseLambda responseLambda) {
+        this.userId = responseLambda.getUserId();
+        this.userName = responseLambda.getUserName();
+        this.friendsList = responseLambda.getFriendsList();
     }
 
     public String getUserId() {
