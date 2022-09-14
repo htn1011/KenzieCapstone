@@ -6,28 +6,32 @@ import javax.validation.constraints.NotEmpty;
 
 public class UpdateSummaryRequest {
     @NotEmpty
-    @JsonProperty("summaryId")
-    private String summaryId;
+    @JsonProperty("existingSummaryDate")
+    private String existingSummaryDate;
     // the user doesnt have to remember this - can be saved on button click when selecting which summary to update
 
     @JsonProperty("userId")
     private String userId;
 
-    @JsonProperty("results")
-    private String results;
+    @JsonProperty("game")
+    private String game;
 
-    public UpdateSummaryRequest(String summaryId, String userId, String results) {
-        this.summaryId = summaryId;
+    @JsonProperty("updatedResults")
+    private String updatedResults;
+
+    public UpdateSummaryRequest(String existingSummaryDate, String userId, String game, String updatedResults) {
+        this.existingSummaryDate = existingSummaryDate;
         this.userId = userId;
-        this.results = results;
+        this.game = game;
+        this.updatedResults = updatedResults;
     }
 
-    public String getSummaryId() {
-        return summaryId;
+    public String getExistingSummaryDate() {
+        return existingSummaryDate;
     }
 
-    public void setSummaryId(String summaryId) {
-        this.summaryId = summaryId;
+    public void setExistingSummaryDate(String existingSummaryDate) {
+        this.existingSummaryDate = existingSummaryDate;
     }
 
     public String getUserId() {
@@ -38,11 +42,19 @@ public class UpdateSummaryRequest {
         this.userId = userId;
     }
 
-    public String getResults() {
-        return results;
+    public String getGame() {
+        return game;
     }
 
-    public void setResults(String results) {
-        this.results = results;
+    public void setGame(String game) {
+        this.game = game;
+    }
+
+    public String getUpdatedResults() {
+        return updatedResults;
+    }
+
+    public void setUpdatedResults(String updatedResults) {
+        this.updatedResults = updatedResults;
     }
 }
