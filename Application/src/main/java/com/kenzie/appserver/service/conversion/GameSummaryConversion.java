@@ -1,32 +1,25 @@
 package com.kenzie.appserver.service.conversion;
 
 import com.kenzie.appserver.controller.model.CreateSummaryRequest;
-import com.kenzie.appserver.controller.model.SummaryResponse;
+import com.kenzie.appserver.controller.model.GameSummaryResponse;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 
-import java.time.LocalDateTime;
-
 public class GameSummaryConversion {
-
     public static GameSummaryRecord createRequestToRecord(CreateSummaryRequest createSummaryRequest) {
-        GameSummaryRecord summaryRecord = new GameSummaryRecord();
-
-        summaryRecord.setUserId(createSummaryRequest.getUserId());
-        summaryRecord.setId(createSummaryRequest.getGameName());
-        summaryRecord.setResults(createSummaryRequest.getResults());
-        summaryRecord.setTimeStamp(String.valueOf(LocalDateTime.now()));
-
-        return summaryRecord;
+        return new GameSummaryRecord(
+                createSummaryRequest.getUserId(),
+                createSummaryRequest.getGame(),
+                createSummaryRequest.getDate(),
+                createSummaryRequest.getResults(),
+                createSummaryRequest.getSessionNumber());
     }
 
-    public static SummaryResponse recordToResponse(GameSummaryRecord gameSummaryRecord) {
-        SummaryResponse response = new SummaryResponse();
-
-        response.setGameId(gameSummaryRecord.getId());
-        response.setResults(gameSummaryRecord.results());
-        response.setUserId(gameSummaryRecord.getUserId());
-        response.setTimestamp(gameSummaryRecord.getTimeStamp());
-
-        return response;
+    public static GameSummaryResponse recordToResponse(GameSummaryRecord gameSummaryRecord) {
+        return new GameSummaryResponse(
+                gameSummaryRecord.getGame(),
+                gameSummaryRecord.getUserId(),
+                gameSummaryRecord.getDate(),
+                gameSummaryRecord.getSessionNumber(),
+                gameSummaryRecord.getResults());
     }
 }
