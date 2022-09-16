@@ -1,5 +1,6 @@
 package com.kenzie.appserver.service;
 
+import com.kenzie.appserver.config.CacheStore;
 import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 import com.kenzie.appserver.controller.model.GameSummaryResponse;
 import com.kenzie.appserver.controller.model.InvalidUserException;
@@ -29,10 +30,12 @@ public class GameSummaryService {
     private static final String GAME = "wordle";
     private GameRepository gameRepository;
     private UserServiceClient userServiceClient;
+    private CacheStore cache;
 
-    public GameSummaryService(GameRepository gameRepository, UserServiceClient userServiceClient) {
+    public GameSummaryService(GameRepository gameRepository, UserServiceClient userServiceClient, CacheStore cache) {
         this.gameRepository = gameRepository;
         this.userServiceClient = userServiceClient;
+        this.cache = cache;
     }
 
     public GameSummaryResponse addSummary(CreateSummaryRequest summaryRequest) {
@@ -42,6 +45,8 @@ public class GameSummaryService {
         GameSummaryRecord record = GameSummaryConversion.createRequestToRecord(summaryRequest);
         // save it
         gameRepository.save(record);
+        // invalidate the cache
+        invalidateCache(record.getDate(), record.getUserId());
         // return it
         return GameSummaryConversion.recordToResponse(record);
     }
@@ -71,28 +76,67 @@ public class GameSummaryService {
         existingRecord.setResults(updateSummaryRequest.getUpdatedResults());
         // save updated record to DB
         gameRepository.save(existingRecord);
-        // save updated record to DB
-
+        // invalidate all caches
+        invalidateCache(existingRecord.getDate(), existingRecord.getUserId());
         // return updated record
         return GameSummaryConversion.recordToResponse(existingRecord);
     }
 
-    public void deleteSummary(String game, String date, String userId) {
-        gameRepository.deleteById(generateGameSummary(game, date, userId));
+    public void deleteSummary(String date, String userId) {
+        invalidateCache(date, userId);
+        gameRepository.deleteById(generateGameSummaryID(date, userId));
     }
 
     public List<GameSummaryResponse> getAllSummariesForDate(String date) {
-        List<GameSummaryResponse> allSummaries = new ArrayList<>();
-        gameRepository.findByDate(date)
-                .forEach(record -> allSummaries.add(GameSummaryConversion.recordToResponse(record)));
-        return allSummaries;
+        // check cache for summaries from that date
+        List<GameSummaryResponse> summaryResponsesHit = cache.get(formatGameDateKey(date));
+        // if cache miss
+        if (summaryResponsesHit == null) {
+            List<GameSummaryResponse> allSummariesAfterMiss = new ArrayList<>();
+            // add to cache wordle::date + list of summaries for that date
+            Optional.ofNullable(gameRepository.findByDateOrderByResultsAsc(date))
+                    .orElseGet(ArrayList::new)
+                    .forEach(record -> allSummariesAfterMiss.add(GameSummaryConversion.recordToResponse(record)));
+            cache.add(formatGameDateKey(date), allSummariesAfterMiss);
+            return allSummariesAfterMiss;
+        }
+        return summaryResponsesHit;
     }
 
     public List<GameSummaryResponse> getAllSummariesFromUser(String userId) {
-        return gameRepository.findByUserId(userId)
+        // check cache for all summaries from a user
+        List<GameSummaryResponse> summaryResponsesHit = cache.get(formatGameUserIdKey(userId));
+        // if null - get from repo
+        if (summaryResponsesHit == null) {
+            List<GameSummaryResponse> summaryResponsesMiss =
+                    // if the user had no records - return empty list
+                    Optional.ofNullable(gameRepository.findByUserId(userId))
+                            .orElseGet(ArrayList::new)
+                    .stream()
+                    .map(GameSummaryConversion::recordToResponse)
+                    .collect(Collectors.toList());
+        // add to cache wordle::user + list of that user's summaries
+            cache.add(formatGameUserIdKey(userId), summaryResponsesMiss);
+            return summaryResponsesMiss;
+        }
+        return summaryResponsesHit;
+    }
+
+    public List<GameSummaryResponse> getFriendSummaries(String userId, String date) {
+        Set<String> friendsList = new HashSet<>(userServiceClient.getFriendList(userId));
+        return Optional.ofNullable(cache.get(formatGameDateKey(date)))
+                .orElseGet(() -> getAllSummariesForDate(date))
                 .stream()
-                .map(GameSummaryConversion::recordToResponse)
+                .filter(response -> friendsList.contains(response.getUserId()))
                 .collect(Collectors.toList());
+    }
+
+    public UserResponse addFriend(String userId, String friendId) {
+        return new UserResponse(userServiceClient.addFriend(userId, friendId));
+    }
+
+    public UserResponse removeFriend(String userId, String friendId) {
+        return new UserResponse(userServiceClient.removeFriend(userId, friendId));
     }
 
     public UserResponse addNewUser(UserCreateRequest userCreateRequest) {
@@ -131,8 +175,8 @@ public class GameSummaryService {
     private GameSummaryId generateGameSummaryID(String date, String userId) {
         return new GameSummaryId(userId, formatGameDateKey(date));
     }
-
-    private GameSummaryId generateGameSummary(String game, String date, String userId) {
-        return new GameSummaryId(userId, formatSummarySortKey(game, date));
+    private void invalidateCache(String date, String userId) {
+        cache.evict(formatGameDateKey(date));
+        cache.evict(formatGameUserIdKey(userId));
     }
 }
