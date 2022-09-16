@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @EnableScan
 public interface GameRepository extends CrudRepository<GameSummaryRecord, GameSummaryId> {
-    // find all by date(GSI)
-    List<GameSummaryRecord> findByDate(String date);
+    // find all by date(GSI) ordered by results in ascending order
+    List<GameSummaryRecord> findByDateOderByResultsAsc(String date);
 
     // find all summaries for user - only primary key
     List<GameSummaryRecord> findByUserId(String userId);
