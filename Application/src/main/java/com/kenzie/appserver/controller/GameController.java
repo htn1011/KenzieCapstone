@@ -137,6 +137,34 @@ public class GameController {
         return ResponseEntity.ok(new UserResponse(userResponse));
     }
 
+    @GetMapping("/{summaryDate}/{userId}/friends")
+    public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForUserFriends(
+            @PathVariable("summaryDate") String summaryDate,
+            @PathVariable("userId") String userId) {
+        List<GameSummaryResponse> gameSummaryResponseList = gameService.getFriendSummaries(userId, summaryDate);
+        if (gameSummaryResponseList == null || gameSummaryResponseList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(gameSummaryResponseList);
+    }
+
+    @PutMapping("/user/{userId}/friends/add/{friendId}")
+    public ResponseEntity<UserResponse> addFriend(
+            @PathVariable("userId") String userId,
+            @PathVariable("friendId") String friendId) {
+        UserResponse userResponse = gameService.addFriend(userId, friendId);
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PutMapping("/user/{userId}/friends/remove/{friendId}")
+    public ResponseEntity<UserResponse> removeFriend(
+            @PathVariable("userId") String userId,
+            @PathVariable("friendId") String friendId) {
+        UserResponse userResponse = gameService.removeFriend(userId, friendId);
+        return ResponseEntity.ok(userResponse);
+    }
+
+
     // this will handle all ApiGatewayExceptions if they are caught within this class
     @ExceptionHandler({ApiGatewayException.class})
     public ResponseEntity<String> handleException(HttpServletRequest req, ApiGatewayException ex) {
