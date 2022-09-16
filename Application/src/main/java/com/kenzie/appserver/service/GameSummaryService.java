@@ -18,11 +18,15 @@ import com.kenzie.capstone.service.model.UserResponseLambda;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class GameSummaryService {
+    private static final String GAME = "wordle";
     private GameRepository gameRepository;
     private UserServiceClient userServiceClient;
 
@@ -32,7 +36,6 @@ public class GameSummaryService {
     }
 
     public GameSummaryResponse addSummary(CreateSummaryRequest summaryRequest) {
-        // steps:
         // use the userService client to verify the user will throw exception if not found
         verifyUser(summaryRequest.getUserId());
         //create the new record
@@ -46,8 +49,8 @@ public class GameSummaryService {
     public GameSummaryResponse getSummary(String game, String date, String userId) {
         // verify the user -> throw exception if invalid
         verifyUser(userId);
-        // attempt to get the requested summary, throw an excpetion if it doesn't exist to be handled in controller
-        return gameRepository.findById(generateGameSummary(game, date, userId))
+        // attempt to get the requested summary, throw an exception if it doesn't exist to be handled in controller
+        return gameRepository.findById(generateGameSummaryID(date, userId))
                 .map(GameSummaryConversion::recordToResponse)
                 .orElseThrow(() -> new NoExistingGameSummaryException(game, date, userId));
     }
@@ -55,20 +58,18 @@ public class GameSummaryService {
     public GameSummaryResponse updateSummary(UpdateSummaryRequest updateSummaryRequest) {
         // verify user
         verifyUser(updateSummaryRequest.getUserId());
-
         // get existing game summary
         GameSummaryRecord existingRecord = gameRepository.findById(
-                generateGameSummary(
-                        updateSummaryRequest.getGame(),
+                generateGameSummaryID(
                         updateSummaryRequest.getExistingSummaryDate(),
                         updateSummaryRequest.getUserId()))
                 .orElseThrow(() -> new NoExistingGameSummaryException(
                         updateSummaryRequest.getGame(),
                         updateSummaryRequest.getExistingSummaryDate(),
                         updateSummaryRequest.getUserId()));
-
         // update with new results
         existingRecord.setResults(updateSummaryRequest.getUpdatedResults());
+        // save updated record to DB
         gameRepository.save(existingRecord);
         // save updated record to DB
 
@@ -95,9 +96,6 @@ public class GameSummaryService {
     }
 
     public UserResponse addNewUser(UserCreateRequest userCreateRequest) {
-        // request comes from the controller to add a new user
-        // calls the user client
-        // todo make sure the user doesn't already exist
         UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(
                 userCreateRequest.getUserId(),
                 userCreateRequest.getUserName());
@@ -110,7 +108,8 @@ public class GameSummaryService {
             // either the user exists and is returned
             existingUser = userServiceClient.findExistingUser(userId);
         } catch (ApiGatewayException e) {
-            // or an exception is thrown and the exception should contain details to be able to debug that or use effectively
+            // or an exception is thrown and the exception should contain details to be able to debug
+            // that or use effectively
             if (e.getStatusCode() == 404) {
                 throw new InvalidUserException(userId, e);
             } else {
@@ -119,14 +118,18 @@ public class GameSummaryService {
         }
         return existingUser;
     }
-    private String formatSummarySortKey(String game, String date) {
+    private String formatGameDateKey(String date) {
 
-        return String.format("%s::%s", game, date);
+        return String.format("%s::%s", GAME, date);
     }
 
-    private String formatIndexSortKey(String game, String userId) {
+    private String formatGameUserIdKey(String userId) {
 
-        return String.format("%s::%s", game, userId);
+        return String.format("%s::%s", GAME, userId);
+    }
+
+    private GameSummaryId generateGameSummaryID(String date, String userId) {
+        return new GameSummaryId(userId, formatGameDateKey(date));
     }
 
     private GameSummaryId generateGameSummary(String game, String date, String userId) {
