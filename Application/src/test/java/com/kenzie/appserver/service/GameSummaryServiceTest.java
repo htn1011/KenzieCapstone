@@ -1,20 +1,12 @@
 package com.kenzie.appserver.service;
 
 import com.kenzie.appserver.repositories.GameRepository;
-import com.kenzie.appserver.repositories.model.GameSummaryRecord;
-import com.kenzie.appserver.service.model.Example;
 import com.kenzie.capstone.service.client.UserServiceClient;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static java.util.UUID.randomUUID;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class ExampleServiceTest {
+public class GameSummaryServiceTest {
     private GameRepository gameRepository;
     private ExampleService exampleService;
     private UserServiceClient userServiceClient;
