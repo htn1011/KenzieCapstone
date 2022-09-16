@@ -93,18 +93,18 @@ public class GameController {
     public ResponseEntity deleteSummaryBySummaryId(
             @PathVariable("summaryDate") String summaryDate,
             @PathVariable("userId") String userId) {
-        gameService.deleteSummary(GAME, summaryDate, userId);
+        gameService.deleteSummary(summaryDate, userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{summaryDate}")
+    @GetMapping("/{summaryDate}/all")
     public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForDate(
             @PathVariable("summaryDate") String summaryDate) {
         List<GameSummaryResponse> leaderboard = gameService.getAllSummariesForDate(summaryDate);
         return ResponseEntity.ok(leaderboard);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}/all")
     public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForUser(@PathVariable("userId") String userId) {
         List<GameSummaryResponse> gameSummaryResponseList = gameService.getAllSummariesFromUser(userId);
         if (gameSummaryResponseList == null || gameSummaryResponseList.isEmpty()) {
@@ -143,7 +143,5 @@ public class GameController {
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(ex.getMessage());
-        // throw new ResponseStatusException(
-        //         ex.getStatusCode(), req.getMethod() + " request to: " + req.getRequestURL() + " failed.", ex);
     }
 }
