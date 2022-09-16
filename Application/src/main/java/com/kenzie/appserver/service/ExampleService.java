@@ -1,11 +1,8 @@
 package com.kenzie.appserver.service;
 
-import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 import com.kenzie.appserver.repositories.GameRepository;
-import com.kenzie.appserver.service.model.Example;
 
 import com.kenzie.capstone.service.client.UserServiceClient;
-import com.kenzie.capstone.service.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
