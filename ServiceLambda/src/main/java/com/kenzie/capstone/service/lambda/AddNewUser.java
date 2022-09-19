@@ -50,7 +50,7 @@ public class AddNewUser implements RequestHandler<APIGatewayProxyRequestEvent, A
         }
 
         try {
-            UserCreateRequestLambda userCreateRequestLambda = converter.convert(data);
+            UserCreateRequestLambda userCreateRequestLambda = converter.convertToUserCreateRequest(data);
             User newUser = userService.addUser(userCreateRequestLambda);
             // do I need a user response instead of the user? - Marika
             String output = gson.toJson(newUser);

@@ -17,11 +17,11 @@ public class UpdateFriendListRequest {
         this.userId = userId;
     }
 
-    public String getUsername() {
+    public String getFriendId() {
         return friendId;
     }
 
-    public void setUsername(String friendId) {
+    public void setFriendId(String friendId) {
         this.friendId = friendId;
     }
 }
