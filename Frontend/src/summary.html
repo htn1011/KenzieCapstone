@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="summaryPage.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<!--local HTML style rules applied to elements by id or class-->
+<!--can also be defined with advanced features in style.css-->
+<!--<style>-->
+<!--  h1.main {-->
+<!--    font-family: "Satisfy", cursive;-->
+<!--    padding-left: 10px;-->
+<!--    margin-top: 15px;-->
+<!--    margin-bottom: 15px;-->
+<!--    font-size: 50px;-->
+<!--    display: inline-block;-->
+<!--  }-->
+<!--</style>-->
+
+<!-- body of page -->
+<body class="background">
+<!-- title header -->
+<header class="header" id="header">
+  <div class="site-title">
+    <h1 class="main" href="summary.html">Sharedle</h1>
+  </div>
+</header>
+<!-- user control sections, each div -->
+<div class="card">
+  <h2>Post New Score</h2>
+  <!-- post new summary -->
+  <form class="card-content" id="create-summary-form" accept-charset=utf-8>
+    <p class="form-field">
+      <!-- can replace with Number of Wordle Guesses? -->
+      <label>Number of Wordle Guesses</label>
+      <!-- dropdown list of options -->
+      <select name="number-guesses" id="create-summary-guesses">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="fail">Failed</option>
+      </select>
+    </p>
+    <!-- additional user comments attached to summary result -->
+    <p class="form-field">
+      <label>Result Comment</label>
+      <textarea name="description" placeholder="Describe your experience!" form="create-summary-form" id="create-summary-description"></textarea>
+    </p>
+
+    <button type="submit" id="createSummaryButton">Post Score</button>
+
+  </form>
+</div>
+
+<div class="card">
+  <h2>Manage Scoreboard</h2>
+  <!-- display all summaries by date -->
+  <div class="card">
+    <form class="card-content" id="get-summaries-by-date-form" accept-charset=utf-8>
+      <p>Filter Scoreboard by Wordle Day:</p>
+        <p class="form-field">
+          <label>Year</label>
+          <input type="text" size="25" required class="validated-field" id="filter-summary-year">
+          <label>Month</label>
+          <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
+<!--          <input type="text" required class="validated-field" id="filter-summary-month">-->
+          <label>Day</label>
+          <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day">
+<!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
+        </p>
+      <button type="submit" id="submit-date-filter">Filter Scoreboard</button>
+    </form>
+  </div>
+  <!-- show only friend summaries -->
+  <div class="card">
+    <form class="card-content" id="get-friend-summaries" accept-charset=utf-8>
+      <p>Show Only Friend Scores:</p>
+      <div>
+        <!-- option to include own summaries in filtered scoreboard -->
+        Would you like to include your own score results?
+        <select name="include-me" id="filter-only-friends-me">
+          <option value=true>Yes</option>
+          <option value=false>No</option>
+        </select>
+      </div>
+      <button type="submit" id="filter-only-friends">Filter Scoreboard</button>
+    </form>
+  </div>
+  <!-- display all summaries for one user -->
+  <div class="card">
+    <form class="card-content" id="get-summaries-by-user" accept-charset=utf-8>
+      <p>Show Scores from User:</p>
+      <p class="form-field">
+        <label>User ID</label>
+        <input type="text" required class="validated-field" id="filter-summary-user">
+      </p>
+      <div>
+        Would you like to include your own score results?
+        <select name="include-you-me" id="filter-only-user-me">
+          <option value=true>Yes</option>
+          <option value=false>No</option>
+        </select>
+      </div>
+      <button type="submit" id="filter-only-user">Filter Scoreboard</button>
+    </form>
+  </div>
+
+</div>
+
+<!-- summary display section -->
+<div class="card" id="result">
+  <h2 id="resultHeader">Scoreboard: </h2>
+  <h1 class="userId" id="summaryUser" style="color:red;"></h1>
+  <p id="result-info"></p>
+</div>
+
+</body>
+</html>
