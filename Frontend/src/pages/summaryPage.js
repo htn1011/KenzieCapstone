@@ -56,7 +56,7 @@ class SummaryPage extends BaseClass {
     // Event Handlers --------------------------------------------------------------------------------------------------
 
     /* @TODO when event listeners detect an action input, these handlers will translate information
-            from user input and call client to process this information */
+            from user input and call summaryClient to process this information */
 
    async onCreateSummary(event) {
        // Prevent the page from refreshing on form submit
