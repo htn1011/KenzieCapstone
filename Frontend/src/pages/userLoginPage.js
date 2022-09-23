@@ -9,7 +9,7 @@ class UserLoginPage extends BaseClass {
 
     constructor() {
         super();
-        this.bindClassMethods(['onUserLogin', 'onRequestSignUp', 'onUserSignUp', 'render'], this);
+        this.bindClassMethods(['onUserLogin', 'onRequestSignUp', 'onUserSignUp', 'render', 'onRemoveFriend', 'onRequestEditFriends', 'onAddFriend'], this);
         this.dataStore = new DataStore();
 
     }
@@ -24,12 +24,17 @@ class UserLoginPage extends BaseClass {
         document.getElementById('sign-up-request').addEventListener('click', this.onRequestSignUp);
         // event listener for the sign up form
         document.getElementById('sign-up-form').addEventListener('submit', this.onUserSignUp);
+        document.getElementById('edit-friends').addEventListener('click', this.onRequestEditFriends);
+        document.getElementById('add-friend').addEventListener('submit', this.onAddFriend);
+        document.getElementById('remove-friend').addEventListener('submit', this.onRemoveFriend);
         // note:
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
         // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
         this.client = new ExampleClient();
         // initial/default state is to display the login form
-        this.dataStore.set("display", "login")
+        this.dataStore.set("display", "login");
+        // initial/default - set editFriends to no
+        this.dataStore.set("edit", "no");
         // re-render whenever change made to datastore
         this.dataStore.addChangeListener(this.render);
         this.render();
@@ -39,10 +44,12 @@ class UserLoginPage extends BaseClass {
     async render() {
         // display signifies the state of the page -> login/signup/userInfo
         let display = this.dataStore.get("display");
+        let edit = this.dataStore.get("edit");
         let loginForm = document.getElementById("login-form");
         let signupForm = document.getElementById("user-sign-up");
-        let userInfo = document.getElementById("user-information-container");
-        let currentUser = null;
+        let userInfo = document.getElementById("user-information");
+        let editFriendForm = document.getElementById("edit-friends-form");
+        let userFriendList = document.getElementById("existing-friendsList");
 
         if (display == "login") {
             loginForm.classList.add("active");
@@ -51,26 +58,25 @@ class UserLoginPage extends BaseClass {
         } else if (display == "signup") {
             loginForm.classList.remove("active");
             signupForm.classList.add("active");
-            userInfo.classList.remove("active");  
+            userInfo.classList.remove("active");
 
         } else if (display == "userInfo") {
+            let currentUser = this.dataStore.get("user");
             loginForm.classList.remove("active");
             signupForm.classList.remove("active");
-
-            currentUser = this.dataStore.get("user");
-            userInfo.innerHTML = "";
-            // add in div containing existing user info
-            userInfo.innerHTML += `
-            <div class="state">
-                <p><strong>User ID</strong>: <span id="existing-userId">${currentUser.userId}</span></p>
-                <p><strong>Username</strong>: <span id="existing-username">${currentUser.username}</span></p>
-                <p><strong>Friends</strong>: <ul>`;
-            currentUser.friendList.forEach(friendId => {userInfo.innerHTML += `<li>${friendId}</li>`             
+            userFriendList.innerHTML = "";
+            userFriendList.innerHTML += `<ul>`;
+            currentUser.friendList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
             });
-            userInfo.innerHTML += `</div>`;
-            userInfo.classList.add("active"); 
+            userFriendList.innerHTML += `</ul>`;
+            userInfo.classList.add("active");
+            if (edit == no) {
+                editFriendForm.classList.remove("active");
+            } else {
+                editFriendForm.classList.add("active");
+            }
         }
- 
+
     }
 
     // Event Handlers --------------------------------------------------------------------------------------------------
@@ -135,6 +141,65 @@ class UserLoginPage extends BaseClass {
            this.handleError("addNewUser", error, errorCallback);
        }
    }
+    */
+
+   async onRequestEditFriends(event) {
+    // Prevent the page from refreshing on form submit
+    event.preventDefault();
+
+    this.dataStore.set("edit", "yes");
+    }
+
+   async onAddFriend(event) {
+        // Prevent the page from refreshing on form submit
+        event.preventDefault();
+
+        let userId = this.dataStore.get("user").userId;
+        let friendId = document.getElementById("friends-user-id").value;
+
+        const updatedUser = await this.client.addfriend(
+            userId,
+            friendId,
+            this.errorHandler);
+
+        this.dataStore.setState({"user":updatedUser, "edit":"no"});
+    }
+    /*
+    client method to add new friend to list
+    async addfriend(userId, friendId, errorCallback=console.error) {
+        try {
+            const response = await this.client.put(`${this.host}/user/{userId}/friends/add/{friendId}`);
+            return response.data;
+        } catch (error) {
+            this.handleError("addfriend", error, errorCallback);
+        }
+    }
+    */
+
+    async onRemoveFriend(event) {
+        // Prevent the page from refreshing on form submit
+        event.preventDefault();
+
+        let userId = this.dataStore.get("user").userId;
+        let friendId = document.getElementById("friends-user-id").value;
+
+        const updatedUser = await this.client.removeFriend(
+            userId,
+            friendId,
+            this.errorHandler);
+
+        this.dataStore.setState({"user":updatedUser, "edit":"no"});
+    }
+    /*
+    client method to remove friend
+    async removeFriend(userId, friendId, errorCallback=console.error) {
+        try {
+            const response = await this.client.put(`${this.host}/user/{userId}/friends/remove/{friendId}`);
+            return response.data;
+        } catch (error) {
+            this.handleError("removeFriend", error, errorCallback);
+        }
+    }
     */
 
 }
