@@ -9,8 +9,9 @@ public class UserCreateRequest {
     @JsonProperty("userId")
     private String userId;
 
-    @JsonProperty("userName")
+    @JsonProperty("username")
     private String userName;
+    // todo change naming so consistent throughout
 
     public UserCreateRequest(String userId, String userName) {
         this.userId = userId;

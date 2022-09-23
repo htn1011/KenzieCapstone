@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="reviewsPage.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="background">
+<header class="header" id="header">
+    <div class="page-title">
+        <h3 class="user-login-page">User Login</h3>
+        <p>Welcome! If you are an existing user, please log in. If you'd like to sign up, please press "Sign Up"</p>
+        <!--        button to choose to sign up instead of login - it will change the display state-->
+        <button type="submit" id="sign-up-request">Sign Up</button>
+    </div>
+    <div>
+        <!--        add link back to the main/home page todo when finalised-->
+        <a href="index.html">Home Page</a>
+    </div>
+</header>
+<!--User login and information section-->
+<div class="card" id="user-login-information">
+    <!--    login-->
+    <form class="card-content state" id="login-form">
+        <p class="form-field">
+            <label>Please enter your user ID.</label>
+            <input type="text" required class="validated-field" id="userId-existing-input" placeholder="user ID...." autofocus>
+        </p>
+        <button type="submit" id="entered-userId">Enter</button>
+    </form>
+    <!--    sign up-->
+    <div class="card" id="user-sign-up">
+        <form class="card-content state" id="sign-up-form">
+            <p class="form-field">
+                <label>Please enter a unique user ID.</label>
+                <input type="text" required class="validated-field" id="userId-new-input" placeholder="user ID...." autofocus>
+            </p>
+            <p class="form-field">
+                <label>Please enter a username.</label>
+                <input type="text" required class="validated-field" id="username-new-input" placeholder="username...." autofocus>
+            </p>
+            <button type="submit" id="sign-up-info">Enter</button>
+        </form>
+    </div>
+    <!--    to be filled out with user information once user is defined-->
+    <div class="state" id="user-information">
+        <!--    can fill in container at js file-->
+        <p><strong>User ID</strong>: <span id="existing-userId">${currentUser.userId}</span></p>
+        <p><strong>Username</strong>: <span id="existing-username">${currentUser.username}</span></p>
+        <p><strong>Friends</strong>: <span id="existing-friendsList"></span></p>
+        <button type="submit" id="edit-friends">Edit Friends List</button>
+        <form class="card-content state" id="edit-friends-form">
+            <p class="form-field">
+                <label>Please enter your friend's user ID.</label>
+                <input type="text" required class="validated-field" id="friends-user-id" placeholder="Friend's user ID...." autofocus>
+            </p>
+            <button type="submit" id="add-friend">Add Friend to List</button>
+            <button type="submit" id="remove-friend">Remove Friend from List</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
