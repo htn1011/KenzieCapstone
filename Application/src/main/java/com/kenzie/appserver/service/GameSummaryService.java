@@ -142,7 +142,7 @@ public class GameSummaryService {
     public UserResponse addNewUser(UserCreateRequest userCreateRequest) {
         UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(
                 userCreateRequest.getUserId(),
-                userCreateRequest.getUserName());
+                userCreateRequest.getusername());
         return new UserResponse(userServiceClient.addNewUser(userCreateRequestLambda));
     }
 

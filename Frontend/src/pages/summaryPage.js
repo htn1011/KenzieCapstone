@@ -10,7 +10,7 @@ class SummaryPage extends BaseClass {
 
     constructor() {
         super();
-        this.bindClassMethods(['onGet', 'onCreate', 'renderSummary', 'onCreateSummary', 'onGetAllSummariesByDate'], this);
+        this.bindClassMethods(['onGet', 'onCreate', 'renderSummary', 'onCreateSummary', 'onGetAllSummariesByDate', 'onGetAllFriendSummaries', 'onGetSummariesByUser'], this);
         this.dataStore = new DataStore();
     }
 
@@ -24,6 +24,9 @@ class SummaryPage extends BaseClass {
 //        document.getElementById('create-form').addEventListener('submit', this.onCreate);
         this.client = new summaryClient();
 
+        // this will retrieve variables from local storage for use,
+        this.firstRender();
+
         this.dataStore.addChangeListener(this.renderSummary)
     }
 
@@ -31,7 +34,7 @@ class SummaryPage extends BaseClass {
 
 
     // @TODO this will populate the resultArea element with a formatted summary entry/post
-   async renderSummary(summary) {
+    async renderSummary(summary) {
        let resultArea = document.getElementById("result-info");
 
        let summaryEntry = "";
@@ -51,7 +54,15 @@ class SummaryPage extends BaseClass {
 
            resultArea.innerHTML = summaryEntry;
        }
-   }
+    }
+
+    async firstRender() {
+           let userId = dataStore.getItem("userId");
+
+           const review = await this.client.findReview(restaurantId, userId, this.errorHandler());
+
+           await this.renderReview(review);
+    }
 
     // Event Handlers --------------------------------------------------------------------------------------------------
 
@@ -66,14 +77,15 @@ class SummaryPage extends BaseClass {
        createSummaryButton.innerText = 'posting...';
        createSummaryButton.disabled = true;
 
-       this.dataStore.set("example", null);
+//       this.dataStore.set("example", null);
 
        // retrieve stored info from DataStore
        let game = this.dataStore.get("game");
        let userId = this.dataStore.get("userId");
        let sessionNumber = this.dataStore.get("sessionNumber");
        // retrieve results from user input in field
-       let results = document.getElementById("create-summary-results").value;
+       let results = document.getElementById("create-summary-guesses").value + " "
+        + document.getElementById("create-summary-description").value;
 
        // input this info into summaryClient method
        const createdSummary = await this.client.postNewSummary(game, userId, sessionNumber, results, this.errorHandler);
@@ -81,7 +93,8 @@ class SummaryPage extends BaseClass {
        // this.dataStore.set("example", createdSummary.username);
 
        if (createdSummary) {
-           this.showMessage(`Score posted for ${createdSummary.game}!`)
+           this.showMessage(`Score posted for ${createdSummary.game}!`);
+            await this.renderSummary(result);
        } else {
            this.errorHandler("Error posting!  Try again...");
        }
@@ -92,10 +105,14 @@ class SummaryPage extends BaseClass {
        // Prevent the page from refreshing on form submit
        event.preventDefault();
 
-       let date = document.getElementById("date-field").value;
-
        // @TODO find use cases for DataStore storage
        // this.dataStore.set("summariesByDate", date);
+
+       let year = document.getElementById("filter-summary-year").value;
+       let month = document.getElementById("get-summary-month").value;
+       let day = document.getElementById("get-summary-day").value;
+
+       let date = year + "-" + month + "-" + day;
 
        let result = await this.client.findAllSummariesForDate(date, this.errorHandler);
 
@@ -104,9 +121,44 @@ class SummaryPage extends BaseClass {
 
        if (result) {
            this.showMessage(`Got all game scores for ${result.date}!`)
+           await this.renderSummary(result);
        } else {
            this.errorHandler("Error retrieving game scores!  Try again...");
+           resultArea.innerHTML = "No summaries available";
        }
+   }
+
+   async onGetAllFriendSummaries(event) {
+       // Prevent the page from refreshing on form submit
+       event.preventDefault();
+
+       let year = document.getElementById("filter-friend-summary-year").value;
+       let month = document.getElementById("get-friend-summary-month").value;
+       let day = document.getElementById("get-friend-summary-day").value;
+       let summaryDate = year + "-" + month + "-" + day;
+
+       let userId = document.getElementById("userId");
+
+       let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, errorCallback);
+
+       result.date = summaryDate;
+
+       if (result) {
+            this.showMessage(`Here are your friends game scores for ${result.date}!`)
+            await this.renderSummary(result);
+       } else {
+            this.errorHandler("Error retrieving your friends' game scores! Try again...")
+            resultArea.innerHTML = "No summaries available";
+       }
+   }
+
+   async onGetSummariesByUser(event) {
+       // Prevent the page from refreshing on form submit
+       event.preventDefault();
+
+       let userId = document.getElementById("userId");
+
+       let result = await this.client.findAllSummariesForUser(userId, errorCallback);
    }
 
 //    async onGet(event) {

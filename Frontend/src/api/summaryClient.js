@@ -10,7 +10,8 @@ export default class summaryClient extends BaseClass {
         super();
         // @TODO the client must bind all methods that will be used
         const methodsToBind = ['clientLoaded', 'postNewSummary', 'findGameSummaryFromUser', 'updateGameSummary',
-            'deleteSummaryBySummaryId', 'findAllSummariesForDate', 'findAllSummariesForUser'];
+            'deleteSummaryBySummaryId', 'findAllSummariesForDate', 'findAllSummariesForUser', 'addNewUser', 'findUser',
+            'findAllSummariesForUserFriends', 'addFriend', 'removeFriend'];
         this.bindClassMethods(methodsToBind, this);
         this.props = props;
         this.clientLoaded(axios);
@@ -27,8 +28,10 @@ export default class summaryClient extends BaseClass {
         }
     }
 
+    // @TODO SUMMARY SIDE controller methods
+
     // date does not get input here, is generated in backend - KK
-    async postNewSummary(game, userId, sessionNumber, results, errorCallback) {
+    async postNewSummary(game, userId, sessionNumber, results, errorCallback=console.error) {
         try {
             const response = await this.client.post(`/game/wordle`, {
                 "game": game,
@@ -44,7 +47,7 @@ export default class summaryClient extends BaseClass {
 
     async findGameSummaryFromUser(summaryDate, userId, errorCallback) {
         try {
-            const response = await this.client.get(`/${summaryDate}/${userId}`);
+            const response = await this.client.get(`/game/wordle/${summaryDate}/${userId}`);
             return response.data;
         } catch (error) {
             this.handleError("findGameSummaryFromUser", error, errorCallback)
@@ -52,13 +55,13 @@ export default class summaryClient extends BaseClass {
     }
 
     // updateGameSummary
-    async updateGameSummary(game, userId, sessionNumber, results, errorCallback) {
+    async updateGameSummary(existingSummaryDate, userId, game, updatedResults, errorCallback=console.error) {
         try {
-            const response = await this.client.put(`/editSummary`, {
-                "game": game,
+            const response = await this.client.put(`/game/wordle/editSummary`, {
+                "existingSummaryDate": existingSummaryDate,
                 "userId": userId,
-                "sessionNumber": sessionNumber,
-                "results": results
+                "game": game,
+                "updatedResults": updatedResults
             });
             return response.data;
         } catch (error) {
@@ -67,9 +70,9 @@ export default class summaryClient extends BaseClass {
     }
 
     // deleteSummaryBySummaryId
-    async deleteSummaryBySummaryId(summaryDate, userId, errorCallback) {
+    async deleteSummaryBySummaryId(summaryDate, userId, errorCallback=console.error) {
         try {
-            const response = await this.client.delete(`/${summaryDate}/${userId}`);
+            const response = await this.client.delete(`/game/wordle/${summaryDate}/${userId}`);
             return response.data;
         } catch (error) {
             this.handleError("deleteSummaryBySummaryId", error, errorCallback)
@@ -79,7 +82,7 @@ export default class summaryClient extends BaseClass {
     // findAllSummariesForDate
     async findAllSummariesForDate(summaryDate, errorCallback) {
         try {
-            const response = await this.client.get(`/${summaryDate}/all`);
+            const response = await this.client.get(`/game/wordle/${summaryDate}/all`);
             return response.data;
         } catch (error) {
             this.handleError("findAllSummariesForDate", error, errorCallback)
@@ -89,21 +92,21 @@ export default class summaryClient extends BaseClass {
     // findAllSummariesForUser
     async findAllSummariesForUser(userId, errorCallback) {
         try {
-            const response = await this.client.get(`/${userId}/all`);
+            const response = await this.client.get(`/game/wordle/${userId}/all`);
             return response.data;
         } catch (error) {
             this.handleError("findAllSummariesForUser", error, errorCallback)
         }
     }
 
-    // @TODO determine whether or not we should have user side methods in a separate client -KK
+    // @TODO USER SIDE controller methods
 
     // addNewUser
-    async addNewUser(userId, userName, errorCallback) {
+    async addNewUser(userId, userName, errorCallback=console.error) {
         try {
             const response = await this.client.post(`/game/wordle/user`, {
                 "userId": userId,
-                "userName": userName
+                "username": username
             });
             return response.data;
         } catch (error) {
@@ -114,7 +117,7 @@ export default class summaryClient extends BaseClass {
     // findUser
     async findUser(userId, errorCallback) {
         try {
-            const response = await this.client.get(`${this.host}/user/${userId}`);
+            const response = await this.client.get(`/game/wordle/user/${userId}`);
             return response.data;
         } catch (error) {
             this.handleError("findUser", error, errorCallback)
@@ -122,13 +125,35 @@ export default class summaryClient extends BaseClass {
     }
 
     // findAllSummariesForUserFriends
+    async findAllSummariesForUserFriends(summaryDate, userId, errorCallback) {
+            try {
+                const response = await this.client.get(`/game/wordle/{summaryDate}/{userId}/friends`);
+                return response.data;
+            } catch (error) {
+                this.handleError("findAllSummariesForUserFriends", error, errorCallback)
+            }
+        }
 
 
     // addFriend
-
+    async addFriend(userId, friendId, errorCallback=console.error) {
+        try {
+            const response = await this.client.put(`/user/${userId}/friends/add/${friendId}`);
+            return response.data;
+        } catch (error) {
+            this.handleError("addfriend", error, errorCallback);
+        }
+    }
 
     // removeFriend
-
+    async removeFriend(userId, friendId, errorCallback=console.error) {
+        try {
+            const response = await this.client.put(`/user/${userId}/friends/remove/${friendId}`);
+            return response.data;
+        } catch (error) {
+            this.handleError("removeFriend", error, errorCallback);
+        }
+    }
 
 
 

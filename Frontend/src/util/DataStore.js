@@ -6,10 +6,10 @@ import BaseClass from "./baseClass";
  */
 export default class DataStore extends BaseClass {
 
-    constructor(initialState = {}) {
+    constructor() {
         super();
-        this.bindClassMethods(['getState', 'get', 'setState', 'set', 'addChangeListener'], this);
-        this.state = initialState;
+        this.bindClassMethods(['getState', 'get', 'setState', 'set', 'addChangeListener', 'clear'], this);
+        this.state = localStorage;
         this.listeners = [];
     }
 
@@ -26,7 +26,7 @@ export default class DataStore extends BaseClass {
      * @returns The current value of that attribute.
      */
     get(attribute) {
-        return this.state[attribute];
+        return JSON.parse(this.state.getItem(attribute));
     }
 
     /**
@@ -37,7 +37,10 @@ export default class DataStore extends BaseClass {
     setState(newState) {
         // ... is the spread operator. This allows us to pull out all of the keys and values of the existing state and
         // the new state and combine them into one new object.
-        this.state = {...this.state, ...newState};
+//        this.state = {...this.state, ...newState};
+        Object.entries(newState).forEach(([attribute, value]) => {
+            this.state.setItem(attribute, JSON.stringify(value));
+        })
         this.listeners.forEach(listener => listener());
     }
 
@@ -48,7 +51,7 @@ export default class DataStore extends BaseClass {
      * @param value The value to give the attribute.
      */
     set(attribute, value) {
-        this.state[attribute] = value;
+        this.state.setItem(attribute, JSON.stringify(value));
         this.listeners.forEach(listener => listener());
     }
 
@@ -57,6 +60,10 @@ export default class DataStore extends BaseClass {
      */
     addChangeListener(listener) {
         this.listeners.push(listener);
+    }
+
+    clear() {
+        this.state.clear();
     }
 
 }

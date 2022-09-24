@@ -4,12 +4,14 @@ import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 import com.kenzie.appserver.controller.model.GameSummaryResponse;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 
+import java.time.LocalDate;
+
 public class GameSummaryConversion {
     public static GameSummaryRecord createRequestToRecord(CreateSummaryRequest createSummaryRequest) {
         return new GameSummaryRecord(
                 createSummaryRequest.getUserId(),
                 createSummaryRequest.getGame(),
-                createSummaryRequest.getDate(),
+                LocalDate.now().toString(),
                 createSummaryRequest.getResults(),
                 createSummaryRequest.getSessionNumber());
     }

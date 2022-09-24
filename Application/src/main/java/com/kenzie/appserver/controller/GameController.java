@@ -90,7 +90,7 @@ public class GameController {
     }
 
     @DeleteMapping("/{summaryDate}/{userId}")
-    public ResponseEntity deleteSummaryBySummaryId(
+    public ResponseEntity<GameSummaryResponse> deleteSummaryBySummaryId(
             @PathVariable("summaryDate") String summaryDate,
             @PathVariable("userId") String userId) {
         gameService.deleteSummary(summaryDate, userId);
@@ -119,7 +119,7 @@ public class GameController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empty UserId");
         }
         // if no username is chosen, assign first 8 characters of the userId (8 is arbitrary length)
-        if (userCreateRequest.getUserName() == null) {
+        if (userCreateRequest.getusername() == null) {
             userCreateRequest.setUserName(userCreateRequest.getUserId().substring(0,8));
         }
         UserResponse userResponse = gameService.addNewUser(userCreateRequest);

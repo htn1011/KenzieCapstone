@@ -10,12 +10,12 @@ public class UserCreateRequest {
     private String userId;
 
     @JsonProperty("username")
-    private String userName;
+    private String username;
     // todo change naming so consistent throughout
 
     public UserCreateRequest(String userId, String userName) {
         this.userId = userId;
-        this.userName = userName;
+        this.username = userName;
     }
 
     public String getUserId() {
@@ -26,11 +26,11 @@ public class UserCreateRequest {
         this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getusername() {
+        return username;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 }
