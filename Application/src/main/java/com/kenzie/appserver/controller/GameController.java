@@ -57,7 +57,7 @@ public class GameController {
             GameSummaryResponse response = gameService.addSummary(createSummaryRequest);
             // status code 201 if successful
             return ResponseEntity.created(
-                    URI.create("/game/wordle/date" + response.getDate() + "/" + response.getUserId())).body(response);
+                    URI.create("/game/wordle/" + response.getDate() + "/" + response.getUserId())).body(response);
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);

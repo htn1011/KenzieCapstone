@@ -98,7 +98,32 @@ export default class summaryClient extends BaseClass {
 
     // @TODO determine whether or not we should have user side methods in a separate client -KK
 
-    addNewUser
+    // addNewUser
+    async addNewUser(userId, userName, errorCallback) {
+        try {
+            const response = await this.client.post(`/user/users/${userId}`, {
+                "userId": userId,
+                "userName": userName
+            });
+            return response.data;
+        } catch (error) {
+            this.handleError("addNewUser", error, errorCallback);
+        }
+    }
+
+    // findUser
+
+
+    // findAllSummariesForUserFriends
+
+
+    // addFriend
+
+
+    // removeFriend
+
+
+
 
 /*
    async getExample(id, errorCallback) {
