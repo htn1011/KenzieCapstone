@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenzie.capstone.service.UserService;
 import com.kenzie.capstone.service.converter.JsonToRequestConverter;
+import com.kenzie.capstone.service.dependency.DaggerServiceComponent;
 import com.kenzie.capstone.service.dependency.ServiceComponent;
 import com.kenzie.capstone.service.model.UpdateFriendListRequest;
 import com.kenzie.capstone.service.model.User;
