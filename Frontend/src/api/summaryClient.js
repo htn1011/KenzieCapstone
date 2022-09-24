@@ -98,6 +98,8 @@ export default class summaryClient extends BaseClass {
 
     // @TODO determine whether or not we should have user side methods in a separate client -KK
 
+    addNewUser
+
 /*
    async getExample(id, errorCallback) {
        try {
