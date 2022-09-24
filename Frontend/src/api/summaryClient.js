@@ -101,7 +101,7 @@ export default class summaryClient extends BaseClass {
     // addNewUser
     async addNewUser(userId, userName, errorCallback) {
         try {
-            const response = await this.client.post(`/user/users/${userId}`, {
+            const response = await this.client.post(`/game/wordle/user`, {
                 "userId": userId,
                 "userName": userName
             });
@@ -112,7 +112,14 @@ export default class summaryClient extends BaseClass {
     }
 
     // findUser
-
+    async findUser(userId, errorCallback) {
+        try {
+            const response = await this.client.get(`${this.host}/user/${userId}`);
+            return response.data;
+        } catch (error) {
+            this.handleError("findUser", error, errorCallback)
+        }
+    }
 
     // findAllSummariesForUserFriends
 
