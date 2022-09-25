@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="text/javascript" src="summaryPage.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <script type="text/javascript" src="summaryPage.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Title</title>
 </head>
 
 <!--local HTML style rules applied to elements by id or class-->
@@ -64,16 +64,16 @@
   <div class="card">
     <form class="card-content" id="get-summaries-by-date-form" accept-charset=utf-8>
       <p>Filter Scoreboard by Wordle Day:</p>
-        <p class="form-field">
-          <label>Year</label>
-          <input type="text" size="25" required class="validated-field" id="filter-summary-year">
-          <label>Month</label>
-          <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
-<!--          <input type="text" required class="validated-field" id="filter-summary-month">-->
-          <label>Day</label>
-          <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day">
-<!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
-        </p>
+      <p class="form-field">
+        <label>Year</label>
+        <input type="text" size="25" required class="validated-field" id="filter-summary-year">
+        <label>Month</label>
+        <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
+        <!--          <input type="text" required class="validated-field" id="filter-summary-month">-->
+        <label>Day</label>
+        <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day">
+        <!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
+      </p>
       <button type="submit" id="submit-date-filter">Filter Scoreboard</button>
     </form>
   </div>
@@ -111,6 +111,7 @@
         <input type="text" required class="validated-field" id="filter-summary-user">
       </p>
       <div>
+        <!-- not sure we need this for this list? -->
         Would you like to include your own score results?
         <select name="include-you-me" id="filter-only-user-me">
           <option value=true>Yes</option>

@@ -22,10 +22,21 @@ class SummaryPage extends BaseClass {
 
 //        document.getElementById('get-by-id-form').addEventListener('submit', this.onGet);
 //        document.getElementById('create-form').addEventListener('submit', this.onCreate);
+        document.getElementById('create-summary-form').addEventListener('submit', this.onCreateSummary);
+        document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
+        document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
+        document.getElementById('get-summaries-by-user').addEventListener('submit', this.onGetSummariesByUser);
         this.client = new summaryClient();
 
         // this will retrieve variables from local storage for use,
         this.firstRender();
+
+
+
+        // when initally loading this page, the default list today's and yesterdays summaries
+        // altering the whichList state can determine which list to render
+        // options: todayAndYesterday, byDate, friends, onlyMine
+        this.dataStore.set("whichList", "todayAndYesterday");
 
         this.dataStore.addChangeListener(this.renderSummary)
     }
@@ -132,6 +143,8 @@ class SummaryPage extends BaseClass {
        // Prevent the page from refreshing on form submit
        event.preventDefault();
 
+       // todo add in functionality to get and include own summary in this list
+       let includeMe = document.getElementById("filter-only-friends-me").value;
        let year = document.getElementById("filter-friend-summary-year").value;
        let month = document.getElementById("get-friend-summary-month").value;
        let day = document.getElementById("get-friend-summary-day").value;
