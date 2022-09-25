@@ -19,6 +19,7 @@ import com.kenzie.capstone.service.model.UserResponseLambda;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -128,6 +129,7 @@ public class GameSummaryService {
                 .orElseGet(() -> getAllSummariesForDate(date))
                 .stream()
                 .filter(response -> friendsList.contains(response.getUserId()))
+                .sorted(Comparator.comparing(GameSummaryResponse::getResults))
                 .collect(Collectors.toList());
     }
 
