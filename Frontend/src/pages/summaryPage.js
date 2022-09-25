@@ -137,11 +137,14 @@ class SummaryPage extends BaseClass {
        let day = document.getElementById("get-friend-summary-day").value;
        let summaryDate = year + "-" + month + "-" + day;
 
-       let userId = document.getElementById("userId");
+//       let userId = document.getElementById("userId");
+       let userId = dataStore.get("userId");
 
        let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, errorCallback);
 
-       result.date = summaryDate;
+// todo check if the results is JSON or not - jsonify if needed
+       this.dataStore.set("friendSummaries-"+summaryDate, result);
+       /*result.date = summaryDate;
 
        if (result) {
             this.showMessage(`Here are your friends game scores for ${result.date}!`)
@@ -149,16 +152,20 @@ class SummaryPage extends BaseClass {
        } else {
             this.errorHandler("Error retrieving your friends' game scores! Try again...")
             resultArea.innerHTML = "No summaries available";
-       }
+       }*/
    }
 
    async onGetSummariesByUser(event) {
        // Prevent the page from refreshing on form submit
        event.preventDefault();
 
-       let userId = document.getElementById("userId");
+       let userId = document.getElementById("filter-summary-user");
 
        let result = await this.client.findAllSummariesForUser(userId, errorCallback);
+
+       // todo check if the results is JSON or not - jsonify if needed
+
+       this.dataStore.set("userSummaries", result);
    }
 
 //    async onGet(event) {
