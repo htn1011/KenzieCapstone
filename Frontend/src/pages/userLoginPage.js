@@ -32,10 +32,13 @@ class UserLoginPage extends BaseClass {
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
         // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
         this.client = new ExampleClient();
-        // initial/default state is to display the login form
-        this.dataStore.set("userPageDisplay", "login");
-        // initial/default - set editFriends to no
-        this.dataStore.set("editFriendList", "no");
+        // if the user has already logged in - show user info otherwise login page
+        let user = this.dataStore.get("user");
+        if (user == null) {
+            this.dataStore.set("userPageDisplay", "login");
+        } else {
+            this.dataStore.set("userPageDisplay", "userInfo");
+        }
         // re-render whenever change made to datastore
         this.dataStore.addChangeListener(this.render);
         this.render();
@@ -43,8 +46,9 @@ class UserLoginPage extends BaseClass {
     // Render Methods -------------------------------------------------------------------------------------------------
 
     async render() {
-        // display signifies the state of the page -> login/signup/userInfo
+        // userPageDisplay signifies the state of the page -> login/signup/userInfo
         let userPageDisplay = this.dataStore.get("userPageDisplay");
+        // editFriendList signifies the state of whether to edit the friend list or not
         let editFriendList = this.dataStore.get("editFriendList");
         let loginForm = document.getElementById("login-form");
         let signupForm = document.getElementById("user-sign-up");
@@ -89,7 +93,7 @@ class UserLoginPage extends BaseClass {
         let userId = document.getElementById("userId-input").value;
 
         // store userId in local storage for use in summaryPage.js
-        this.dataStore.setItem("userId", userId);
+        this.dataStore.set("userId", userId);
 
         // use that userId to make a call to get the user
         const user = await this.client.findUser(userId, this.errorHandler);
@@ -116,7 +120,7 @@ class UserLoginPage extends BaseClass {
             newUsername,
             this.errorHandler);
 
-        this.dataStore.set
+        this.dataStore.set("userId", newUserId);
 
         this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo"});
 
