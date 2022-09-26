@@ -44,7 +44,7 @@ public class GameSummaryServiceTest {
         String results = "results";
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
         ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor = ArgumentCaptor.forClass(GameSummaryRecord.class);
 
@@ -74,7 +74,7 @@ public class GameSummaryServiceTest {
         String date = "date";
         String results = "results";
         String sessionNumber = "sessionNumber";
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         when(userServiceClient.findExistingUser(userId)).thenThrow(new InvalidUserException(userId));
 
         //WHEN
@@ -443,12 +443,12 @@ public class GameSummaryServiceTest {
         String userName = "userName";
         UserCreateRequest userCreateRequest = new UserCreateRequest(userId, userName);
 
-        UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(userCreateRequest.getUserId(), userCreateRequest.getUserName());
+        UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(userCreateRequest.getUserId(), userCreateRequest.getusername());
 
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
         userResponseLambda.setUserName(userName);
-        when(userServiceClient.addNewUser(userCreateRequestLambda)).thenReturn(userResponseLambda);
+        when(userServiceClient.addNewUser(any())).thenReturn(userResponseLambda);
 
         //WHEN
         UserResponse userResponse = gameSummaryService.addNewUser(userCreateRequest);

@@ -51,7 +51,7 @@ public class AddNewFriend implements RequestHandler<APIGatewayProxyRequestEvent,
 
         try {
             UpdateFriendListRequest updateFriendListRequest = converter.convertToUpdateFriendListRequest(data);
-            User updatedUser = userService.addfriend(updateFriendListRequest.getUserId(), updateFriendListRequest.getFriendId());
+            User updatedUser = userService.addFriend(updateFriendListRequest.getUserId(), updateFriendListRequest.getFriendId());
             String output = gson.toJson(updatedUser);
 
             return response

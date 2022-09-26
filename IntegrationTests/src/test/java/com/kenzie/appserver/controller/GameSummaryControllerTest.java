@@ -83,7 +83,7 @@ public class GameSummaryControllerTest {
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
 
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
 //        mapper.registerModule(new JavaTimeModule());
 
@@ -115,7 +115,7 @@ public class GameSummaryControllerTest {
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
 
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
@@ -144,7 +144,7 @@ public class GameSummaryControllerTest {
         String date = mockNeat.strings().valStr();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
@@ -177,7 +177,7 @@ public class GameSummaryControllerTest {
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
 
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
@@ -202,19 +202,19 @@ public class GameSummaryControllerTest {
         String userId = mockNeat.strings().valStr();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
         String userId1 = mockNeat.strings().valStr();
         String sessionNumber1 = mockNeat.strings().valStr();
         String results1 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId1, date, sessionNumber1, results1);
+        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId1, sessionNumber1, results1);
         GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
 
         String userId2 = mockNeat.strings().valStr();
         String sessionNumber2 = mockNeat.strings().valStr();
         String results2 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId2, date, sessionNumber2, results2);
+        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId2, sessionNumber2, results2);
         GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
 
         //WHEN
@@ -247,21 +247,21 @@ public class GameSummaryControllerTest {
         String date = mockNeat.strings().valStr();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
         String date1 = mockNeat.strings().valStr();
         String sessionNumber1 = mockNeat.strings().valStr();
         String results1 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId, date1, sessionNumber1, results1);
+        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId, sessionNumber1, results1);
 
         GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
 
         String date2 = mockNeat.strings().valStr();
         String sessionNumber2 = mockNeat.strings().valStr();
         String results2 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId, date2, sessionNumber2, results2);
+        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId, sessionNumber2, results2);
 
         GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
 
@@ -350,19 +350,19 @@ public class GameSummaryControllerTest {
         String friendId = mockNeat.strings().valStr();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, friendId, date, sessionNumber, results);
+        CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, friendId, sessionNumber, results);
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
         String friendId1 = mockNeat.strings().valStr();
         String sessionNumber1 = mockNeat.strings().valStr();
         String results1 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, friendId1, date, sessionNumber1, results1);
+        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, friendId1, sessionNumber1, results1);
         GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
 
         String friendId2 = mockNeat.strings().valStr();
         String sessionNumber2 = mockNeat.strings().valStr();
         String results2 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, friendId2, date, sessionNumber2, results2);
+        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, friendId2, sessionNumber2, results2);
         GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
 
         friendsList.add(friendId);
