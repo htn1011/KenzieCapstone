@@ -31,7 +31,7 @@ class UserLoginPage extends BaseClass {
         // note:
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
         // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
-        this.client = new ExampleClient();
+        this.client = new summaryClient();
         // if the user has already logged in - show user info otherwise login page
         let user = this.dataStore.get("user");
         if (user == null) {
