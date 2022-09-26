@@ -45,7 +45,7 @@ public class UserService {
         return existingUser.getFriendsList();
     }
 
-    public User addfriend(String userId, String friendId) {
+    public User addFriend(String userId, String friendId) {
         // make sure user exists
         User existingUser = findUser(userId)
                 .orElseThrow(() -> new NoExistingUserException(userId));

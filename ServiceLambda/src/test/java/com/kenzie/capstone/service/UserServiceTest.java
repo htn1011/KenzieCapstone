@@ -2,88 +2,26 @@ package com.kenzie.capstone.service;
 
 import com.kenzie.capstone.service.dao.UserDao;
 import com.kenzie.capstone.service.model.*;
-import com.kenzie.capstone.service.model.NoExistingUserException;
-import org.apache.logging.log4j.core.util.Assert;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class  UserServiceTest {
-
-    /** ------------------------------------------------------------------------
-     *  expenseService.getExpenseById
-     *  ------------------------------------------------------------------------ **/
+public class UserServiceTest {
 
     private UserDao userDao;
     private UserService userService;
 
-    @BeforeAll
+    @BeforeEach
     void setup() {
         this.userDao = mock(UserDao.class);
         this.userService = new UserService(userDao);
     }
 
-    // @Test
-    // void setDataTest() {
-    //     ArgumentCaptor<String> idCaptor = ArgumentCaptor.forClass(String.class);
-    //     ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-    //
-    //     // GIVEN
-    //     String data = "somedata";
-    //
-    //     // WHEN
-    //     User response = this.userService.addUser(mock(UserCreateRequestLambda.class));
-    //
-    //     // THEN
-    //     verify(userDao, times(1)).addNewUser(idCaptor.capture(), dataCaptor.capture());
-    //
-    //     assertNotNull(idCaptor.getValue(), "An ID is generated");
-    //     assertEquals(data, dataCaptor.getValue(), "The data is saved");
-    //
-    //     assertNotNull(response, "A response is returned");
-    //     assertEquals(idCaptor.getValue(), response.getUserId(), "The response id should match");
-    //     assertEquals(data, response.getUsername(), "The response data should match");
-    // }
-
-    // @Test
-    // void getDataTest() {
-    //     ArgumentCaptor<String> idCaptor = ArgumentCaptor.forClass(String.class);
-    //
-    //     // GIVEN
-    //     String id = "fakeid";
-    //     String data = "somedata";
-    //     UserRecord record = new UserRecord();
-    //     record.setUserId(id);
-    //     record.setUsername(data);
-    //
-    //
-    //     when(userDao.findUserName(id)).thenReturn(Arrays.asList(record));
-    //
-    //     // WHEN
-    //     User response = this.userService.findUser(id);
-    //
-    //     // THEN
-    //     verify(userDao, times(1)).findUserName(idCaptor.capture());
-    //
-    //     assertEquals(id, idCaptor.getValue(), "The correct id is used");
-    //
-    //     assertNotNull(response, "A response is returned");
-    //     assertEquals(id, response.getUserId(), "The response id should match");
-    //     assertEquals(data, response.getUsername(), "The response data should match");
-    // }
-
-    // Write additional tests here
     @Test
     void findUserTest() {
         //GIVEN
@@ -131,17 +69,18 @@ class  UserServiceTest {
         friendsList.add(friend);
         friendsList.add(friend1);
         UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(userId, userName);
-        UserRecord userRecordNull = new UserRecord();
         UserRecord userRecord = new UserRecord();
         userRecord.setUserId(userId);
         userRecord.setUsername(userName);
         userRecord.setFriendsList(friendsList);
+        when(userDao.findByUserId(userId)).thenReturn(null);
         when(userDao.addNewUser(userCreateRequestLambda.getUserId(), userCreateRequestLambda.getUsername())).thenReturn(userRecord);
 
         //WHEN
         User user = userService.addUser(userCreateRequestLambda);
 
         //THEN
+        verify(userDao, times(1)).findByUserId(userId);
         Assertions.assertNotNull(user, "User not null");
         Assertions.assertEquals(userId, user.getUserId(), "UserId matches");
         Assertions.assertEquals(userName, user.getUsername(), "UserName matches");
@@ -168,7 +107,7 @@ class  UserServiceTest {
         when(userDao.findByUserId(userId)).thenReturn(userRecord);
 
         //THEN
-        Assertions.assertThrows(UserAlreadyExistsException.class, ()-> userService.addUser(userCreateRequestLambda), "User already exists");
+        Assertions.assertThrows(UserAlreadyExistsException.class, ()-> userService.addUser(userCreateRequestLambda), "User already exists throws exception");
     }
 
     @Test
@@ -191,7 +130,7 @@ class  UserServiceTest {
         List<String> returnedFriendsList = userService.getFriends(userId);
 
         //THEN
-        verify(userDao, atLeastOnce()).findByUserId(any());
+        verify(userDao, times(1)).findByUserId(any());
         Assertions.assertEquals(friendsList, returnedFriendsList, "Friends list matches");
     }
 
@@ -209,10 +148,11 @@ class  UserServiceTest {
         userRecord.setUserId(userId);
         userRecord.setUsername(userName);
         userRecord.setFriendsList(friendsList);
-        doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
+        when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, () -> userService.getFriends(userId), "User does not exist");
+        Assertions.assertThrows(NoExistingUserException.class, () -> userService.getFriends(userId), "User does not exist throws exception");
+        verify(userDao, times(1)).findByUserId(userId);
     }
 
     @Test
@@ -242,7 +182,7 @@ class  UserServiceTest {
         when(userDao.findByUserId(friendId)).thenReturn(friendRecord);
 
         //WHEN
-        User updatedUser = userService.addfriend(userId, friendId);
+        User updatedUser = userService.addFriend(userId, friendId);
 
         //THEN
         verify(userDao, times(2)).findByUserId(any());
@@ -257,11 +197,12 @@ class  UserServiceTest {
     void addFriendTest_InvalidUser_ThrowsException() {
         //GIVEN
         String userId = "";
-        String friendId = "";
-        doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
+        String friendId = "friendId";
+        when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, ()-> userService.addfriend(userId, friendId), "User does not exist");
+        Assertions.assertThrows(NoExistingUserException.class, ()-> userService.addFriend(userId, friendId), "User does not exist");
+        verify(userDao, times(1)).findByUserId(userId);
     }
 
     @Test
@@ -280,10 +221,11 @@ class  UserServiceTest {
         userRecord.setFriendsList(friendsList);
         String newFriend = "";
         when(userDao.findByUserId(userId)).thenReturn(userRecord);
-        doThrow(NoExistingUserException.class).when(userDao).findByUserId(newFriend);
+        when(userDao.findByUserId(newFriend)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, () -> userService.addfriend(userId, newFriend), "Friend does not exist");
+        Assertions.assertThrows(NoExistingUserException.class, () -> userService.addFriend(userId, newFriend), "Friend does not exist");
+        verify(userDao, times(2)).findByUserId(any());
     }
 
     @Test
@@ -306,7 +248,7 @@ class  UserServiceTest {
         User user = userService.removeFriend(userId, friend);
 
         //THEN
-        verify(userDao, atLeastOnce()).findByUserId(userId);
+        verify(userDao, times(1)).findByUserId(userId);
         Assertions.assertFalse(user.getFriendsList().contains(friend), "Friend is removed from list");
         Assertions.assertEquals(1, user.getFriendsList().size(), "Friend list has only one friend in list");
     }
@@ -316,9 +258,11 @@ class  UserServiceTest {
         //GIVEN
         String userId = "userId";
         String friendId = "friendId";
-        doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
+//        doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
+        when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
         assertThrows(NoExistingUserException.class, ()-> userService.removeFriend(userId, friendId), "UserId not found");
+        verify(userDao, times(1)).findByUserId(userId);
     }
 }
