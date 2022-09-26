@@ -5,8 +5,10 @@ import com.kenzie.appserver.controller.model.*;
 import com.kenzie.appserver.repositories.GameRepository;
 import com.kenzie.appserver.repositories.model.GameSummaryId;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
+import com.kenzie.capstone.service.client.ApiGatewayException;
 import com.kenzie.capstone.service.client.UserServiceClient;
 import com.kenzie.capstone.service.model.NoExistingUserException;
+import com.kenzie.capstone.service.model.UserCreateRequestLambda;
 import com.kenzie.capstone.service.model.UserResponseLambda;
 import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Assertions;
@@ -57,7 +59,7 @@ public class GameSummaryServiceTest {
         GameSummaryRecord gameSummaryRecord = gameSummaryRecordArgumentCaptor.getValue();
 
         Assertions.assertNotNull(gameSummaryRecord, "Game summary record is returned");
-        Assertions.assertNotNull(gameSummaryRecord.getUserId(), "The userId exists");
+        Assertions.assertNotNull(gameSummaryRecord.getUserId(), "The userid exists");
         Assertions.assertNotNull(gameSummaryRecord.getDate(), "The date exists");
         Assertions.assertNotNull(gameSummaryRecord.getGame(), "The game exists");
         Assertions.assertNotNull(gameSummaryRecord.getResults(), "The results exists");
@@ -65,7 +67,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void addSummaryTest_UserDoesNotExist_ThrowException() {
+    void addSummaryTest_userDoesNotExist_throwException() {
         //GIVEN
         String userId = "userId";
         String game = "wordle";
@@ -76,7 +78,7 @@ public class GameSummaryServiceTest {
         when(userServiceClient.findExistingUser(userId)).thenThrow(new InvalidUserException(userId));
 
         //WHEN
-        Assertions.assertThrows(InvalidUserException.class, () -> gameSummaryService.addSummary(createSummaryRequest), "UserId does not exist");
+        Assertions.assertThrows(InvalidUserException.class, () -> gameSummaryService.addSummary(createSummaryRequest), "Userid does not exist");
     }
 
     @Test
@@ -101,7 +103,7 @@ public class GameSummaryServiceTest {
 
         //THEN
         Assertions.assertNotNull(gameSummaryResponse, "Response is returned");
-        Assertions.assertEquals(gameSummaryRecord.getUserId(), gameSummaryResponse.getUserId(), "UserId matches");
+        Assertions.assertEquals(gameSummaryRecord.getUserId(), gameSummaryResponse.getUserId(), "Userid matches");
         Assertions.assertEquals(gameSummaryRecord.getGame(), gameSummaryResponse.getGame(), "Game matches");
         Assertions.assertEquals(gameSummaryRecord.getDate(), gameSummaryResponse.getDate(), "Date matches");
         Assertions.assertEquals(gameSummaryRecord.getResults(), gameSummaryResponse.getResults(), "Results matches");
@@ -109,7 +111,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void getSummary_UserIdIsInvalid_ThrowsException() {
+    void getSummary_userIdIsInvalid_throwsException() {
         //GIVEN
         String userId = "userId";
         String game = "wordle";
@@ -121,7 +123,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void getSummary_GameSummaryDoesNotExist_ThrowsException() {
+    void getSummary_gameSummaryDoesNotExist_throwsException() {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
@@ -135,10 +137,10 @@ public class GameSummaryServiceTest {
         userResponseLambda.setFriendsList(friendsList);
 
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findById(any())).thenThrow(new NoExistingGameSummaryException(game, date, userId));
+        when(gameRepository.findById(any())).thenReturn(Optional.empty());
 
         //THEN
-        Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.getSummary(game, date, userId), "Game summary does not exist");
+        Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.getSummary(game, date, userId), "Game summary does not exist throws exception");
     }
 
     @Test
@@ -169,7 +171,7 @@ public class GameSummaryServiceTest {
         GameSummaryRecord gameSummaryRecord1 = gameSummaryRecordArgumentCaptor.getValue();
 
         Assertions.assertNotNull(gameSummaryRecord1, "Record is returned");
-        Assertions.assertNotNull(gameSummaryRecord1.getUserId(), "UserId exists");
+        Assertions.assertNotNull(gameSummaryRecord1.getUserId(), "Userid exists");
         Assertions.assertNotNull(gameSummaryRecord1.getGame(), "Game exists");
         Assertions.assertNotNull(gameSummaryRecord1.getDate(), "Date exists");
         Assertions.assertNotNull(gameSummaryRecord1.getResults(), "Results exists");
@@ -177,24 +179,39 @@ public class GameSummaryServiceTest {
     }
 
     @Test
+    void updateSummaryTest_gameSummaryInvalid_throwsException() {
+        //GIVEN
+        String date = "date";
+        String userId = "userId";
+        String game = "wordle";
+        String updatedResults = "updatedResults";
+        UpdateSummaryRequest updateSummaryRequest = new UpdateSummaryRequest(date, userId, game, updatedResults);
+        UserResponseLambda userResponseLambda = new UserResponseLambda();
+        userResponseLambda.setUserId(userId);
+        when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
+        when(gameRepository.findById(any())).thenReturn(Optional.empty());
+
+        //THEN
+        Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.updateSummary(updateSummaryRequest), "Invalid game summary throws exception");
+
+
+    }
+    @Test
     void deleteSummaryTest() {
         //GIVEN
         String userId = "userId";
         String date = "date";
-        when(gameRepository.findByUserId(userId)).thenReturn(null);
 
         //WHEN
         gameSummaryService.deleteSummary(date, userId);
 
         //THEN
-        verify(gameRepository, atLeastOnce()).deleteById(any());
+        verify(gameRepository, times(1)).deleteById(any());
         verify(cache, times(2)).evict(any());
-
-        Assertions.assertNull(gameRepository.findByUserId(userId), "Returns null");
     }
 
     @Test
-    void getAllSummariesForDateTest_CacheHit() {
+    void getAllSummariesForDateTest_cacheHit() {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
@@ -219,7 +236,7 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(gameSummaryResponseList.size(), 2, "List should have 2 entries");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getUserId(), gameSummaryResponseList.get(0).getUserId(), "UserId should match");
+        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getUserId(), gameSummaryResponseList.get(0).getUserId(), "Userid should match");
         Assertions.assertEquals(gameSummaryResponseHitList.get(0).getGame(), gameSummaryResponseList.get(0).getGame(), "Game should match");
         Assertions.assertEquals(gameSummaryResponseHitList.get(0).getDate(), gameSummaryResponseList.get(0).getDate(), "Date should match");
         Assertions.assertEquals(gameSummaryResponseHitList.get(0).getResults(), gameSummaryResponseList.get(0).getResults(), "Results should match");
@@ -228,7 +245,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void getAllSummariesForDateTest_CacheMiss() {
+    void getAllSummariesForDateTest_cacheMiss() {
         //GIVEN
         String game = "wordle";
         String date = "date";
@@ -257,7 +274,7 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(gameSummaryResponseList.size(), 2, "List should have 2 entries");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getUserId(), userId, "UserId should match");
+        Assertions.assertEquals(gameSummaryResponseList.get(0).getUserId(), userId, "Userid should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getGame(), game, "Game should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getDate(), date, "Date should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getResults(), results, "Results should match");
@@ -266,7 +283,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void getAllSummariesFromUserTest_CacheHit() {
+    void getAllSummariesFromUserTest_cacheHit() {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
@@ -291,16 +308,16 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(2, gameSummaryResponseList.size(), "List should have 2 entries");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getUserId(), gameSummaryResponseHitList.get(0).getUserId(), "UserId should match");
+        Assertions.assertEquals(gameSummaryResponseList.get(0).getUserId(), gameSummaryResponseHitList.get(0).getUserId(), "Userid should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getGame(), gameSummaryResponseHitList.get(0).getGame(), "Game should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getDate(), gameSummaryResponseHitList.get(0).getDate(), "Date should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getResults(), gameSummaryResponseHitList.get(0).getResults(), "Results should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getSessionNumber(), gameSummaryResponseHitList.get(0).getSessionNumber(), "Session number should match");
-        verify(cache, atLeastOnce()).get(any());
+        verify(cache).get(any());
     }
 
     @Test
-    void getAllSummariesFromUserTest_CacheMiss() {
+    void getAllSummariesFromUserTest_cacheMiss() {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
@@ -329,12 +346,12 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(2, gameSummaryResponseList.size(), "List should have 2 entries");
-        Assertions.assertEquals(userId, gameSummaryResponseList.get(0).getUserId(), "UserId should match");
+        Assertions.assertEquals(userId, gameSummaryResponseList.get(0).getUserId(), "Userid should match");
         Assertions.assertEquals(game, gameSummaryResponseList.get(0).getGame(), "Game should match");
         Assertions.assertEquals(date, gameSummaryResponseList.get(0).getDate(), "Date should match");
         Assertions.assertEquals(results, gameSummaryResponseList.get(0).getResults(), "Results should match");
         Assertions.assertEquals(sessionNumber, gameSummaryResponseList.get(0).getSessionNumber(), "Session number should match");
-        verify(cache, atLeastOnce()).add(any(), any());
+        verify(cache).add(any(), any());
     }
 
     @Test
@@ -372,26 +389,78 @@ public class GameSummaryServiceTest {
         Assertions.assertNotNull(gameSummaryResponseList1);
         Assertions.assertEquals(friend, gameSummaryResponseList.get(0).getUserId(), "Friend userid matches");
         Assertions.assertEquals(friend1, gameSummaryResponseList.get(1).getUserId(), "Friend userId matches");
+        verify(cache).get(any());
     }
 
     @Test
-    void addNewFriend() {
-        //Implement
+    void addFriend() {
+        //GIVEN
+        String userId = "userId";
+        String userName = "userName";
+        List<String> friendsList = new ArrayList<>();
+        friendsList.add("friend1");
+        friendsList.add("friend2");
+        UserResponseLambda userResponseLambda = new UserResponseLambda(userId, userName, friendsList);
+        String friendId = "friendId";
+        friendsList.add(friendId);
+        when(userServiceClient.addFriend(userId, friendId)).thenReturn(userResponseLambda);
+
+        //WHEN
+        UserResponse response = gameSummaryService.addFriend(userId, friendId);
+
+        //THEN
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(userResponseLambda.getUserId(), response.getUserId(), "Userid should match");
+        Assertions.assertEquals(userResponseLambda.getUserName(), response.getUserName(), "Username should match");
+        Assertions.assertEquals(userResponseLambda.getFriendsList(), response.getFriendsList(), "Friends list match");
+
     }
 
     @Test
     void removeFriend() {
-        //Implement
+        //GIVEN
+        String friendId = "friendId";
+        String userId = "userId";
+        String userName = "user";
+        List<String> friendsList = new ArrayList<>();
+        UserResponseLambda userResponseLambda = new UserResponseLambda(userId, userName, friendsList);
+        when(userServiceClient.removeFriend(userId, friendId)).thenReturn(userResponseLambda);
+
+        //WHEN
+        UserResponse removeFriendResponse = gameSummaryService.removeFriend(userId, friendId);
+
+        //THEN
+        Assertions.assertNotNull(removeFriendResponse, "Response is not null");
+        Assertions.assertEquals(userId, removeFriendResponse.getUserId(), "Userid should match");
+        Assertions.assertEquals(userName, removeFriendResponse.getUserName(), "Username should match");
+        Assertions.assertFalse(removeFriendResponse.getFriendsList().contains(friendId), "Friend is not in friends list");
     }
 
     @Test
     void addNewUser() {
-        //Implement
+        //GIVEN
+        String userId = "userId";
+        String userName = "userName";
+        UserCreateRequest userCreateRequest = new UserCreateRequest(userId, userName);
+
+        UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(userCreateRequest.getUserId(), userCreateRequest.getUserName());
+
+        UserResponseLambda userResponseLambda = new UserResponseLambda();
+        userResponseLambda.setUserId(userId);
+        userResponseLambda.setUserName(userName);
+        when(userServiceClient.addNewUser(userCreateRequestLambda)).thenReturn(userResponseLambda);
+
+        //WHEN
+        UserResponse userResponse = gameSummaryService.addNewUser(userCreateRequest);
+
+        //THEN
+        Assertions.assertNotNull(userResponse, "Response is not null");
+        Assertions.assertEquals(userId, userResponse.getUserId(), "UserId matches");
+        Assertions.assertEquals(userName, userResponse.getUserName(), "userName matches");
     }
 
     @Test
     void verifyUser() {
-        //Implement
         //GIVEN
         String userId = "userId";
         String userName = "userName";
@@ -410,5 +479,18 @@ public class GameSummaryServiceTest {
         Assertions.assertEquals(userName, response.getUserName(), "Username matches");
         Assertions.assertEquals(friendsList, response.getFriendsList(), "Friends list matches");
         verify(userServiceClient, times(1)).findExistingUser(userId);
+    }
+
+    @Test
+    void verifyUser_invalidUser_throwsException() {
+        //GIVEN
+        String userId = "";
+        ApiGatewayException apiGatewayException = new ApiGatewayException("error");
+        apiGatewayException.setStatusCode(404);
+        when(userServiceClient.findExistingUser(userId)).thenThrow(apiGatewayException);
+
+        //THEN
+        Assertions.assertThrows(InvalidUserException.class, ()-> gameSummaryService.verifyUser(userId), "Invalid userid throws exception");
+
     }
 }
