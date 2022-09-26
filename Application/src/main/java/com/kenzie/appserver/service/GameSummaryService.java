@@ -125,6 +125,7 @@ public class GameSummaryService {
 
     public List<GameSummaryResponse> getFriendSummaries(String userId, String date) {
         Set<String> friendsList = new HashSet<>(userServiceClient.getFriendList(userId));
+        friendsList.add(userId);
         return Optional.ofNullable(cache.get(formatGameDateKey(date)))
                 .orElseGet(() -> getAllSummariesForDate(date))
                 .stream()
