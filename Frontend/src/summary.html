@@ -27,9 +27,20 @@
   <div class="site-title">
     <h1 class="main" href="summary.html">Sharedle</h1>
   </div>
+  <!-- user logged in state -->
+  <div class="state" id="link-to-login">
+    <a class="main" href="userLogin.html">Login</a>
+    <p>You must be logged in to post your own summaries and to access extra filtering options</p>
+  </div>
+  <div class="state" id="user-welcome">
+    <h2 class="main"><strong>Welcome </strong> <span id="user-name-welcome"></span></h2>
+    <h2 class="main"><strong>User Id: </strong> <span id="user-id-welcome"></span></h2>
+
+  </div>
 </header>
 <!-- user control sections, each div -->
-<div class="card">
+<!-- post new summary only available if logged in -->
+<div class="card state" id="post-new-Summary">
   <h2>Post New Score</h2>
   <!-- post new summary -->
   <form class="card-content" id="create-summary-form" accept-charset=utf-8>
@@ -77,8 +88,8 @@
       <button type="submit" id="submit-date-filter">Filter Scoreboard</button>
     </form>
   </div>
-  <!-- show only friend summaries -->
-  <div class="card">
+  <!-- show only friend summaries only available if logged in-->
+  <div class="card state" id="friend-filer">
     <form class="card-content" id="get-friend-summaries" accept-charset=utf-8>
       <p>Show Only Friend Scores:</p>
       <p class="form-field">
@@ -91,34 +102,14 @@
         <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-friend-summary-day">
         <!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
       </p>
-      <div>
-        <!-- option to include own summaries in filtered scoreboard -->
-        Would you like to include your own score results?
-        <select name="include-me" id="filter-only-friends-me">
-          <option value=true>Yes</option>
-          <option value=false>No</option>
-        </select>
-      </div>
       <button type="submit" id="filter-only-friends">Filter Scoreboard</button>
     </form>
   </div>
-  <!-- display all summaries for one user -->
-  <div class="card">
+  <!-- display all summaries for one user only available if logged in -->
+  <div class="card state" id="only-me-filter">
     <form class="card-content" id="get-summaries-by-user" accept-charset=utf-8>
-      <p>Show Scores from User:</p>
-      <p class="form-field">
-        <label>User ID</label>
-        <input type="text" required class="validated-field" id="filter-summary-user">
-      </p>
-      <div>
-        <!-- not sure we need this for this list? -->
-        Would you like to include your own score results?
-        <select name="include-you-me" id="filter-only-user-me">
-          <option value=true>Yes</option>
-          <option value=false>No</option>
-        </select>
-      </div>
-      <button type="submit" id="filter-only-user">Filter Scoreboard</button>
+      <p>Show only my scores</p>
+      <button type="submit" id="filter-only-user">Filter for only my scores</button>
     </form>
   </div>
 
@@ -128,6 +119,10 @@
 <div class="card" id="result">
   <h2 id="resultHeader">Scoreboard: </h2>
   <h1 class="userId" id="summaryUser" style="color:red;"></h1>
+  <p><span id="summary-list-filter-type"></span> </p>
+  <div class="card state active" id="summary-list-container">
+
+  </div>
   <p id="result-info"></p>
 </div>
 
