@@ -102,7 +102,7 @@ export default class summaryClient extends BaseClass {
     // @TODO USER SIDE controller methods
 
     // addNewUser
-    async addNewUser(userId, userName, errorCallback=console.error) {
+    async addNewUser(userId, username, errorCallback=console.error) {
         try {
             const response = await this.client.post(`/game/wordle/user`, {
                 "userId": userId,
@@ -191,7 +191,7 @@ export default class summaryClient extends BaseClass {
            console.error(error.response.data.message);
        }
        if (errorCallback) {
-           errorCallback(method + " failed - " + error);
+           errorCallback(method + " failed - " + error, error);
        }
    }
 }

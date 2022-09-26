@@ -38,7 +38,9 @@ export default class DataStore extends BaseClass {
         // ... is the spread operator. This allows us to pull out all of the keys and values of the existing state and
         // the new state and combine them into one new object.
 //        this.state = {...this.state, ...newState};
-        Object.entries(newState).forEach(([attribute, value]) => {
+        Object.entries(newState)
+        .filter(([attribute, value]) => value !== undefined)
+        .forEach(([attribute, value]) => {
             this.state.setItem(attribute, JSON.stringify(value));
         })
         this.listeners.forEach(listener => listener());
@@ -51,7 +53,9 @@ export default class DataStore extends BaseClass {
      * @param value The value to give the attribute.
      */
     set(attribute, value) {
-        this.state.setItem(attribute, JSON.stringify(value));
+        if (value !== undefined) {
+            this.state.setItem(attribute, JSON.stringify(value));
+        }
         this.listeners.forEach(listener => listener());
     }
 

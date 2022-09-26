@@ -45,4 +45,9 @@ export default class BaseClass {
             }
         }).showToast();
     }
+
+
+    nothingErrorHandler(error) {
+
+    }
 }

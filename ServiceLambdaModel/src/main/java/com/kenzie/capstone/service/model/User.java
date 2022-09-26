@@ -13,7 +13,7 @@ public class User {
     public User(String userId, String username, List<String> friendsList) {
         this.userId = userId;
         this.username = username;
-        this.friendsList = Optional.ofNullable(friendsList).orElse(new ArrayList<>());
+        this.friendsList = Optional.ofNullable(friendsList).orElseGet(ArrayList::new);
     }
 
     public User() {}

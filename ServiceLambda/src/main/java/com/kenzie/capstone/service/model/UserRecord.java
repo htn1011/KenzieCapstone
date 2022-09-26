@@ -40,7 +40,7 @@ public class UserRecord {
     }
 
     public void setFriendsList(List<String> friendsList) {
-        this.friendsList = Optional.ofNullable(friendsList).orElse(new ArrayList<>());
+        this.friendsList = Optional.ofNullable(friendsList).orElseGet(ArrayList::new);
     }
 
     @Override

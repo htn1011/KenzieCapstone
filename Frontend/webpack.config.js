@@ -8,7 +8,8 @@ module.exports = {
     usedExports: true
   },
   entry: {
-    examplePage: path.resolve(__dirname, 'src', 'pages', 'examplePage.js'),
+    summaryPage: path.resolve(__dirname, 'src', 'pages', 'summaryPage.js'),
+    userLoginPage: path.resolve(__dirname, 'src', 'pages', 'userLoginPage.js'),
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -16,9 +17,9 @@ module.exports = {
   },
   devServer: {
     https: false,
-    port: 8080,
+    port: 8000,
     open: true,
-    openPage: 'http://localhost:8080',
+    openPage: 'http://localhost:8000',
     // diableHostChecks, otherwise we get an error about headers and the page won't render
     disableHostCheck: true,
     contentBase: 'packaging_additional_published_artifacts',
@@ -27,10 +28,15 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
-      filename: 'index.html',
+      template: './src/summary.html',
+      filename: 'summary.html',
       inject: false
     }),
+    new HtmlWebpackPlugin({
+          template: './src/userLogin.html',
+          filename: 'userLogin.html',
+          inject: false
+        }),
     new CopyPlugin({
       patterns: [
         {

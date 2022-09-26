@@ -47,13 +47,13 @@ class SummaryPage extends BaseClass {
         this.dataStore.set("currentListFilter", "Today's Results");
         // https://www.tutorialrepublic.com/faq/how-to-format-javascript-date-as-yyyy-mm-dd.php
         let today = new Date();
-        let year = date.toLocaleString("default", { year: "numeric" });
-        let month = date.toLocaleString("default", { month: "2-digit" });
-        let day = date.toLocaleString("default", { day: "2-digit" });
+        let year = today.toLocaleString("default", { year: "numeric" });
+        let month = today.toLocaleString("default", { month: "2-digit" });
+        let day = today.toLocaleString("default", { day: "2-digit" });
         let formattedDate = year + "-" + month + "-" + day;
         this.dataStore.set("todaysDate", formattedDate);
 
-        let initalList = await this.client.findAllSummariesForDate(formattedDate, this.errorHandler);
+        let initalList = await this.client.findAllSummariesForDate(formattedDate, this.summaryErrorHandler);
         this.dataStore.set("listOfSummaries", initalList);
 
         this.dataStore.addChangeListener(this.renderSummary)
@@ -74,7 +74,7 @@ class SummaryPage extends BaseClass {
         let onlyMeFilter = document.getElementById("only-me-filter");
 
         let loginStatus = this.dataStore.get("loginStatus");
-        if (loginStatus == login) {
+        if (loginStatus == "login needed") {
             logInButton.classList.add("active");
             userWelcome.classList.remove("active");
             postNewSummary.classList.remove("active");
@@ -129,6 +129,11 @@ class SummaryPage extends BaseClass {
 //           summaryListType.innerText = dataStore.get("currentListFilter");
 
            resultArea.innerHTML = "";
+           if (summaryList == null) {
+                resultArea.textContent = "There are no results to display";
+                return;
+           }
+
            const ul = document.createElement("ul");
 
            summaryList.forEach(summary => {
@@ -332,6 +337,16 @@ class SummaryPage extends BaseClass {
 //            this.errorHandler("Error creating!  Try again...");
 //        }
 //    }
+    summaryErrorHandler(message, error) {
+        console.dir(error);
+        if (error.response.status == 404) {
+            return;
+        } else {
+            this.errorHandler(message)
+        }
+    }
+
+
 }
 
 /**

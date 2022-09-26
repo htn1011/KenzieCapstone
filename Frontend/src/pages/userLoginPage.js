@@ -1,6 +1,6 @@
 import BaseClass from "../util/baseClass";
 import DataStore from "../util/DataStore";
-import ExampleClient from "../api/exampleClient";
+import SummaryClient from "../api/summaryClient";
 
 /**
  * Logic needed for the user to log in or sign up.
@@ -31,7 +31,7 @@ class UserLoginPage extends BaseClass {
         // note:
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
         // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
-        this.client = new summaryClient();
+        this.client = new SummaryClient();
         // if the user has already logged in - show user info otherwise login page
         let user = this.dataStore.get("user");
         if (user == null) {
@@ -70,11 +70,16 @@ class UserLoginPage extends BaseClass {
             loginForm.classList.remove("active");
             signupForm.classList.remove("active");
             userFriendList.innerHTML = "";
-            userFriendList.innerHTML += `<ul>`;
-            currentUser.friendList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
-            });
-            userFriendList.innerHTML += `</ul>`;
+            if (currentUser.friendList.length == 0) {
+                userFriendList.textContent = "No friends yet :(";
+            } else {
+                userFriendList.innerHTML += `<ul>`;
+                currentUser.friendList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
+                });
+                userFriendList.innerHTML += `</ul>`;
+            }
             userInfo.classList.add("active");
+
             if (editFriendList == no) {
                 editFriendForm.classList.remove("active");
             } else {
@@ -90,7 +95,7 @@ class UserLoginPage extends BaseClass {
         // Prevent the page from refreshing on form submit
         event.preventDefault();
         // get the userId from the input
-        let userId = document.getElementById("userId-input").value;
+        let userId = document.getElementById("userId-existing-input").value;
 
         // store userId in local storage for use in summaryPage.js
         this.dataStore.set("userId", userId);
@@ -121,6 +126,7 @@ class UserLoginPage extends BaseClass {
             this.errorHandler);
 
         this.dataStore.set("userId", newUserId);
+        console.log(newUser);
 
         this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo"});
 
@@ -179,7 +185,7 @@ class UserLoginPage extends BaseClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const page = new EditReviewsPage();
+    const page = new UserLoginPage();
     page.mount();
 };
 
