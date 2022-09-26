@@ -25,18 +25,36 @@ class SummaryPage extends BaseClass {
         document.getElementById('create-summary-form').addEventListener('submit', this.onCreateSummary);
         document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
         document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
-        document.getElementById('get-summaries-by-user').addEventListener('submit', this.onGetSummariesByUser);
+        document.getElementById('filter-only-user').addEventListener('click', this.onGetSummariesByUser);
         this.client = new summaryClient();
 
         // this will retrieve variables from local storage for use,
-        this.firstRender();
+//        this.firstRender();
+       // todo state to show if user is logged in or not
+       let user = this.dataStore.get("user");
+        if (user == null) {
+            this.dataStore.set("loginStatus", "login needed");
+        } else {
+            this.dataStore.set("loginStatus", "success");
+        }
+
 
 
 
         // when initally loading this page, the default list today's and yesterdays summaries
         // altering the whichList state can determine which list to render
         // options: todayAndYesterday, byDate, friends, onlyMine
-        this.dataStore.set("whichList", "todayAndYesterday");
+        this.dataStore.set("currentListFilter", "Today's Results");
+        // https://www.tutorialrepublic.com/faq/how-to-format-javascript-date-as-yyyy-mm-dd.php
+        let today = new Date();
+        let year = date.toLocaleString("default", { year: "numeric" });
+        let month = date.toLocaleString("default", { month: "2-digit" });
+        let day = date.toLocaleString("default", { day: "2-digit" });
+        let formattedDate = year + "-" + month + "-" + day;
+        this.dataStore.set("todaysDate", formattedDate);
+
+        let initalList = await this.client.findAllSummariesForDate(formattedDate, this.errorHandler);
+        this.dataStore.set("listOfSummaries", initalList);
 
         this.dataStore.addChangeListener(this.renderSummary)
     }
@@ -44,36 +62,97 @@ class SummaryPage extends BaseClass {
     // Render Methods --------------------------------------------------------------------------------------------------
 
 
-    // @TODO this will populate the resultArea element with a formatted summary entry/post
-    async renderSummary(summary) {
-       let resultArea = document.getElementById("result-info");
 
-       let summaryEntry = "";
+    // @TODO this will populate the resultArea element with a formatted summary entry/post/list
+    async render() {
+        let logInButton = document.getElementById("link-to-login");
+        let userWelcome = document.getElementById("user-welcome");
+        let userIdWelcome = document.getElementById("user-id-welcome");
+        let usernameWelcome = document.getElementById("user-name-welcome");
+        let postNewSummary = document.getElementById("post-new-Summary");
+        let friendFiler = document.getElementById("friend-filer");
+        let onlyMeFilter = document.getElementById("only-me-filter");
 
-       if (summary != null) {
-           summaryEntry += `<ul>`;
-           summaryEntry += `<p><h3 class="userName">${summary.username}</h3></p>`;
-           summaryEntry += `<p><b>date: </b>${summary.date}</p>`;
+        let loginStatus = this.dataStore.get("loginStatus");
+        if (loginStatus == login) {
+            logInButton.classList.add("active");
+            userWelcome.classList.remove("active");
+            postNewSummary.classList.remove("active");
+            friendFiler.classList.remove("active");
+            onlyMeFilter.classList.remove("active");
+        } else if (loginStatus == "success") {
+            let user = this.dataStore.get("user");
+            logInButton.classList.remove("active");
+            userWelcome.classList.add("active");
+            userIdWelcome.textContent = user.userId;
+            usernameWelcome.textContent = user.userName;
+            postNewSummary.classList.add("active");
+            friendFiler.classList.add("active");
+            onlyMeFilter.classList.add("active");
+        }
 
-           if (summary.results != null) {
-               summaryEntry += `<p><b>Score Report: </b>${summary.results}</p>`;
-           }
 
-           summaryEntry += `<hr></hr>`;
-           summaryEntry += `<p></p>`;
-           summaryEntry += `</ul>`;
+        let listFilter = this.dataStore.get("currentListFilter");
+        let summaryList = this.dataStore.get("listOfSummaries");
 
-           resultArea.innerHTML = summaryEntry;
-       }
+        let summaryListType = document.getElementById("summary-list-filter-type");
+        summaryListType.innerText = listFilter;
+        this.renderSummaryList(summaryList);
+
+// Use new Date() to generate a new Date object containing the current date and time.
+// This will give you today's date in the format of mm/dd/yyyy.
+// Simply change today = mm +'/'+ dd +'/'+ yyyy; to whatever format you wish
+// example:
+// var today = new Date();
+// var dd = String(today.getDate()).padStart(2, '0');
+// var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+// var yyyy = today.getFullYear();
+// today = mm + '/' + dd + '/' + yyyy;
+// document.write(today);
+
+//        if (listFilter == "Today's and Yesterday's Results") {
+//            summaryListType.innerText = "";
+//        } else if (listFilter == "by User") {
+//            summaryListType.innerText = "";
+//        } else if (listFilter == "by Date") {
+//            summaryListType.innerText = "";
+//        } else if (listFilter == "by Friends") {
+//            summaryListType.innerText = "";
+//        }
+
     }
 
-    async firstRender() {
-           let userId = dataStore.getItem("userId");
+    async renderSummaryList(summaryList) {
+           let resultArea = document.getElementById("summary-list-container");
+           // print label of current rendered list
+//           let summaryListType = document.getElementById("summary-list-filter-type");
+//           summaryListType.innerText = dataStore.get("currentListFilter");
 
-           const review = await this.client.findReview(restaurantId, userId, this.errorHandler());
+           resultArea.innerHTML = "";
+           const ul = document.createElement("ul");
 
-           await this.renderReview(review);
+           summaryList.forEach(summary => {
+               const li = document.createElement("li");
+               li.innerHTML += `<div class="card">`;
+                // @TODO consider retrieving user name instead of userId?
+               li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
+               li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
+               li.innerHTML += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
+               li.innerHTML += `</div>`;
+               li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
+               ul.append(li);
+           });
+           resultArea.append(ul);
+           resultArea.classList.add("active");
     }
+
+//    async firstRender() {
+//           let userId = dataStore.getItem("userId");
+//
+//           const review = await this.client.findReview(restaurantId, userId, this.errorHandler());
+//
+//           await this.renderReview(review);
+//    }
 
     // Event Handlers --------------------------------------------------------------------------------------------------
 
@@ -104,8 +183,11 @@ class SummaryPage extends BaseClass {
        // this.dataStore.set("example", createdSummary.username);
 
        if (createdSummary) {
-           this.showMessage(`Score posted for ${createdSummary.game}!`);
-            await this.renderSummary(result);
+           this.showMessage(`Score posted for today's ${createdSummary.game}!`);
+           let todaysDate = this.dataStore.get("todaysDate");
+           let result = await this.client.findAllSummariesForDate(todaysDate, this.errorHandler);
+           this.dataStore.setState({"currentListFilter":"Today's Results", "listOfSummaries":result});
+
        } else {
            this.errorHandler("Error posting!  Try again...");
        }
@@ -128,6 +210,15 @@ class SummaryPage extends BaseClass {
        let result = await this.client.findAllSummariesForDate(date, this.errorHandler);
 
        result.date = date;
+
+       if (result) {
+                  this.showMessage(`Got all game scores for ${date}!`);
+                  this.dataStore.setState({"currentListFilter":"by Date", "listOfSummaries":result});
+//                  await this.renderSummaryList(result);
+              } else {
+//                  this.errorHandler("Error retrieving game scores!  Try again...");
+                  resultArea.innerHTML = "No summaries available";
+              }
 
 
        if (result) {
@@ -156,7 +247,7 @@ class SummaryPage extends BaseClass {
        let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, errorCallback);
 
 // todo check if the results is JSON or not - jsonify if needed
-       this.dataStore.set("friendSummaries-"+summaryDate, result);
+//       this.dataStore.set("friendSummaries-"+summaryDate, result);
        /*result.date = summaryDate;
 
        if (result) {
@@ -168,17 +259,45 @@ class SummaryPage extends BaseClass {
        }*/
    }
 
+   async onGetSummariesByOtherUser(event) {
+         event.preventDefault();
+         // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
+         console.log(event.target.dataset);
+         let userId = event.target.dataset.userid;
+
+         let result = await this.client.findAllSummariesForUser(userId, errorCallback);
+        if (result) {
+                    this.showMessage(`Got all your game scores!`);
+                    this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
+        //                  await this.renderSummaryList(result);
+        } else {
+        //                  this.errorHandler("Error retrieving game scores!  Try again...");
+                    resultArea.innerHTML = "No summaries available";
+        }
+
+   }
+
    async onGetSummariesByUser(event) {
        // Prevent the page from refreshing on form submit
        event.preventDefault();
 
-       let userId = document.getElementById("filter-summary-user");
+       let userId = this.dataStore.get("userId");
 
        let result = await this.client.findAllSummariesForUser(userId, errorCallback);
 
        // todo check if the results is JSON or not - jsonify if needed
 
-       this.dataStore.set("userSummaries", result);
+//       this.dataStore.set("userSummaries", result);
+       this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
+
+       if (result) {
+                   this.showMessage(`Got all your game scores!`);
+                   this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
+       //                  await this.renderSummaryList(result);
+       } else {
+       //                  this.errorHandler("Error retrieving game scores!  Try again...");
+                   resultArea.innerHTML = "No summaries available";
+       }
    }
 
 //    async onGet(event) {
