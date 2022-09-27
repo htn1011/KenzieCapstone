@@ -10,7 +10,8 @@ class SummaryPage extends BaseClass {
 
     constructor() {
         super();
-        this.bindClassMethods(['onGet', 'onCreate', 'renderSummary', 'onCreateSummary', 'onGetAllSummariesByDate', 'onGetAllFriendSummaries', 'onGetSummariesByUser'], this);
+        this.bindClassMethods(['render','renderSummaryList', 'onCreateSummary', 'onGetAllSummariesByDate',
+        'onGetAllFriendSummaries', 'onGetSummariesByUser', 'onGetSummariesByOtherUser'], this);
         this.dataStore = new DataStore();
     }
 
@@ -56,7 +57,8 @@ class SummaryPage extends BaseClass {
         let initalList = await this.client.findAllSummariesForDate(formattedDate, this.summaryErrorHandler);
         this.dataStore.set("listOfSummaries", initalList);
 
-        this.dataStore.addChangeListener(this.renderSummary)
+        this.dataStore.addChangeListener(this.render)
+        this.render();
     }
 
     // Render Methods --------------------------------------------------------------------------------------------------
@@ -225,14 +227,10 @@ class SummaryPage extends BaseClass {
                   resultArea.innerHTML = "No summaries available";
               }
 
+       // for labeling the rendered list
+//       dataStore.set("currentListFilter", "by Date");
 
-       if (result) {
-           this.showMessage(`Got all game scores for ${result.date}!`)
-           await this.renderSummary(result);
-       } else {
-           this.errorHandler("Error retrieving game scores!  Try again...");
-           resultArea.innerHTML = "No summaries available";
-       }
+
    }
 
    async onGetAllFriendSummaries(event) {
@@ -250,6 +248,19 @@ class SummaryPage extends BaseClass {
        let userId = dataStore.get("userId");
 
        let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, errorCallback);
+
+       // for labeling the rendered list
+//       this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
+//       dataStore.set("currentListFilter", "by Friends");
+
+       if (result) {
+            this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
+            this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
+//                  await this.renderSummaryList(result);
+       } else {
+//                  this.errorHandler("Error retrieving game scores!  Try again...");
+            resultArea.innerHTML = "No summaries available";
+       }
 
 // todo check if the results is JSON or not - jsonify if needed
 //       this.dataStore.set("friendSummaries-"+summaryDate, result);
@@ -289,6 +300,9 @@ class SummaryPage extends BaseClass {
        let userId = this.dataStore.get("userId");
 
        let result = await this.client.findAllSummariesForUser(userId, errorCallback);
+
+       // for labeling the rendered list
+//       dataStore.set("currentListFilter", "by User");
 
        // todo check if the results is JSON or not - jsonify if needed
 
