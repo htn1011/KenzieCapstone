@@ -55,6 +55,12 @@ public class UserService {
         List<String> friendList = existingUser.getFriendsList();
         friendList.add(friendId);
         existingUser.setFriendsList(friendList);
+        UserRecord updatedUser = new UserRecord();
+        updatedUser.setUserId(existingUser.getUserId());
+        updatedUser.setUsername(existingUser.getUsername());
+        updatedUser.setFriendsList(existingUser.getFriendsList());
+
+        userDao.updateUser(updatedUser);
         return existingUser;
     }
 
@@ -65,6 +71,12 @@ public class UserService {
         List<String> friendList = existingUser.getFriendsList();
         friendList.removeIf(id -> id.equals(friendId));
         existingUser.setFriendsList(friendList);
+        UserRecord updatedUser = new UserRecord();
+        updatedUser.setUserId(existingUser.getUserId());
+        updatedUser.setUsername(existingUser.getUsername());
+        updatedUser.setFriendsList(existingUser.getFriendsList());
+
+        userDao.updateUser(updatedUser);
         return existingUser;
     }
 

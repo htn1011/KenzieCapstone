@@ -20,6 +20,9 @@ public class UserResponse {
     @JsonProperty("friendsList")
     private List<String> friendsList;
 
+    public UserResponse() {
+    }
+
     public UserResponse(String userId, String userName, List<String> friendsList) {
         this.userId = userId;
         this.userName = userName;

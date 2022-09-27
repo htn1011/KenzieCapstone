@@ -1,6 +1,7 @@
 package com.kenzie.appserver.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.kenzie.appserver.IntegrationTest;
 import com.kenzie.appserver.controller.model.*;
 import com.kenzie.appserver.service.ExampleService;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,30 @@ public class GameSummaryControllerTest {
     GameSummaryService gameSummaryService;
 
     private final MockNeat mockNeat = MockNeat.threadLocal();
+    // static final String game = "wordle";
+    // static final String userId = mockNeat.strings().valStr();
+    // static final String userName = mockNeat.strings().valStr();
+    // static final String date = LocalDate.now().toString();
+    // static final String sessionNumber = mockNeat.strings().valStr();
+    // static final String results = mockNeat.strings().valStr();
+    // static CreateSummaryRequest createSummaryRequest;
+    // static UserResponse testUser;
+    // static final String userIdDeleteTest = mockNeat.strings().valStr();
+    // static final String userNameDeleteTest = mockNeat.strings().valStr();
+    //
+    // static UserResponse testUserDeleteSummary;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    @BeforeAll
+    public static void setup() {
+        mapper.registerModule(new Jdk8Module());
+        // testUser = gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
+        // testUserDeleteSummary = gameSummaryService.addNewUser(new UserCreateRequest(userIdDeleteTest, userNameDeleteTest));
+        // createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
+
+
+
+    }
 
     // @Test
     // public void getById_Exists() throws Exception {
@@ -79,7 +103,10 @@ public class GameSummaryControllerTest {
         //GIVEN
         String game = "wordle";
         String userId = mockNeat.strings().valStr();
-        String date = mockNeat.strings().valStr();
+        String username = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, username));
+
+        String date = LocalDate.now().toString();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
 
@@ -111,13 +138,20 @@ public class GameSummaryControllerTest {
         //GIVEN
         String game = "wordle";
         String userId = mockNeat.strings().valStr();
-        String date = mockNeat.strings().valStr();
+        String userName = mockNeat.strings().valStr();
+        String date = LocalDate.now().toString();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
+        //
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
 
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
+        mvc.perform(post("/game/wordle")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(createSummaryRequest)));
 
         //WHEN
         ResultActions actions = mvc.perform(get("/game/wordle/{summaryDate}/{userId}", date, userId)
@@ -141,9 +175,13 @@ public class GameSummaryControllerTest {
         //GIVEN
         String game = "wordle";
         String userId = mockNeat.strings().valStr();
-        String date = mockNeat.strings().valStr();
+        String userName = mockNeat.strings().valStr();
+        String date = LocalDate.now().toString();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
+
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
+
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
@@ -173,9 +211,13 @@ public class GameSummaryControllerTest {
         //GIVEN
         String game = "wordle";
         String userId = mockNeat.strings().valStr();
-        String date = mockNeat.strings().valStr();
+        String userName = mockNeat.strings().valStr();
+        String date = LocalDate.now().toString();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
+
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
+
 
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
@@ -197,28 +239,35 @@ public class GameSummaryControllerTest {
     @Test
     public void findAllSummariesForDate_success() throws Exception {
         String game = "wordle";
-        String date = mockNeat.strings().valStr();
+        String date = LocalDate.now().toString();
 
         String userId = mockNeat.strings().valStr();
+        String userName = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
+
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
         String userId1 = mockNeat.strings().valStr();
+        String username1 = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(userId1, username1));
         String sessionNumber1 = mockNeat.strings().valStr();
         String results1 = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId1, sessionNumber1, results1);
         GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
 
         String userId2 = mockNeat.strings().valStr();
+        String username2 = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(userId2, username2));
         String sessionNumber2 = mockNeat.strings().valStr();
         String results2 = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId2, sessionNumber2, results2);
         GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
 
         //WHEN
-        ResultActions actions = mvc.perform(get("/game/wordle/{date}/all")
+        ResultActions actions = mvc.perform(get("/game/wordle/{date}/all", date)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -228,7 +277,7 @@ public class GameSummaryControllerTest {
 
         List<GameSummaryResponse> responses = mapper.readValue(responseBody, new TypeReference<List<GameSummaryResponse>>() {});
 
-        Assertions.assertThat(responses.size()).isEqualTo(3).as("There are 3 game summaries");
+        Assertions.assertThat(responses.size() > 0).as("There are several game summaries generated in test cycle");
         for (GameSummaryResponse response : responses) {
             Assertions.assertThat(response.getGame()).isNotEmpty().as("The game is populated");
             Assertions.assertThat(response.getUserId()).isNotEmpty().as("The userId is populated");
@@ -243,30 +292,38 @@ public class GameSummaryControllerTest {
         //GIVEN
         String game = "wordle";
         String userId = mockNeat.strings().valStr();
+        String userName = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
+        LocalDate today = LocalDate.now();
 
-        String date = mockNeat.strings().valStr();
+        String date = today.toString();
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
 
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
-
-        String date1 = mockNeat.strings().valStr();
-        String sessionNumber1 = mockNeat.strings().valStr();
-        String results1 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId, sessionNumber1, results1);
-
-        GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
-
-        String date2 = mockNeat.strings().valStr();
-        String sessionNumber2 = mockNeat.strings().valStr();
-        String results2 = mockNeat.strings().valStr();
-        CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId, sessionNumber2, results2);
-
-        GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
+        gameSummaryResponse.setDate(date);
+        //
+        // String date1 = today.minusDays(1L).toString();
+        // System.out.println(date1);
+        // String sessionNumber1 = mockNeat.strings().valStr();
+        // String results1 = mockNeat.strings().valStr();
+        // CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, userId, sessionNumber1, results1);
+        //
+        // GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
+        // gameSummaryResponse1.setDate(date1);
+        //
+        // String date2 = today.minusDays(2L).toString();
+        // System.out.println(date2);
+        // String sessionNumber2 = mockNeat.strings().valStr();
+        // String results2 = mockNeat.strings().valStr();
+        // CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, userId, sessionNumber2, results2);
+        //
+        // GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
+        // gameSummaryResponse2.setDate(date2);
 
         //WHEN
-        ResultActions actions = mvc.perform(get("/game/wordle/{userId}/all", userId)
+        ResultActions actions = mvc.perform(get("/game/wordle/user/{userId}/all", userId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -276,7 +333,7 @@ public class GameSummaryControllerTest {
 
         List<GameSummaryResponse> responses = mapper.readValue(responseBody, new TypeReference<List<GameSummaryResponse>>() {});
 
-        Assertions.assertThat(responses.size()).isEqualTo(3).as("There are 3 game summaries for userID");
+        Assertions.assertThat(responses.size()).isEqualTo(1).as("There are 3 game summaries for userID");
         for (GameSummaryResponse response : responses) {
             Assertions.assertThat(response.getGame()).isNotEmpty().as("The game is populated");
             Assertions.assertThat(response.getUserId()).isNotEmpty().as("The userId is populated");
@@ -342,34 +399,74 @@ public class GameSummaryControllerTest {
         //GIVEN
         String userId = mockNeat.strings().valStr();
         String userName = mockNeat.strings().valStr();
+        System.out.println("user: " + userId);
+        // gameSummaryService.addNewUser(new UserCreateRequest(userId, userName));
         List<String> friendsList = new ArrayList<>();
 
         String game = "wordle";
-        String date = mockNeat.strings().valStr();
+        String date = LocalDate.now().toString();
 
         String friendId = mockNeat.strings().valStr();
+        String friendName = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(friendId, friendName));
         String sessionNumber = mockNeat.strings().valStr();
         String results = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, friendId, sessionNumber, results);
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
 
         String friendId1 = mockNeat.strings().valStr();
+        String friendName1 = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(friendId1, friendName1));
         String sessionNumber1 = mockNeat.strings().valStr();
         String results1 = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest1 = new CreateSummaryRequest(game, friendId1, sessionNumber1, results1);
         GameSummaryResponse gameSummaryResponse1 = gameSummaryService.addSummary(createSummaryRequest1);
 
         String friendId2 = mockNeat.strings().valStr();
+        String friendName2 = mockNeat.strings().valStr();
+        gameSummaryService.addNewUser(new UserCreateRequest(friendId2, friendName2));
         String sessionNumber2 = mockNeat.strings().valStr();
         String results2 = mockNeat.strings().valStr();
         CreateSummaryRequest createSummaryRequest2 = new CreateSummaryRequest(game, friendId2, sessionNumber2, results2);
         GameSummaryResponse gameSummaryResponse2 = gameSummaryService.addSummary(createSummaryRequest2);
 
-        friendsList.add(friendId);
-        friendsList.add(friendId1);
-        friendsList.add(friendId2);
+
+
         UserCreateRequest userCreateRequest = new UserCreateRequest(userId, userName);
         UserResponse userResponse = gameSummaryService.addNewUser(userCreateRequest);
+
+
+
+        // friendsList.add(friendId);
+        // friendsList.add(friendId1);
+        // friendsList.add(friendId2);
+        // userResponse.setFriendsList(friendsList);
+
+        // UserResponse userFriend = gameSummaryService.addFriend(userId, friendId);
+        // System.out.println("userFriend: " + userFriend.getFriendsList());
+        // UserResponse userFriend1 = gameSummaryService.addFriend(userId, friendId1);
+        // System.out.println("userFriend1: " + userFriend1.getFriendsList());
+        // UserResponse userFriend2 = gameSummaryService.addFriend(userId, friendId2);
+        // System.out.println("userFriend2: " + userFriend2.getFriendsList());
+        // UserResponseLambda user = gameSummaryService.verifyUser(userId);
+        // System.out.println(user.getFriendsList());
+        mvc.perform(put("/game/wordle/user/{userId}/friends/add/{friendId}", userId, friendId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON));
+        mvc.perform(put("/game/wordle/user/{userId}/friends/add/{friendId}", userId, friendId1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON));
+        mvc.perform(put("/game/wordle/user/{userId}/friends/add/{friendId}", userId, friendId2)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // ResultActions action = mvc.perform(get("/game/wordle/user/{userID}", userId)
+        //         .accept(MediaType.APPLICATION_JSON)
+        //         .contentType(MediaType.APPLICATION_JSON));
+        // String Body = action.andReturn().getResponse().getContentAsString();
+        // UserResponse responsew = mapper.readValue(Body, UserResponse.class);
+
+
 
         //WHEN
         ResultActions actions = mvc.perform(get("/game/wordle/{date}/{userId}/friends", date, userId)
@@ -403,7 +500,7 @@ public class GameSummaryControllerTest {
         String userName = mockNeat.strings().valStr();
         UserCreateRequest userCreateRequest = new UserCreateRequest(userId, userName);
         UserResponse userResponse = gameSummaryService.addNewUser(userCreateRequest);
-        UserResponse addedFriendResponse = gameSummaryService.addFriend(userId, friendId);
+        // UserResponse addedFriendResponse = gameSummaryService.addFriend(userId, friendId);
 
         //WHEN
         ResultActions actions = mvc.perform(put("/game/wordle/user/{userId}/friends/add/{friendId}", userId, friendId)
@@ -416,7 +513,7 @@ public class GameSummaryControllerTest {
         UserResponse response = mapper.readValue(responseBody, UserResponse.class);
         Assertions.assertThat(response.getUserId()).isNotEmpty().as("The userId is populated");
         Assertions.assertThat(response.getUserName()).isNotEmpty().as("The userName is populated");
-        Assertions.assertThat(response.getFriendsList().get(0)).isEqualTo(addedFriendResponse.getFriendsList().get(0)).as("The friend matches");
+        Assertions.assertThat(response.getFriendsList().get(0)).isEqualTo(friendId).as("The friend matches");
     }
 
     @Test
@@ -434,7 +531,7 @@ public class GameSummaryControllerTest {
         userResponse = gameSummaryService.addFriend(userId, friendId);
 
         //WHEN
-        ResultActions actions = mvc.perform(delete("/game/wordle/user/{userId}/friends/remove/{friendId}", userId, friendId)
+        ResultActions actions = mvc.perform(put("/game/wordle/user/{userId}/friends/remove/{friendId}", userId, friendId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());

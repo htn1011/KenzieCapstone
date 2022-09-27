@@ -45,11 +45,11 @@ public class GameSummaryService {
         //create the new record
         GameSummaryRecord record = GameSummaryConversion.createRequestToRecord(summaryRequest);
         // save it
-        gameRepository.save(record);
+        GameSummaryRecord saved = gameRepository.save(record);
         // invalidate the cache
-        invalidateCache(record.getDate(), record.getUserId());
+        invalidateCache(saved.getDate(), saved.getUserId());
         // return it
-        return GameSummaryConversion.recordToResponse(record);
+        return GameSummaryConversion.recordToResponse(saved);
     }
 
     public GameSummaryResponse getSummary(String game, String date, String userId) {
@@ -65,7 +65,7 @@ public class GameSummaryService {
         // verify user
         verifyUser(updateSummaryRequest.getUserId());
         // get existing game summary
-        GameSummaryRecord existingRecord = gameRepository.findById(
+        GameSummaryRecord existingRecord = gameRepository.findByGameSummaryId(
                 generateGameSummaryID(
                         updateSummaryRequest.getExistingSummaryDate(),
                         updateSummaryRequest.getUserId()))
@@ -95,13 +95,20 @@ public class GameSummaryService {
         if (summaryResponsesHit == null) {
             List<GameSummaryResponse> allSummariesAfterMiss = new ArrayList<>();
             // add to cache wordle::date + list of summaries for that date
-            Optional.ofNullable(gameRepository.findByDateOrderByResultsAsc(date))
+            Optional.ofNullable(gameRepository.findByDate(date))
                     .orElseGet(ArrayList::new)
                     .forEach(record -> allSummariesAfterMiss.add(GameSummaryConversion.recordToResponse(record)));
+            System.out.println(allSummariesAfterMiss + "all summaries for date");
             cache.add(formatGameDateKey(date), allSummariesAfterMiss);
-            return allSummariesAfterMiss;
+            return allSummariesAfterMiss
+                    .stream()
+                    .sorted(Comparator.comparing(GameSummaryResponse::getResults))
+                    .collect(Collectors.toList());
         }
-        return summaryResponsesHit;
+        return summaryResponsesHit
+                .stream()
+                .sorted(Comparator.comparing(GameSummaryResponse::getResults))
+                .collect(Collectors.toList());
     }
 
     public List<GameSummaryResponse> getAllSummariesFromUser(String userId) {
@@ -124,7 +131,8 @@ public class GameSummaryService {
     }
 
     public List<GameSummaryResponse> getFriendSummaries(String userId, String date) {
-        Set<String> friendsList = new HashSet<>(userServiceClient.getFriendList(userId));
+        List<String> friends = userServiceClient.getFriendList(userId);
+        Set<String> friendsList = new HashSet<>(friends);
         friendsList.add(userId);
         return Optional.ofNullable(cache.get(formatGameDateKey(date)))
                 .orElseGet(() -> getAllSummariesForDate(date))

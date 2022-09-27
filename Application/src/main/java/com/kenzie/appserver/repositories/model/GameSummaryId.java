@@ -7,6 +7,9 @@ public class GameSummaryId {
     private String userId;
     private String SummarySortKey;
 
+    public GameSummaryId() {
+    }
+
     public GameSummaryId(String userId, String summarySortKey) {
         this.userId = userId;
         SummarySortKey = summarySortKey;
@@ -28,5 +31,13 @@ public class GameSummaryId {
 
     public void setSummarySortKey(String summarySortKey) {
         SummarySortKey = summarySortKey;
+    }
+
+    @Override
+    public String toString() {
+        return "GameSummaryId{" +
+                "userId='" + userId + '\'' +
+                ", SummarySortKey='" + SummarySortKey + '\'' +
+                '}';
     }
 }

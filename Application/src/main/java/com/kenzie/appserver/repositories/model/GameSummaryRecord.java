@@ -37,6 +37,7 @@ public class GameSummaryRecord {
     // layer between controller models and record models
 
     public GameSummaryRecord() {
+        // this.gameSummaryId = new GameSummaryId(userId, summarySortKey);
     }
 
     public GameSummaryRecord(String userId, String game, String date, String results, String sessionNumber) {
@@ -54,16 +55,16 @@ public class GameSummaryRecord {
 
 
 
-    public GameSummaryId getGameSummaryId() {
-        return gameSummaryId;
-    }
-    public void setGameSummaryId(GameSummaryId gameSummaryId) {
-        this.gameSummaryId = gameSummaryId;
-    }
+    // public GameSummaryId getGameSummaryId() {
+    //     return gameSummaryId;
+    // }
+    // public void setGameSummaryId(GameSummaryId gameSummaryId) {
+    //     this.gameSummaryId = gameSummaryId;
+    // }
 
     @DynamoDBHashKey(attributeName = "userId")
     public String getUserId() {
-        return gameSummaryId != null ? gameSummaryId.getUserId() : null;
+        return gameSummaryId != null ? gameSummaryId.getUserId() : userId;
     }
 
     public void setUserId(String userId) {
@@ -82,7 +83,7 @@ public class GameSummaryRecord {
 
     @DynamoDBRangeKey(attributeName = "summarySortKey")
     public String getSummarySortKey() {
-        return gameSummaryId != null ? gameSummaryId.getSummarySortKey() : null;
+        return gameSummaryId != null ? gameSummaryId.getSummarySortKey() : summarySortKey;
     }
 
     public void setSummarySortKey(String summarySortKey) {
@@ -146,5 +147,19 @@ public class GameSummaryRecord {
     @Override
     public int hashCode() {
         return Objects.hash(userId, game, date, results, sessionNumber);
+    }
+
+    @Override
+    public String toString() {
+        return "GameSummaryRecord{" +
+                "gameSummaryId=" + gameSummaryId +
+                ", userId='" + userId + '\'' +
+                ", game='" + game + '\'' +
+                ", date='" + date + '\'' +
+                ", results='" + results + '\'' +
+                ", sessionNumber='" + sessionNumber + '\'' +
+                ", summarySortKey='" + summarySortKey + '\'' +
+                ", indexSortKey='" + indexSortKey + '\'' +
+                '}';
     }
 }

@@ -60,7 +60,7 @@ public class GameController {
                     URI.create("/game/wordle/" + response.getDate() + "/" + response.getUserId())).body(response);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary" + e.getMessage() + e, e);
         }
     }
 
@@ -73,7 +73,7 @@ public class GameController {
             return ResponseEntity.ok(gameSummaryResponse);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to get an existing game summary" + e.getMessage() + e, e);
         }
     }
 
@@ -85,7 +85,7 @@ public class GameController {
             return ResponseEntity.ok(gameSummaryResponse);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary", e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to update an existing game summary" + e.getMessage() + e, e);
         }
     }
 
@@ -104,7 +104,7 @@ public class GameController {
         return ResponseEntity.ok(leaderboard);
     }
 
-    @GetMapping("/{userId}/all")
+    @GetMapping("/user/{userId}/all")
     public ResponseEntity<List<GameSummaryResponse>> findAllSummariesForUser(@PathVariable("userId") String userId) {
         List<GameSummaryResponse> gameSummaryResponseList = gameService.getAllSummariesFromUser(userId);
         if (gameSummaryResponseList == null || gameSummaryResponseList.isEmpty()) {

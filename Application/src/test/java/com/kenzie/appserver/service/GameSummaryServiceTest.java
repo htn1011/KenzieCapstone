@@ -3,14 +3,11 @@ package com.kenzie.appserver.service;
 import com.kenzie.appserver.config.CacheStore;
 import com.kenzie.appserver.controller.model.*;
 import com.kenzie.appserver.repositories.GameRepository;
-import com.kenzie.appserver.repositories.model.GameSummaryId;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 import com.kenzie.capstone.service.client.ApiGatewayException;
 import com.kenzie.capstone.service.client.UserServiceClient;
-import com.kenzie.capstone.service.model.NoExistingUserException;
 import com.kenzie.capstone.service.model.UserCreateRequestLambda;
 import com.kenzie.capstone.service.model.UserResponseLambda;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +93,7 @@ public class GameSummaryServiceTest {
 
 
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findById(any())).thenReturn(Optional.of(gameSummaryRecord));
+        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.of(gameSummaryRecord));
 
         //WHEN
         GameSummaryResponse gameSummaryResponse = gameSummaryService.getSummary(game, date, userId);
@@ -137,7 +134,7 @@ public class GameSummaryServiceTest {
         userResponseLambda.setFriendsList(friendsList);
 
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findById(any())).thenReturn(Optional.empty());
+        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.empty());
 
         //THEN
         Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.getSummary(game, date, userId), "Game summary does not exist throws exception");
@@ -157,7 +154,7 @@ public class GameSummaryServiceTest {
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findById(any())).thenReturn(Optional.of(gameSummaryRecord));
+        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.of(gameSummaryRecord));
         ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor = ArgumentCaptor.forClass(GameSummaryRecord.class);
 
         //WHEN
@@ -189,7 +186,7 @@ public class GameSummaryServiceTest {
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findById(any())).thenReturn(Optional.empty());
+        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.empty());
 
         //THEN
         Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.updateSummary(updateSummaryRequest), "Invalid game summary throws exception");
@@ -266,7 +263,7 @@ public class GameSummaryServiceTest {
         gameSummaryRecordList.add(gameSummaryRecord1);
 
         when(cache.get(any())).thenReturn(null);
-        when(gameRepository.findByDateOrderByResultsAsc(date)).thenReturn(gameSummaryRecordList);
+        when(gameRepository.findByDate(date)).thenReturn(gameSummaryRecordList);
 
         //WHEN
         List<GameSummaryResponse> gameSummaryResponseList = gameSummaryService.getAllSummariesForDate(date);

@@ -23,6 +23,9 @@ public class GameSummaryResponse {
     @JsonProperty("results")
     private String results;
 
+    public GameSummaryResponse() {
+    }
+
     public GameSummaryResponse(String game, String userId, String date, String sessionNumber, String results) {
         this.game = game;
         this.userId = userId;

@@ -92,7 +92,7 @@ export default class summaryClient extends BaseClass {
     // findAllSummariesForUser
     async findAllSummariesForUser(userId, errorCallback) {
         try {
-            const response = await this.client.get(`/game/wordle/${userId}/all`);
+            const response = await this.client.get(`/game/wordle/user/${userId}/all`);
             return response.data;
         } catch (error) {
             this.handleError("findAllSummariesForUser", error, errorCallback)

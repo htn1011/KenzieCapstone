@@ -12,13 +12,15 @@ import java.util.Optional;
 @EnableScan
 public interface GameRepository extends CrudRepository<GameSummaryRecord, GameSummaryId> {
     // find all by date(GSI) ordered by results in ascending order
-    List<GameSummaryRecord> findByDateOrderByResultsAsc(String date);
+    List<GameSummaryRecord> findByDate(String date);
 
     // find all summaries for user - only primary key
     List<GameSummaryRecord> findByUserId(String userId);
 
     // find specific gamesummary for user
-    Optional<GameSummaryRecord> findById(GameSummaryId gameSummaryId);
+    Optional<GameSummaryRecord> findByGameSummaryId(GameSummaryId gameSummaryId);
+
+    // Optional<GameSummaryRecord> findByUserIdAndSummarySortKey(String userId, String summarySortKey);
 
     // delete using the summaryIdClass
     void deleteById(GameSummaryId gameSummaryId);

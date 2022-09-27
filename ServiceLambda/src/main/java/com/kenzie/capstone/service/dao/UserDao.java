@@ -74,4 +74,15 @@ public class UserDao {
 
         return userRecord;
     }
+
+    public UserRecord updateUser(UserRecord userRecord) {
+
+        try {
+            mapper.save(userRecord);
+        } catch (ConditionalCheckFailedException e) {
+            throw new IllegalArgumentException("user ID already exists");
+        }
+
+        return userRecord;
+    }
 }
