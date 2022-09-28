@@ -247,7 +247,7 @@ class SummaryPage extends BaseClass {
 //       let userId = document.getElementById("userId");
        let userId = dataStore.get("userId");
 
-       let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, errorCallback);
+       let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, this.errorHandler);
 
        // for labeling the rendered list
 //       this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
@@ -281,7 +281,7 @@ class SummaryPage extends BaseClass {
          console.log(event.target.dataset);
          let userId = event.target.dataset.userid;
 
-         let result = await this.client.findAllSummariesForUser(userId, errorCallback);
+         let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
         if (result) {
                     this.showMessage(`Got all your game scores!`);
                     this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
@@ -299,7 +299,7 @@ class SummaryPage extends BaseClass {
 
        let userId = this.dataStore.get("userId");
 
-       let result = await this.client.findAllSummariesForUser(userId, errorCallback);
+       let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
 
        // for labeling the rendered list
 //       dataStore.set("currentListFilter", "by User");
