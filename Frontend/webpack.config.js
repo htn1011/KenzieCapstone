@@ -24,7 +24,17 @@ module.exports = {
     disableHostCheck: true,
     contentBase: 'packaging_additional_published_artifacts',
     // overlay shows a full-screen overlay in the browser when there are compiler errors or warnings
-    overlay: true
+    overlay: true,
+    // https://stackoverflow.com/questions/31602697/webpack-dev-server-cors-issue
+    proxy: {
+        '/game':{
+            target: {
+                host: '127.0.0.1',
+                protocol: 'http:',
+                port: 5001
+            }
+        }
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
