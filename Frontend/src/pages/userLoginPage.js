@@ -98,12 +98,13 @@ class UserLoginPage extends BaseClass {
         let userId = document.getElementById("userId-existing-input").value;
 
         // store userId in local storage for use in summaryPage.js
-        this.dataStore.set("userId", userId);
+//        this.dataStore.set("userId", userId);
+        // todo is this causing the problem?
 
         // use that userId to make a call to get the user
         const user = await this.client.findUser(userId, this.errorHandler);
         // save the user to the datastore
-        this.datastore.setState({"user":user, "userPageDisplay":"userInfo"});
+        this.datastore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId});
     }
 
     async onRequestSignUp(event) {
@@ -125,10 +126,10 @@ class UserLoginPage extends BaseClass {
             newUsername,
             this.errorHandler);
 
-        this.dataStore.set("userId", newUserId);
-        console.log(newUser);
+//        this.dataStore.set("userId", newUserId);
+//        console.log(newUser);
 
-        this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo"});
+        this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo", "userId":newUserId});
 
         // note:
         // go back to a particular URL / is the root page    like cd in gitbash
