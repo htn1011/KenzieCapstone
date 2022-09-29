@@ -27,13 +27,14 @@ class UserLoginPage extends BaseClass {
         document.getElementById('edit-friends').addEventListener('click', this.onRequestEditFriends);
         document.getElementById('add-friend').addEventListener('submit', this.onAddFriend);
         document.getElementById('remove-friend').addEventListener('submit', this.onRemoveFriend);
-        document.getElementById('user-logout').addEventListener('submit', this.onLogout);
+//        document.getElementById('user-logout').addEventListener('submit', this.onLogout);
         // note:
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
         // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
         this.client = new SummaryClient();
         // if the user has already logged in - show user info otherwise login page
         let user = this.dataStore.get("user");
+        this.dataStore.set("editFriendList", "no");
         if (user == null) {
             this.dataStore.set("userPageDisplay", "login");
         } else {
@@ -57,22 +58,30 @@ class UserLoginPage extends BaseClass {
         let existingUsername = document.getElementById("existing-username");
         let editFriendForm = document.getElementById("edit-friends-form");
         let userFriendList = document.getElementById("existing-friendsList");
+        let noUserTitle = document.getElementById("no-user-title");
+        let userTitle = document.getElementById("user-title");
 
         if (userPageDisplay == "login") {
             loginForm.classList.add("active");
             signupForm.classList.remove("active");
             userInfo.classList.remove("active");
+            noUserTitle.classList.add("active");
+            userTitle.classList.remove("active");
         } else if (userPageDisplay == "signup") {
             loginForm.classList.remove("active");
             signupForm.classList.add("active");
             userInfo.classList.remove("active");
+            noUserTitle.classList.add("active");
+            userTitle.classList.remove("active");
 
         } else if (userPageDisplay == "userInfo") {
             let currentUser = this.dataStore.get("user");
             existingUserId.textContent = `${currentUser.userId}`;
-            existingUsername.textContent = `${currentUser.username}`;
+            existingUsername.textContent = `${currentUser.userName}`;
             loginForm.classList.remove("active");
             signupForm.classList.remove("active");
+            noUserTitle.classList.remove("active");
+            userTitle.classList.add("active");
             userFriendList.innerHTML = "";
             if (currentUser.friendsList.length == 0) {
                 userFriendList.textContent = "No friends yet :(";
@@ -108,7 +117,7 @@ class UserLoginPage extends BaseClass {
         // use that userId to make a call to get the user
         const user = await this.client.findUser(userId, this.errorHandler);
         // save the user to the datastore
-        this.datastore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId});
+        this.dataStore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId, "loginStatus":"success"});
     }
 
     async onRequestSignUp(event) {
@@ -142,9 +151,9 @@ class UserLoginPage extends BaseClass {
 
    async onRequestEditFriends(event) {
     // Prevent the page from refreshing on form submit
-    event.preventDefault();
+        event.preventDefault();
 
-    this.dataStore.set("editFriendList", "yes");
+        this.dataStore.set("editFriendList", "yes");
     }
 
    async onAddFriend(event) {
@@ -179,10 +188,13 @@ class UserLoginPage extends BaseClass {
 
     async onLogout(event) {
         // Prevent the page from refreshing on form submit
-        event.preventDefault();
+//        event.preventDefault();
+//        document.location = "summary.html";
+//        this.dataStore.removeState({"user", "userId"});
+        document.location.href = "summary.html";
         this.dataStore.clear();
-        document.location = "/";
-        }
+    }
+
 
 }
 

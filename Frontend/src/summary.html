@@ -28,14 +28,17 @@
     <h1 class="main" href="summary.html">Sharedle</h1>
   </div>
   <!-- user logged in state -->
-  <div class="state" id="link-to-login">
-    <a class="main" href="userLogin.html">Login</a>
+  <div class="state" id="button-to-login">
+    <button type="submit" id="summary-login">Login</button>
+<!--    <a class="main" href="userLogin.html">Login</a>-->
     <p>You must be logged in to post your own summaries and to access extra filtering options</p>
   </div>
   <div class="state" id="user-welcome">
     <h2 class="main"><strong>Welcome </strong> <span id="user-name-welcome"></span></h2>
     <h2 class="main"><strong>User Id: </strong> <span id="user-id-welcome"></span></h2>
-
+    <button type="submit" id="summary-logout">Logout</button>
+    <button onclick="document.location.href='userLogin.html'">User Page</button>
+<!---->
   </div>
 </header>
 <!-- user control sections, each div -->

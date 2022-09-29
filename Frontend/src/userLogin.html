@@ -8,14 +8,27 @@
 <body class="background">
 <header class="header" id="header">
     <div class="page-title">
-        <h3 class="user-login-page">User Login</h3>
-        <p>Welcome! If you are an existing user, please log in. If you'd like to sign up, please press "Sign Up"</p>
+        <h3 class="user-login-page">User Page</h3>
+        <div class="state" id="no-user-title">
+            <p>Welcome! If you are an existing user, please log in below. If you'd like to sign up, please press "Sign Up"</p>
+<!--        <p>Welcome! <span id="existing-userId"></span></p>-->
+<!--        <p><strong>Username</strong>: <span id="existing-username"></span></p>-->
         <!--        button to choose to sign up instead of login - it will change the display state-->
         <button type="submit" id="sign-up-request">Sign Up</button>
+        </div>
+        <div class="state" id="user-title">
+            <p>Welcome! <span id="existing-userId"></span></p>
+            <p><strong>Username</strong>: <span id="existing-username"></span></p>
+<!--            <p>Welcome! If you are an existing user, please log in below. If you'd like to sign up, please press "Sign Up"</p>-->
+            <!--        button to choose to sign up instead of login - it will change the display state-->
+<!--            <button type="submit" id="user-logout">Logout</button>-->
+        </div>
     </div>
     <div>
         <!--        add link back to the main/home page todo when finalised-->
-        <a href="summary.html">Home Page</a>
+        <button onclick="document.location.href='summary.html'">Home</button>
+<!--        https://stackoverflow.com/questions/16562577/how-can-i-make-a-button-redirect-my-page-to-another-page-->
+<!--        <a href="summary.html">Home Page</a>-->
     </div>
 </header>
 <!--User login and information section-->
@@ -45,8 +58,8 @@
     <!--    to be filled out with user information once user is defined-->
     <div class="state" id="user-information">
         <!--    can fill in container at js file-->
-        <p><strong>User ID</strong>: <span id="existing-userId"></span></p>
-        <p><strong>Username</strong>: <span id="existing-username"></span></p>
+<!--        <p><strong>User ID</strong>: <span id="existing-userId"></span></p>-->
+<!--        <p><strong>Username</strong>: <span id="existing-username"></span></p>-->
         <p><strong>Friends</strong>: <span id="existing-friendsList"></span></p>
         <button type="submit" id="edit-friends">Edit Friends List</button>
         <form class="card-content state" id="edit-friends-form">
@@ -56,7 +69,7 @@
             </p>
             <button type="submit" id="add-friend">Add Friend to List</button>
             <button type="submit" id="remove-friend">Remove Friend from List</button>
-            <button type="submit" id="user-logout">Logout</button>
+
         </form>
     </div>
 </div>

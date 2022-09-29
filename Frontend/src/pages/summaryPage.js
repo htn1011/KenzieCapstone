@@ -11,7 +11,7 @@ class SummaryPage extends BaseClass {
     constructor() {
         super();
         this.bindClassMethods(['render','renderSummaryList', 'onCreateSummary', 'onGetAllSummariesByDate',
-        'onGetAllFriendSummaries', 'onGetSummariesByUser', 'onGetSummariesByOtherUser'], this);
+        'onGetAllFriendSummaries', 'onGetSummariesByUser', 'onGetSummariesByOtherUser', 'onLogout', 'onLogin'], this);
         this.dataStore = new DataStore();
     }
 
@@ -27,6 +27,9 @@ class SummaryPage extends BaseClass {
         document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
         document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
         document.getElementById('filter-only-user').addEventListener('click', this.onGetSummariesByUser);
+        document.getElementById('summary-logout').addEventListener('click', this.onLogout);
+        document.getElementById('summary-login').addEventListener('click', this.onLogin);
+//        document.getElementById('go-to-user-page').addEventListener('click', this.onLogin);
         this.client = new summaryClient();
 
         // this will retrieve variables from local storage for use,
@@ -67,7 +70,7 @@ class SummaryPage extends BaseClass {
 
     // @TODO this will populate the resultArea element with a formatted summary entry/post/list
     async render() {
-        let logInButton = document.getElementById("link-to-login");
+        let logInButton = document.getElementById("button-to-login");
         let userWelcome = document.getElementById("user-welcome");
         let userIdWelcome = document.getElementById("user-id-welcome");
         let usernameWelcome = document.getElementById("user-name-welcome");
@@ -322,6 +325,19 @@ class SummaryPage extends BaseClass {
 //                   resultArea.innerHTML = "No summaries available";
 //       }
    }
+
+   async onLogout(event) {
+           // Prevent the page from refreshing on form submit
+           event.preventDefault();
+           document.location = "summary.html";
+           this.dataStore.clear();
+   }
+
+   async onLogin(event) {
+              // Prevent the page from refreshing on form submit
+              event.preventDefault();
+              document.location = "userLogin.html";
+      }
 
 //    async onGet(event) {
 //        // Prevent the page from refreshing on form submit
