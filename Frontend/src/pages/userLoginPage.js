@@ -25,8 +25,8 @@ class UserLoginPage extends BaseClass {
         // event listener for the sign up form
         document.getElementById('sign-up-form').addEventListener('submit', this.onUserSignUp);
         document.getElementById('edit-friends').addEventListener('click', this.onRequestEditFriends);
-        document.getElementById('add-friend').addEventListener('submit', this.onAddFriend);
-        document.getElementById('remove-friend').addEventListener('submit', this.onRemoveFriend);
+        document.getElementById('add-friend').addEventListener('click', this.onAddFriend);
+        document.getElementById('remove-friend').addEventListener('click', this.onRemoveFriend);
 //        document.getElementById('user-logout').addEventListener('submit', this.onLogout);
         // note:
         // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
@@ -152,6 +152,8 @@ class UserLoginPage extends BaseClass {
    async onRequestEditFriends(event) {
     // Prevent the page from refreshing on form submit
         event.preventDefault();
+        let editFriendForm = document.getElementById("edit-friends-form");
+        editFriendForm.reset();
 
         this.dataStore.set("editFriendList", "yes");
     }
@@ -162,11 +164,13 @@ class UserLoginPage extends BaseClass {
 
         let userId = this.dataStore.get("user").userId;
         let friendId = document.getElementById("friends-user-id").value;
+        console.log(friendId)
 
-        const updatedUser = await this.client.addfriend(
+        const updatedUser = await this.client.addFriend(
             userId,
             friendId,
             this.errorHandler);
+        console.log(updatedUser);
 
         this.dataStore.setState({"user":updatedUser, "editFriendList":"no"});
     }

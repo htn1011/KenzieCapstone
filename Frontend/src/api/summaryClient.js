@@ -138,7 +138,7 @@ export default class summaryClient extends BaseClass {
     // addFriend
     async addFriend(userId, friendId, errorCallback=console.error) {
         try {
-            const response = await this.client.put(`/user/${userId}/friends/add/${friendId}`);
+            const response = await this.client.put(`/game/wordle/user/${userId}/friends/add/${friendId}`);
             return response.data;
         } catch (error) {
             this.handleError("addfriend", error, errorCallback);
@@ -148,7 +148,7 @@ export default class summaryClient extends BaseClass {
     // removeFriend
     async removeFriend(userId, friendId, errorCallback=console.error) {
         try {
-            const response = await this.client.put(`/user/${userId}/friends/remove/${friendId}`);
+            const response = await this.client.put(`/game/wordle/user/${userId}/friends/remove/${friendId}`);
             return response.data;
         } catch (error) {
             this.handleError("removeFriend", error, errorCallback);
