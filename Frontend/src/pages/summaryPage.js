@@ -131,7 +131,7 @@ class SummaryPage extends BaseClass {
 //           summaryListType.innerText = dataStore.get("currentListFilter");
 
            resultArea.innerHTML = "";
-           if (summaryList == null) {
+           if (summaryList == null || summaryList.length == 0) {
                 resultArea.textContent = "There are no results to display";
                 return;
            }
@@ -218,14 +218,15 @@ class SummaryPage extends BaseClass {
 
        result.date = date;
 
-       if (result) {
+       if (result.length > 0) {
                   this.showMessage(`Got all game scores for ${date}!`);
                   this.dataStore.setState({"currentListFilter":"by Date", "listOfSummaries":result});
 //                  await this.renderSummaryList(result);
-              } else {
-//                  this.errorHandler("Error retrieving game scores!  Try again...");
-                  resultArea.innerHTML = "No summaries available";
               }
+//              else {
+////                  this.errorHandler("Error retrieving game scores!  Try again...");
+//                  resultArea.innerHTML = "No summaries available";
+//              }
 
        // for labeling the rendered list
 //       dataStore.set("currentListFilter", "by Date");
@@ -253,14 +254,15 @@ class SummaryPage extends BaseClass {
 //       this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
 //       dataStore.set("currentListFilter", "by Friends");
 
-       if (result) {
+       if (result.length > 0) {
             this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
             this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
 //                  await this.renderSummaryList(result);
-       } else {
-//                  this.errorHandler("Error retrieving game scores!  Try again...");
-            resultArea.innerHTML = "No summaries available";
        }
+//       else {
+////                  this.errorHandler("Error retrieving game scores!  Try again...");
+//            resultArea.innerHTML = "No summaries available";
+//       }
 
 // todo check if the results is JSON or not - jsonify if needed
 //       this.dataStore.set("friendSummaries-"+summaryDate, result);
@@ -282,14 +284,15 @@ class SummaryPage extends BaseClass {
          let userId = event.target.dataset.userid;
 
          let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
-        if (result) {
+        if (result.length > 0) {
                     this.showMessage(`Got all your game scores!`);
                     this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
         //                  await this.renderSummaryList(result);
-        } else {
-        //                  this.errorHandler("Error retrieving game scores!  Try again...");
-                    resultArea.innerHTML = "No summaries available";
         }
+//        else {
+//        //                  this.errorHandler("Error retrieving game scores!  Try again...");
+//                    resultArea.innerHTML = "No summaries available";
+//        }
 
    }
 
@@ -309,14 +312,15 @@ class SummaryPage extends BaseClass {
 //       this.dataStore.set("userSummaries", result);
        this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
 
-       if (result) {
+       if (result.length > 0) {
                    this.showMessage(`Got all your game scores!`);
                    this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
        //                  await this.renderSummaryList(result);
-       } else {
-       //                  this.errorHandler("Error retrieving game scores!  Try again...");
-                   resultArea.innerHTML = "No summaries available";
        }
+//       else {
+//       //                  this.errorHandler("Error retrieving game scores!  Try again...");
+//                   resultArea.innerHTML = "No summaries available";
+//       }
    }
 
 //    async onGet(event) {

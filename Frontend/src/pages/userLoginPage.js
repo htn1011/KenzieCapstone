@@ -53,6 +53,8 @@ class UserLoginPage extends BaseClass {
         let loginForm = document.getElementById("login-form");
         let signupForm = document.getElementById("user-sign-up");
         let userInfo = document.getElementById("user-information");
+        let existingUserId = document.getElementById("existing-userId");
+        let existingUsername = document.getElementById("existing-username");
         let editFriendForm = document.getElementById("edit-friends-form");
         let userFriendList = document.getElementById("existing-friendsList");
 
@@ -67,20 +69,22 @@ class UserLoginPage extends BaseClass {
 
         } else if (userPageDisplay == "userInfo") {
             let currentUser = this.dataStore.get("user");
+            existingUserId.textContent = `${currentUser.userId}`;
+            existingUsername.textContent = `${currentUser.username}`;
             loginForm.classList.remove("active");
             signupForm.classList.remove("active");
             userFriendList.innerHTML = "";
-            if (currentUser.friendList.length == 0) {
+            if (currentUser.friendsList.length == 0) {
                 userFriendList.textContent = "No friends yet :(";
             } else {
                 userFriendList.innerHTML += `<ul>`;
-                currentUser.friendList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
+                currentUser.friendsList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
                 });
                 userFriendList.innerHTML += `</ul>`;
             }
             userInfo.classList.add("active");
 
-            if (editFriendList == no) {
+            if (editFriendList == "no") {
                 editFriendForm.classList.remove("active");
             } else {
                 editFriendForm.classList.add("active");
