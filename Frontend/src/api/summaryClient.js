@@ -55,12 +55,12 @@ export default class summaryClient extends BaseClass {
     }
 
     // updateGameSummary
-    async updateGameSummary(existingSummaryDate, userId, game, updatedResults, errorCallback=console.error) {
+    async updateGameSummary(existingSummary, updatedResults, errorCallback=console.error) {
         try {
             const response = await this.client.put(`/game/wordle/editSummary`, {
-                "existingSummaryDate": existingSummaryDate,
-                "userId": userId,
-                "game": game,
+                "existingSummaryDate": existingSummary.date,
+                "userId": existingSummary.userId,
+                "game": existingSummary.game,
                 "updatedResults": updatedResults
             });
             return response.data;
