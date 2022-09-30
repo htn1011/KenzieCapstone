@@ -10,6 +10,7 @@ module.exports = {
   entry: {
     summaryPage: path.resolve(__dirname, 'src', 'pages', 'summaryPage.js'),
     userLoginPage: path.resolve(__dirname, 'src', 'pages', 'userLoginPage.js'),
+    editSummaryPage: path.resolve(__dirname, 'src', 'pages', 'editSummaryPage.js'),
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -47,6 +48,11 @@ module.exports = {
           filename: 'userLogin.html',
           inject: false
         }),
+    new HtmlWebpackPlugin({
+              template: './src/editSummary.html',
+              filename: 'editSummary.html',
+              inject: false
+            }),
     new CopyPlugin({
       patterns: [
         {
