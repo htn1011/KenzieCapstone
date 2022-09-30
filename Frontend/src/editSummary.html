@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="editSummaryPage.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="background">
+<header class="header" id="header">
+    <div class="page-title">
+        <h2>Edit Your Summary</h2>
+        <p><strong>Welcome </strong>: <span id="existing-username"></span>!</p>
+        <p>User ID: <span id="existing-userId"></span></p>
+        <!--            <p>Welcome! If you are an existing user, please log in below. If you'd like to sign up, please press "Sign Up"</p>-->
+        <!--        button to choose to sign up instead of login - it will change the display state-->
+        <!--            <button type="submit" id="user-logout">Logout</button>-->
+    </div>
+    <div>
+        <!--        add link back to the main/home page todo when finalised-->
+        <button onclick="document.location.href='summary.html'">Home</button>
+        <!--        https://stackoverflow.com/questions/16562577/how-can-i-make-a-button-redirect-my-page-to-another-page-->
+        <!--        <a href="summary.html">Home Page</a>-->
+    </div>
+</header>
+<div class="card">
+    <h2>Your <span id="game-name"></span> results for <span id="summary-date"></span></h2>
+    <p><strong>Results: </strong><span id="summary-results"></span></p>
+    <button type="submit" id="edit-summary-selection">Edit</button>
+    <button type="submit" id="delete-button-selection">Delete</button>
+    <form class="card-content state" id="edit-summary-form" accept-charset=utf-8>
+        <p class="form-field">
+            <label>Number of Wordle Guesses</label>
+            <!-- dropdown list of options -->
+            <select name="number-guesses" id="edit-summary-guesses">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="fail">Failed</option>
+            </select>
+        </p>
+        <!-- additional user comments attached to summary result -->
+        <p class="form-field">
+            <label>Result Comment</label>
+            <textarea name="description" placeholder="Describe your experience!" form="edit-summary-form" id="edit-summary-description"></textarea>
+        </p>
+
+        <button type="submit" id="update-form-button">Update!</button>
+
+    </form>
+</div>
+</body>
+</html>
