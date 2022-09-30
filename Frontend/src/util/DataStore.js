@@ -59,6 +59,18 @@ export default class DataStore extends BaseClass {
         this.listeners.forEach(listener => listener());
     }
 
+    remove(attribute) {
+        if (attribute !== undefined) {
+            this.state.removeItem(attribute);
+        }
+    }
+
+    setSilent(attribute, value) {
+        if (value !== undefined) {
+            this.state.setItem(attribute, JSON.stringify(value));
+        }
+    }
+
     /**
      * Add a listener. Whenever the state is changed in the DataStore all of the listeners will be executed.
      */
