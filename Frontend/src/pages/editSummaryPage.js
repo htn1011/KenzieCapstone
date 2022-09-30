@@ -97,6 +97,7 @@ class EditSummaryPage extends BaseClass {
         await this.client.deleteSummaryBySummaryId(this.summary.date, this.summary.userId, this.ErrorHandler);
         this.showMessage(`You have deleted your ${this.summary.game} summary for ${this.summary.date}`);
         this.dataStore.remove("updateSummary");
+        this.dataStore.remove("userSummary");
         document.location = "summary.html";
     }
 }

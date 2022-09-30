@@ -20,15 +20,13 @@ class SummaryPage extends BaseClass {
      */
     async mount() {
     // @TODO here are event listeners that will detect an action made from html button/field
-
-//        document.getElementById('get-by-id-form').addEventListener('submit', this.onGet);
-//        document.getElementById('create-form').addEventListener('submit', this.onCreate);
         document.getElementById('create-summary-form').addEventListener('submit', this.onCreateSummary);
         document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
         document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
         document.getElementById('filter-only-user').addEventListener('click', this.onGetSummariesByUser);
         document.getElementById('summary-logout').addEventListener('click', this.onLogout);
         document.getElementById('summary-login').addEventListener('click', this.onLogin);
+        document.getElementById('posted-edit-button').addEventListener('click', this.onRequestEdit);
 //        document.getElementById('go-to-user-page').addEventListener('click', this.onLogin);
         this.client = new summaryClient();
         // when initally loading this page, the default list today's and yesterdays summaries
@@ -48,6 +46,7 @@ class SummaryPage extends BaseClass {
 //        this.firstRender();
        // todo state to show if user is logged in or not
        this.user = this.dataStore.get("user");
+       console.log(this.user);
         if (this.user == null) {
             this.dataStore.set("loginStatus", "login needed");
         } else {
@@ -87,6 +86,9 @@ class SummaryPage extends BaseClass {
 //        let postSummaryMessage = document.getElementById("post-message");
         let postSummaryForm = document.getElementById("create-summary-form");
         let summaryPosted = document.getElementById("summary-posted");
+        let postedSummaryDate = document.getElementById("posted-summary-date");
+        let postedSummaryResults = document.getElementById("posted-summary-results");
+        let postedSummaryButton = document.getElementById("posted-edit-button");
         let today = this.dataStore.get("todaysDate");
 
         let loginStatus = this.dataStore.get("loginStatus");
@@ -104,7 +106,11 @@ class SummaryPage extends BaseClass {
             if (usersSummary && usersSummary.date == today) {
                 postSummaryForm.classList.remove("active");
                 summaryPosted.classList.add("active");
-                this.renderSummary(usersSummary, summaryPosted);
+                postedSummaryDate.textContent = usersSummary.date;
+                postedSummaryResults.textContent = usersSummary.results;
+                postedSummaryButton.dataset.date = usersSummary.date;
+//                data-date="${summary.date}"
+//                this.renderSummary(usersSummary, summaryPosted);
 //                summaryPosted.innerHTML += `<p>Your score for ${usersSummary.date} is: ${usersSummary.results}</p>`;
             } else {
                 postSummaryForm.classList.add("active");
@@ -172,14 +178,15 @@ class SummaryPage extends BaseClass {
                 // @TODO consider retrieving user name instead of userId?
                li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
                li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
-               if (summary.userId == user.userId) {
+               if (user && summary.userId == user.userId) {
                 li.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
                 li.innerHTML += `</div>`;
-                // li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
+                li.querySelector("button").addEventListener('click', this.onRequestEdit);
+
                } else {
                 li.innerHTML += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
                 li.innerHTML += `</div>`;
-                li.querySelector("button").addEventListener('click', this.onRequestEdit);
+                li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
 
                }
 
@@ -314,11 +321,11 @@ class SummaryPage extends BaseClass {
 
        result.date = date;
 
-       if (result.length > 0) {
+//       if (result.length > 0) {
                   this.showMessage(`Got all game scores for ${date}!`);
                   this.dataStore.setState({"currentListFilter":"by Date", "listOfSummaries":result});
 //                  await this.renderSummaryList(result);
-              }
+//              }
 //              else {
 ////                  this.errorHandler("Error retrieving game scores!  Try again...");
 //                  resultArea.innerHTML = "No summaries available";
@@ -335,14 +342,14 @@ class SummaryPage extends BaseClass {
        event.preventDefault();
 
        // todo add in functionality to get and include own summary in this list
-       let includeMe = document.getElementById("filter-only-friends-me").value;
+//       let includeMe = document.getElementById("filter-only-friends-me").value;
        let year = document.getElementById("filter-friend-summary-year").value;
        let month = document.getElementById("get-friend-summary-month").value;
        let day = document.getElementById("get-friend-summary-day").value;
        let summaryDate = year + "-" + month + "-" + day;
 
 //       let userId = document.getElementById("userId");
-       let userId = dataStore.get("userId");
+       let userId = this.dataStore.get("userId");
 
        let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, this.errorHandler);
 
@@ -350,11 +357,11 @@ class SummaryPage extends BaseClass {
 //       this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
 //       dataStore.set("currentListFilter", "by Friends");
 
-       if (result.length > 0) {
+//       if (result.length > 0) {
             this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
             this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
 //                  await this.renderSummaryList(result);
-       }
+//       }
 //       else {
 ////                  this.errorHandler("Error retrieving game scores!  Try again...");
 //            resultArea.innerHTML = "No summaries available";
@@ -380,11 +387,11 @@ class SummaryPage extends BaseClass {
          let userId = event.target.dataset.userid;
 
          let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
-        if (result.length > 0) {
+//        if (result.length > 0) {
                     this.showMessage(`Got all your game scores!`);
                     this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
         //                  await this.renderSummaryList(result);
-        }
+//        }
 //        else {
 //        //                  this.errorHandler("Error retrieving game scores!  Try again...");
 //                    resultArea.innerHTML = "No summaries available";
@@ -422,8 +429,11 @@ class SummaryPage extends BaseClass {
    async onLogout(event) {
            // Prevent the page from refreshing on form submit
            event.preventDefault();
+           this.dataStore.setSilent("user", "");
+           this.dataStore.remove("userId");
+           this.dataStore.remove("userSummary");
            document.location = "summary.html";
-           this.dataStore.clear();
+
    }
 
    async onLogin(event) {
@@ -432,38 +442,6 @@ class SummaryPage extends BaseClass {
               document.location = "userLogin.html";
       }
 
-//    async onGet(event) {
-//        // Prevent the page from refreshing on form submit
-//        event.preventDefault();
-//
-//        let id = document.getElementById("id-field").value;
-//        this.dataStore.set("example", null);
-//
-//        let result = await this.client.getExample(id, this.errorHandler);
-//        this.dataStore.set("example", result);
-//        if (result) {
-//            this.showMessage(`Got ${result.name}!`)
-//        } else {
-//            this.errorHandler("Error doing GET!  Try again...");
-//        }
-//    }
-
-//    async onCreate(event) {
-//        // Prevent the page from refreshing on form submit
-//        event.preventDefault();
-//        this.dataStore.set("example", null);
-//
-//        let name = document.getElementById("create-name-field").value;
-//
-//        const createdExample = await this.client.createExample(name, this.errorHandler);
-//        this.dataStore.set("example", createdExample);
-//
-//        if (createdExample) {
-//            this.showMessage(`Created ${createdExample.name}!`)
-//        } else {
-//            this.errorHandler("Error creating!  Try again...");
-//        }
-//    }
     summaryErrorHandler(message, error) {
         console.dir(error);
         if (error.response.status == 404) {

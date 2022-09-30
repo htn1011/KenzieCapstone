@@ -194,6 +194,7 @@ class UserLoginPage extends BaseClass {
     }
 
     async onLogout(event) {
+    // todo now that there are remove functions that don't rtrigger listeners
         // Prevent the page from refreshing on form submit
 //        event.preventDefault();
 //        document.location = "summary.html";
