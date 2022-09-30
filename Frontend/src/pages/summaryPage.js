@@ -196,7 +196,7 @@ class SummaryPage extends BaseClass {
            resultArea.classList.add("active");
     }
      async renderSummary(summary, container) {
-        container.innerHTML += `<p>Your score for ${summary.date} is: ${summary.results}</p>`;
+        container.innerHTML = `<p>Your score for ${summary.date} is: ${summary.results}</p>`;
         container.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
         container.querySelector("button").addEventListener('click', this.onRequestEdit);
      }
@@ -415,11 +415,11 @@ class SummaryPage extends BaseClass {
 //       this.dataStore.set("userSummaries", result);
        this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
 
-       if (result.length > 0) {
+//       if (result.length > 0) {
                    this.showMessage(`Got all your game scores!`);
                    this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
        //                  await this.renderSummaryList(result);
-       }
+//       }
 //       else {
 //       //                  this.errorHandler("Error retrieving game scores!  Try again...");
 //                   resultArea.innerHTML = "No summaries available";
