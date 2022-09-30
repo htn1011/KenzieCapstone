@@ -44,32 +44,40 @@
 <!-- user control sections, each div -->
 <!-- post new summary only available if logged in -->
 <div class="card state" id="post-new-Summary">
-  <h2>Post New Score</h2>
+  <h2><span id="post-message">Your Game summary for </span><span id="todays-date"></span></h2>
   <!-- post new summary -->
-  <form class="card-content" id="create-summary-form" accept-charset=utf-8>
-    <p class="form-field">
-      <label>Number of Wordle Guesses</label>
-      <!-- dropdown list of options -->
-      <select name="number-guesses" id="create-summary-guesses">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="fail">Failed</option>
-      </select>
-    </p>
-    <!-- additional user comments attached to summary result -->
-    <p class="form-field">
-      <label>Result Comment</label>
-      <textarea name="description" placeholder="Describe your experience!" form="create-summary-form" id="create-summary-description"></textarea>
-    </p>
+<!--  <div class="state" id>-->
+    <form class="card-content state" id="create-summary-form" accept-charset=utf-8>
+      <p class="form-field">
+        <label>Number of Wordle Guesses</label>
+        <!-- dropdown list of options -->
+        <select name="number-guesses" id="create-summary-guesses">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="fail">Failed</option>
+        </select>
+      </p>
+      <!-- additional user comments attached to summary result -->
+      <p class="form-field">
+        <label>Result Comment</label>
+        <textarea name="description" placeholder="Describe your experience!" form="create-summary-form" id="create-summary-description"></textarea>
+      </p>
 
-    <button type="submit" id="createSummaryButton">Post Score</button>
+      <button type="submit" id="createSummaryButton">Post Score</button>
 
-  </form>
+    </form>
+<!--  </div>-->
+  <div class="state" id="summary-posted">
+    <p>Thanks for posting your game summary for today! Check the score board below to see how you measure up!</p>
+
+  </div>
 </div>
+
+
 
 <div class="card">
   <h2>Manage Scoreboard</h2>

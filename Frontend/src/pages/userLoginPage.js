@@ -145,7 +145,7 @@ class UserLoginPage extends BaseClass {
 //        this.dataStore.set("userId", newUserId);
 //        console.log(newUser);
 
-        this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo", "userId":newUserId});
+        this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo", "userId":newUserId, "posted":"no"});
 
         // note:
         // go back to a particular URL / is the root page    like cd in gitbash

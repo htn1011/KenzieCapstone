@@ -31,20 +31,6 @@ class SummaryPage extends BaseClass {
         document.getElementById('summary-login').addEventListener('click', this.onLogin);
 //        document.getElementById('go-to-user-page').addEventListener('click', this.onLogin);
         this.client = new summaryClient();
-
-        // this will retrieve variables from local storage for use,
-//        this.firstRender();
-       // todo state to show if user is logged in or not
-       let user = this.dataStore.get("user");
-        if (user == null) {
-            this.dataStore.set("loginStatus", "login needed");
-        } else {
-            this.dataStore.set("loginStatus", "success");
-        }
-
-
-
-
         // when initally loading this page, the default list today's and yesterdays summaries
         // altering the whichList state can determine which list to render
         // options: todayAndYesterday, byDate, friends, onlyMine
@@ -56,6 +42,25 @@ class SummaryPage extends BaseClass {
         let day = today.toLocaleString("default", { day: "2-digit" });
         let formattedDate = year + "-" + month + "-" + day;
         this.dataStore.set("todaysDate", formattedDate);
+
+        // this will retrieve variables from local storage for use,
+//        this.firstRender();
+       // todo state to show if user is logged in or not
+       let user = this.dataStore.get("user");
+        if (user == null) {
+            this.dataStore.set("loginStatus", "login needed");
+        } else {
+            this.dataStore.set("loginStatus", "success");
+            let userSummary = await this.client.findGameSummaryFromUser(formattedDate, user.userId, this.summaryErrorHandler);
+            if (userSummary) {
+                this.dataStore.set("userSummary", userSummary);
+            }
+
+        }
+
+
+
+
 
         let initalList = await this.client.findAllSummariesForDate(formattedDate, this.summaryErrorHandler);
         this.dataStore.set("listOfSummaries", initalList);
@@ -77,6 +82,11 @@ class SummaryPage extends BaseClass {
         let postNewSummary = document.getElementById("post-new-Summary");
         let friendFiler = document.getElementById("friend-filer");
         let onlyMeFilter = document.getElementById("only-me-filter");
+        let todaysDateContainer = document.getElementById("todays-date");
+//        let postSummaryMessage = document.getElementById("post-message");
+        let postSummaryForm = document.getElementById("create-summary-form");
+        let summaryPosted = document.getElementById("summary-posted");
+        let today = this.dataStore.get("todaysDate");
 
         let loginStatus = this.dataStore.get("loginStatus");
         if (loginStatus == "login needed") {
@@ -87,6 +97,18 @@ class SummaryPage extends BaseClass {
             onlyMeFilter.classList.remove("active");
         } else if (loginStatus == "success") {
             let user = this.dataStore.get("user");
+
+            todaysDateContainer.textContent = today;
+            let usersSummary = this.dataStore.get("userSummary");
+            if (usersSummary && usersSummary.date == today) {
+                postSummaryForm.classList.remove("active");
+                summaryPosted.classList.add("active");
+                summaryPosted.innerHTML += `<p>Your score for ${usersSummary.date} is: ${usersSummary.results}</p>`;
+            } else {
+                postSummaryForm.classList.add("active");
+                summaryPosted.classList.remove("active");
+                summaryPosted.textContent = "";
+            }
             logInButton.classList.remove("active");
             userWelcome.classList.add("active");
             userIdWelcome.textContent = user.userId;
@@ -155,6 +177,9 @@ class SummaryPage extends BaseClass {
            resultArea.append(ul);
            resultArea.classList.add("active");
     }
+     async renderSummary(summary, container) {
+        container.innerHTML += `<p>Your score for ${summary.date} is: ${summary.result}</p>`;
+     }
 
 //    async firstRender() {
 //           let userId = dataStore.getItem("userId");
@@ -196,7 +221,7 @@ class SummaryPage extends BaseClass {
            this.showMessage(`Score posted for today's ${createdSummary.game}!`);
            let todaysDate = this.dataStore.get("todaysDate");
            let result = await this.client.findAllSummariesForDate(todaysDate, this.errorHandler);
-           this.dataStore.setState({"currentListFilter":"Today's Results", "listOfSummaries":result});
+           this.dataStore.setState({"currentListFilter":"Today's Results", "listOfSummaries":result, "userSummary":createdSummary});
 
        } else {
            this.errorHandler("Error posting!  Try again...");
