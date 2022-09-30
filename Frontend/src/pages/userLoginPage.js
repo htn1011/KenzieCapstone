@@ -9,7 +9,8 @@ class UserLoginPage extends BaseClass {
 
     constructor() {
         super();
-        this.bindClassMethods(['onUserLogin', 'onRequestSignUp', 'onUserSignUp', 'render', 'onRemoveFriend', 'onRequestEditFriends', 'onAddFriend'], this);
+        this.bindClassMethods(['onUserLogin', 'onRequestSignUp', 'onUserSignUp', 'render', 'onRemoveFriend',
+        'onRequestEditFriends', 'onAddFriend', 'userNotFoundErrorHandler'], this);
         this.dataStore = new DataStore();
 
     }
@@ -115,9 +116,11 @@ class UserLoginPage extends BaseClass {
         // todo is this causing the problem?
 
         // use that userId to make a call to get the user
-        const user = await this.client.findUser(userId, this.errorHandler);
+        const user = await this.client.findUser(userId, this.userNotFoundErrorHandler);
         // save the user to the datastore
-        this.dataStore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId, "loginStatus":"success"});
+        if (user) {
+            this.dataStore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId, "loginStatus":"success"});
+        }
     }
 
     async onRequestSignUp(event) {
@@ -198,6 +201,16 @@ class UserLoginPage extends BaseClass {
         document.location.href = "summary.html";
         this.dataStore.clear();
     }
+
+    userNotFoundErrorHandler(message, error) {
+//            console.dir(error);
+            if (error.response.status == 404) {
+                this.dataStore.set("userPageDisplay", "signup");
+                return;
+            } else {
+                this.errorHandler(message)
+            }
+        }
 
 
 }
