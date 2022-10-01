@@ -5,27 +5,38 @@
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <meta charset="UTF-8">
   <title>Title</title>
+
+  <!--  Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
 </head>
 
 <!--local HTML style rules applied to elements by id or class-->
 <!--can also be defined with advanced features in style.css-->
-<!--<style>-->
-<!--  h1.main {-->
-<!--    font-family: "Satisfy", cursive;-->
-<!--    padding-left: 10px;-->
-<!--    margin-top: 15px;-->
-<!--    margin-bottom: 15px;-->
-<!--    font-size: 50px;-->
-<!--    display: inline-block;-->
-<!--  }-->
-<!--</style>-->
+<style>
+  h1.main {
+    font-family: 'Nunito', sans-serif;
+    padding-left: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 50px;
+    display: inline-block;
+  }
+
+  h2 {
+    font-family: 'Nunito', sans-serif;
+  }
+
+
+</style>
 
 <!-- body of page -->
 <body class="background">
 <!-- title header -->
 <header class="header" id="header">
   <div class="site-title">
-    <h1 class="main" href="summary.html">Sharedle</h1>
+    <h1 class="main" href="summary.html"> <img src=sharedle_logo1.png id="logoMain" alt="S"/>haredle</h1>
   </div>
   <!-- user logged in state -->
   <div class="state" id="button-to-login">
@@ -82,7 +93,7 @@
 
 
 
-<div class="card">
+<div class="card" id="largeCard">
   <h2>Manage Scoreboard</h2>
   <!-- display all summaries by date -->
   <div class="card">

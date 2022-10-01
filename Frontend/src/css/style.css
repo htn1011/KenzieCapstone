@@ -1,12 +1,18 @@
 :root {
     /* css variables: https://developer.mozilla.org/en-US/docs/Web/CSS/var */
-    --primary-color: #131921;
+    --primary-color: #121213;
     --secondary-color: #fff;
+    --tertiary-color: #538d4e;
+    --highlight-color: #b59f3b;
+    --alternative-color: #3a3a3c;
     --error-color: rgba(194, 0, 0, 0.71);
 }
 
 .background {
-    background-color: #eaeded;
+    background-color: #3a3a3c;
+    background-image: url("backletters_desat1.jpg");
+    background-repeat: repeat;
+    background-size: 400px;
     margin: 0;
     counter-reset: section;
 }
@@ -35,16 +41,23 @@
     line-height: 40px;
 }
 
+#logoMain {
+    position: relative;
+    top: 7px;
+    width: 50px;
+    height: 50px;
+}
+
 .about {
     margin-left: 20px;
 }
 
 .button, button {
-    background: #aed9ff;
-    padding: 3px;
+    background: var(--tertiary-color);
+    padding: 5px;
     border-radius: 3px;
     text-decoration: none;
-    color: black;
+    color: white;
     border: 1px solid black;
     cursor: pointer;
 }
@@ -54,17 +67,32 @@
 }
 
 .card {
-    color: var(--primary-color);
+    border-radius: 15px;
     background-color: var(--secondary-color);
     margin: 20px;
     padding: 10px 20px;
 }
 
+#largeCard {
+    border: 3px solid #D8d8d8;
+    color: var(--primary-color);
+}
+
+#result {
+    border: 3px solid #D8d8d8;
+    color: var(--primary-color);
+}
+
+#post-new-Summary {
+    border: 3px solid #D8d8d8;
+    color: var(--primary-color);
+}
+
 .validated-field:invalid {
-    outline: 2px solid var(--error-color);
+    outline: 2px solid var(--highlight-color);
 }
 .validated-field:focus:invalid {
-    color: var(--error-color);
+    color: var(--highlight-color);
 }
 
 .card-content {
