@@ -1,7 +1,28 @@
 import BaseClass from "../util/baseClass";
 import DataStore from "../util/DataStore";
-import ExampleClient from "../api/exampleClient";
 import summaryClient from "../api/summaryClient";
+
+// display states
+const LOGIN_STATUS = "loginStatus";
+const FILTER_TYPE = "currentListFilter";
+// display state variations
+const TODAYS_DATE_FILTER = "Results from today:";
+const DATE_FILTER = "Results from the date you selected:";
+const FRIENDS_FILTER = "Results from only your friends:";
+const USER_FILTER = "Results your selected user:";
+const ONLY_MINE = "Only your results:"
+const LOGIN_NEEDED = "login needed";
+const LOGIN_SUCCESS = "success";
+// attribute names for datastore
+const GAME = "game";
+const USER = "user";
+const USER_ID = "userId";
+const TODAYS_DATE = "todaysDate";
+const USERS_SUMMARY = "userSummary";
+const LIST_OF_SUMMARIES = "listOfSummaries";
+const UPDATE_SUMMARY = "updateSummary"
+// const variables
+const GAME_NAME = "wordle";
 
 /**
  * Logic needed for the view summaries leaderboard page of the website.
@@ -11,7 +32,8 @@ class SummaryPage extends BaseClass {
     constructor() {
         super();
         this.bindClassMethods(['render','renderSummaryList', 'onCreateSummary', 'onGetAllSummariesByDate',
-        'onGetAllFriendSummaries', 'onGetSummariesByUser', 'onGetSummariesByOtherUser', 'onLogout', 'onLogin', 'onRequestEdit'], this);
+        'onGetAllFriendSummaries', 'onGetSummariesByUser', 'onGetSummariesByOtherUser', 'onLogout', 'onLogin',
+        'onRequestEdit'], this);
         this.dataStore = new DataStore();
     }
 
@@ -19,7 +41,7 @@ class SummaryPage extends BaseClass {
      * Once the page has loaded, set up the event handlers and fetch the summary list.
      */
     async mount() {
-    // @TODO here are event listeners that will detect an action made from html button/field
+        // Listeners
         document.getElementById('create-summary-form').addEventListener('submit', this.onCreateSummary);
         document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
         document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
@@ -27,53 +49,40 @@ class SummaryPage extends BaseClass {
         document.getElementById('summary-logout').addEventListener('click', this.onLogout);
         document.getElementById('summary-login').addEventListener('click', this.onLogin);
         document.getElementById('posted-edit-button').addEventListener('click', this.onRequestEdit);
-//        document.getElementById('go-to-user-page').addEventListener('click', this.onLogin);
+
         this.client = new summaryClient();
-        // when initally loading this page, the default list today's and yesterdays summaries
-        // altering the whichList state can determine which list to render
-        // options: todayAndYesterday, byDate, friends, onlyMine
-        this.dataStore.set("currentListFilter", "Today's Results");
-        this.dataStore.set("game", "wordle");
+        // default list filter and game type
+        this.dataStore.set(FILTER_TYPE, TODAYS_DATE_FILTER);
+        this.dataStore.set(GAME, GAME_NAME);
+        //get today's date
         // https://www.tutorialrepublic.com/faq/how-to-format-javascript-date-as-yyyy-mm-dd.php
         let today = new Date();
         let year = today.toLocaleString("default", { year: "numeric" });
         let month = today.toLocaleString("default", { month: "2-digit" });
         let day = today.toLocaleString("default", { day: "2-digit" });
         let formattedDate = year + "-" + month + "-" + day;
-        this.dataStore.set("todaysDate", formattedDate);
-
-        // this will retrieve variables from local storage for use,
-//        this.firstRender();
-       // todo state to show if user is logged in or not
-       this.user = this.dataStore.get("user");
-       console.log(this.user);
-        if (this.user == null) {
-            this.dataStore.set("loginStatus", "login needed");
+        this.dataStore.set(TODAYS_DATE, formattedDate);
+        // check if there is a user or not->log in state if not
+        this.user = this.dataStore.get(USER);
+        if (this.user == undefined) {
+            this.dataStore.set(LOGIN_STATUS, LOGIN_NEEDED);
         } else {
-            this.dataStore.set("loginStatus", "success");
+            this.dataStore.set(LOGIN_STATUS, LOGIN_SUCCESS);
+            // todo check if summary already exists for efficiency improvement
             let userSummary = await this.client.findGameSummaryFromUser(formattedDate, this.user.userId, this.summaryErrorHandler);
             if (userSummary) {
-                this.dataStore.set("userSummary", userSummary);
+                this.dataStore.set(USERS_SUMMARY, userSummary);
             }
-
         }
-
-
-
-
-
         let initalList = await this.client.findAllSummariesForDate(formattedDate, this.summaryErrorHandler);
-        this.dataStore.set("listOfSummaries", initalList);
-
+        this.dataStore.set(LIST_OF_SUMMARIES, initalList);
+        // add change listener
         this.dataStore.addChangeListener(this.render)
+        // initial render
         this.render();
     }
 
     // Render Methods --------------------------------------------------------------------------------------------------
-
-
-
-    // @TODO this will populate the resultArea element with a formatted summary entry/post/list
     async render() {
         let logInButton = document.getElementById("button-to-login");
         let userWelcome = document.getElementById("user-welcome");
@@ -83,375 +92,208 @@ class SummaryPage extends BaseClass {
         let friendFiler = document.getElementById("friend-filer");
         let onlyMeFilter = document.getElementById("only-me-filter");
         let todaysDateContainer = document.getElementById("todays-date");
-//        let postSummaryMessage = document.getElementById("post-message");
         let postSummaryForm = document.getElementById("create-summary-form");
         let summaryPosted = document.getElementById("summary-posted");
         let postedSummaryDate = document.getElementById("posted-summary-date");
         let postedSummaryResults = document.getElementById("posted-summary-results");
         let postedSummaryButton = document.getElementById("posted-edit-button");
-        let today = this.dataStore.get("todaysDate");
-
-        let loginStatus = this.dataStore.get("loginStatus");
-        if (loginStatus == "login needed") {
+        let today = this.dataStore.get(TODAYS_DATE);
+        // check display state and render according to state
+        let loginStatus = this.dataStore.get(LOGIN_STATUS);
+        if (loginStatus == LOGIN_NEEDED) {
+            // is login is required - only show that day's results and request login for further functionality
             logInButton.classList.add("active");
             userWelcome.classList.remove("active");
             postNewSummary.classList.remove("active");
             friendFiler.classList.remove("active");
             onlyMeFilter.classList.remove("active");
-        } else if (loginStatus == "success") {
-            let user = this.dataStore.get("user");
-
+        } else if (loginStatus == LOGIN_SUCCESS) {
+            // if there is a logged in user
+            this.user = this.dataStore.get(USER);
             todaysDateContainer.textContent = today;
-            let usersSummary = this.dataStore.get("userSummary");
+            let usersSummary = this.dataStore.get(USERS_SUMMARY);
             if (usersSummary && usersSummary.date == today) {
+                // if there is already a summary from today show that
                 postSummaryForm.classList.remove("active");
                 summaryPosted.classList.add("active");
                 postedSummaryDate.textContent = usersSummary.date;
                 postedSummaryResults.textContent = usersSummary.results;
                 postedSummaryButton.dataset.date = usersSummary.date;
-//                data-date="${summary.date}"
-//                this.renderSummary(usersSummary, summaryPosted);
-//                summaryPosted.innerHTML += `<p>Your score for ${usersSummary.date} is: ${usersSummary.results}</p>`;
             } else {
+                // allow user to post a new summary
                 postSummaryForm.classList.add("active");
                 summaryPosted.classList.remove("active");
-                summaryPosted.textContent = "";
             }
+            // remove the change the buttons and show the filters
             logInButton.classList.remove("active");
             userWelcome.classList.add("active");
-            userIdWelcome.textContent = user.userId;
-            usernameWelcome.textContent = user.userName;
+            userIdWelcome.textContent = this.user.userId;
+            usernameWelcome.textContent = this.user.userName;
             postNewSummary.classList.add("active");
             friendFiler.classList.add("active");
             onlyMeFilter.classList.add("active");
         }
-
-
-        let listFilter = this.dataStore.get("currentListFilter");
-        let summaryList = this.dataStore.get("listOfSummaries");
-
+        // get the filter type and the list of summaries
+        let listFilter = this.dataStore.get(FILTER_TYPE);
+        let summaryList = this.dataStore.get(LIST_OF_SUMMARIES);
         let summaryListType = document.getElementById("summary-list-filter-type");
         summaryListType.innerText = listFilter;
+        // render the summaries
         this.renderSummaryList(summaryList);
-
-// Use new Date() to generate a new Date object containing the current date and time.
-// This will give you today's date in the format of mm/dd/yyyy.
-// Simply change today = mm +'/'+ dd +'/'+ yyyy; to whatever format you wish
-// example:
-// var today = new Date();
-// var dd = String(today.getDate()).padStart(2, '0');
-// var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-// var yyyy = today.getFullYear();
-// today = mm + '/' + dd + '/' + yyyy;
-// document.write(today);
-
-//        if (listFilter == "Today's and Yesterday's Results") {
-//            summaryListType.innerText = "";
-//        } else if (listFilter == "by User") {
-//            summaryListType.innerText = "";
-//        } else if (listFilter == "by Date") {
-//            summaryListType.innerText = "";
-//        } else if (listFilter == "by Friends") {
-//            summaryListType.innerText = "";
-//        }
-
     }
 
     async renderSummaryList(summaryList) {
-           let resultArea = document.getElementById("summary-list-container");
-           let user = this.dataStore.get("user");
-           // print label of current rendered list
-//           let summaryListType = document.getElementById("summary-list-filter-type");
-//           summaryListType.innerText = dataStore.get("currentListFilter");
-
-           resultArea.innerHTML = "";
-           if (summaryList == null || summaryList.length == 0) {
-                resultArea.textContent = "There are no results to display";
-                return;
-           }
-
-           const ul = document.createElement("ul");
-
-           summaryList.forEach(summary => {
-               const li = document.createElement("li");
-               li.innerHTML += `<div class="card">`;
-                // @TODO consider retrieving user name instead of userId?
-               li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
-               li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
-               if (user && summary.userId == user.userId) {
-                li.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
-                li.innerHTML += `</div>`;
-                li.querySelector("button").addEventListener('click', this.onRequestEdit);
-
-               } else {
-                li.innerHTML += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
-                li.innerHTML += `</div>`;
-                li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
-
-               }
-
-               ul.append(li);
-           });
-           resultArea.append(ul);
-           resultArea.classList.add("active");
+         let resultArea = document.getElementById("summary-list-container");
+         resultArea.innerHTML = "";
+         // if there are no summaries
+         if (summaryList == null || summaryList.length == 0) {
+              resultArea.textContent = "There are no results to display";
+              return;
+         }
+         // render the summaries into a list
+         const ul = document.createElement("ul");
+         summaryList.forEach(summary => {
+             const li = document.createElement("li");
+             li.innerHTML += `<div class="card">`;
+             li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
+             li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
+             if (this.user && summary.userId == this.user.userId) {
+                 li.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
+                 li.innerHTML += `</div>`;
+                 li.querySelector("button").addEventListener('click', this.onRequestEdit);
+             } else {
+                 li.innerHTML += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
+                 li.innerHTML += `</div>`;                  li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
+             }
+             ul.append(li);
+         });
+         resultArea.append(ul);
+         resultArea.classList.add("active");
     }
      async renderSummary(summary, container) {
-        container.innerHTML = `<p>Your score for ${summary.date} is: ${summary.results}</p>`;
-        container.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
-        container.querySelector("button").addEventListener('click', this.onRequestEdit);
+         container.innerHTML = `<p>Your score for ${summary.date} is: ${summary.results}</p>`;
+         container.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
+         container.querySelector("button").addEventListener('click', this.onRequestEdit);
      }
-
-//    async firstRender() {
-//           let userId = dataStore.getItem("userId");
-//
-//           const review = await this.client.findReview(restaurantId, userId, this.errorHandler());
-//
-//           await this.renderReview(review);
-//    }
 
     // Event Handlers --------------------------------------------------------------------------------------------------
     async onRequestEdit(event) {
-        event.preventDefault();
-        let date = event.target.dataset.date;
-        let summary = await this.client.findGameSummaryFromUser(date, this.user.userId, this.summaryErrorHandler);
-        this.dataStore.setSilent("updateSummary", summary);
-        document.location = "editSummary.html";
-        // update state to edit state
-
+         event.preventDefault();
+         // get the date from the request
+         let date = event.target.dataset.date;
+         // get the existing summary that needs to be updated
+         let summary = await this.client.findGameSummaryFromUser(date, this.user.userId, this.summaryErrorHandler);
+         // save that summary to be updated
+         this.dataStore.setSilent(UPDATE_SUMMARY, summary);
+         // go to the edit page
+         document.location = "editSummary.html";
     }
 
-
-
-    // async onEditSummary(event) {
-    //     event.preventDefault();
-    //      let summary = event.target.dataset.userSummary;
-
-    //      let editSummary = document.getElementById('edit-Summary');
-    //      let editSummaryDate = document.getElementById('edit-summary-date');
-
-    //      editSummaryDate.textContent = summary.date;
-
-    //      editSummary.classList.add("active");
-
-
-
-
-    //      let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
-    //     if (result.length > 0) {
-    //                 this.showMessage(`Got all your game scores!`);
-    //                 this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
-    //     //                  await this.renderSummaryList(result);
-    //     }
-
-       // retrieve results from user input in field
-
-
-//        // input this info into summaryClient method
-//        const createdSummary = await this.client.postNewSummary(game, userId, sessionNumber, results, this.errorHandler);
-
-//        // this.dataStore.set("example", createdSummary.username);
-
-//        if (createdSummary) {
-//            this.showMessage(`Score posted for today's ${createdSummary.game}!`);
-//            let todaysDate = this.dataStore.get("todaysDate");
-//            let result = await this.client.findAllSummariesForDate(todaysDate, this.errorHandler);
-//            this.dataStore.setState({"currentListFilter":"Today's Results", "listOfSummaries":result, "userSummary":createdSummary});
-
-//        } else {
-//            this.errorHandler("Error posting!  Try again...");
-//        }
-//    }
-
-
-
-
-    /* @TODO when event listeners detect an action input, these handlers will translate information
-            from user input and call summaryClient to process this information */
-
-   async onCreateSummary(event) {
-       // Prevent the page from refreshing on form submit
-       event.preventDefault();
-
-       let createSummaryButton = document.getElementById('createSummaryButton');
-       createSummaryButton.innerText = 'posting...';
-       createSummaryButton.disabled = true;
-
-//       this.dataStore.set("example", null);
-
-       // retrieve stored info from DataStore
-       let game = this.dataStore.get("game");
-       let userId = this.dataStore.get("userId");
-       // for now/while the game is wordle session ID == date
-       let sessionNumber = this.dataStore.get("todaysDate");
-       // retrieve results from user input in field
-       let results = document.getElementById("create-summary-guesses").value + " "
-        + document.getElementById("create-summary-description").value;
-
-       // input this info into summaryClient method
-       const createdSummary = await this.client.postNewSummary(game, userId, sessionNumber, results, this.errorHandler);
-
-       // this.dataStore.set("example", createdSummary.username);
-
-       if (createdSummary) {
-           this.showMessage(`Score posted for today's ${createdSummary.game}!`);
-           let todaysDate = this.dataStore.get("todaysDate");
-           let result = await this.client.findAllSummariesForDate(todaysDate, this.errorHandler);
-           this.dataStore.setState({"currentListFilter":"Today's Results", "listOfSummaries":result, "userSummary":createdSummary});
-
-       } else {
-           this.errorHandler("Error posting!  Try again...");
-       }
-   }
-
+    async onCreateSummary(event) {
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         let createSummaryButton = document.getElementById('createSummaryButton');
+         createSummaryButton.innerText = 'posting...';
+         createSummaryButton.disabled = true;
+         let game = this.dataStore.get(GAME);
+         // for now/while the game is wordle session ID == date
+         let sessionNumber = this.dataStore.get(TODAYS_DATE);
+         // retrieve results from user input in field
+         let results = document.getElementById("create-summary-guesses").value + " "
+         + document.getElementById("create-summary-description").value;
+         const createdSummary = await this.client.postNewSummary(game, this.user.userId, sessionNumber, results, this.errorHandler);
+         if (createdSummary) {
+             this.showMessage(`Score posted for today's ${createdSummary.game}!`);
+             let todaysDate = this.dataStore.get(TODAYS_DATE);
+             let result = await this.client.findAllSummariesForDate(todaysDate, this.errorHandler);
+             this.dataStore.setState({
+                [FILTER_TYPE]:TODAYS_DATE_FILTER,
+                [LIST_OF_SUMMARIES]:result,
+                [USERS_SUMMARY]:createdSummary});
+         } else {
+             this.errorHandler("Error posting!  Try again...");
+         }
+    }
 
    async onGetAllSummariesByDate(event) {
-       // Prevent the page from refreshing on form submit
-       event.preventDefault();
-
-       // @TODO find use cases for DataStore storage
-       // this.dataStore.set("summariesByDate", date);
-
-       let year = document.getElementById("filter-summary-year").value;
-       let month = document.getElementById("get-summary-month").value;
-       let day = document.getElementById("get-summary-day").value;
-
-       let date = year + "-" + month + "-" + day;
-
-       let result = await this.client.findAllSummariesForDate(date, this.errorHandler);
-
-       result.date = date;
-
-//       if (result.length > 0) {
-                  this.showMessage(`Got all game scores for ${date}!`);
-                  this.dataStore.setState({"currentListFilter":"by Date", "listOfSummaries":result});
-//                  await this.renderSummaryList(result);
-//              }
-//              else {
-////                  this.errorHandler("Error retrieving game scores!  Try again...");
-//                  resultArea.innerHTML = "No summaries available";
-//              }
-
-       // for labeling the rendered list
-//       dataStore.set("currentListFilter", "by Date");
-
-
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         // get the date to filter by and format properly
+         let year = document.getElementById("filter-summary-year").value;
+         let month = document.getElementById("get-summary-month").value;
+         let day = document.getElementById("get-summary-day").value;
+         let date = year + "-" + month + "-" + day;
+         let result = await this.client.findAllSummariesForDate(date, this.errorHandler);
+         this.showMessage(`Got all game scores for ${date}!`);
+         // update state and values
+         this.dataStore.setState({
+            [FILTER_TYPE]:DATE_FILTER,
+            [LIST_OF_SUMMARIES]:result});
    }
 
    async onGetAllFriendSummaries(event) {
-       // Prevent the page from refreshing on form submit
-       event.preventDefault();
-
-       // todo add in functionality to get and include own summary in this list
-//       let includeMe = document.getElementById("filter-only-friends-me").value;
-       let year = document.getElementById("filter-friend-summary-year").value;
-       let month = document.getElementById("get-friend-summary-month").value;
-       let day = document.getElementById("get-friend-summary-day").value;
-       let summaryDate = year + "-" + month + "-" + day;
-
-//       let userId = document.getElementById("userId");
-       let userId = this.dataStore.get("userId");
-
-       let result = await this.client.findAllSummariesForUserFriends(summaryDate, userId, this.errorHandler);
-
-       // for labeling the rendered list
-//       this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
-//       dataStore.set("currentListFilter", "by Friends");
-
-//       if (result.length > 0) {
-            this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
-            this.dataStore.setState({"currentListFilter":"by Friends", "listOfSummaries":result});
-//                  await this.renderSummaryList(result);
-//       }
-//       else {
-////                  this.errorHandler("Error retrieving game scores!  Try again...");
-//            resultArea.innerHTML = "No summaries available";
-//       }
-
-// todo check if the results is JSON or not - jsonify if needed
-//       this.dataStore.set("friendSummaries-"+summaryDate, result);
-       /*result.date = summaryDate;
-
-       if (result) {
-            this.showMessage(`Here are your friends game scores for ${result.date}!`)
-            await this.renderSummary(result);
-       } else {
-            this.errorHandler("Error retrieving your friends' game scores! Try again...")
-            resultArea.innerHTML = "No summaries available";
-       }*/
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         // get the date to filter by and format properly
+         let year = document.getElementById("filter-friend-summary-year").value;
+         let month = document.getElementById("get-friend-summary-month").value;
+         let day = document.getElementById("get-friend-summary-day").value;
+         let summaryDate = year + "-" + month + "-" + day;
+         let result = await this.client.findAllSummariesForUserFriends(summaryDate, this.user.userId, this.errorHandler);
+         this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
+         // update state and values
+         this.dataStore.setState({
+            [FILTER_TYPE]:FRIENDS_FILTER,
+            [LIST_OF_SUMMARIES]:result});
    }
 
    async onGetSummariesByOtherUser(event) {
          event.preventDefault();
          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
-        //  console.log(event.target.dataset);
          let userId = event.target.dataset.userid;
 
          let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
-//        if (result.length > 0) {
-                    this.showMessage(`Got all your game scores!`);
-                    this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
-        //                  await this.renderSummaryList(result);
-//        }
-//        else {
-//        //                  this.errorHandler("Error retrieving game scores!  Try again...");
-//                    resultArea.innerHTML = "No summaries available";
-//        }
-
+         this.showMessage(`Got all your game scores!`);
+         // update state and values
+         this.dataStore.setState({
+            [FILTER_TYPE]:USER_FILTER,
+            [LIST_OF_SUMMARIES]:result});
    }
 
    async onGetSummariesByUser(event) {
-       // Prevent the page from refreshing on form submit
-       event.preventDefault();
-
-       let userId = this.dataStore.get("userId");
-
-       let result = await this.client.findAllSummariesForUser(userId, this.errorHandler);
-
-       // for labeling the rendered list
-//       dataStore.set("currentListFilter", "by User");
-
-       // todo check if the results is JSON or not - jsonify if needed
-
-//       this.dataStore.set("userSummaries", result);
-       this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
-
-//       if (result.length > 0) {
-                   this.showMessage(`Got all your game scores!`);
-                   this.dataStore.setState({"currentListFilter":"by User", "listOfSummaries":result});
-       //                  await this.renderSummaryList(result);
-//       }
-//       else {
-//       //                  this.errorHandler("Error retrieving game scores!  Try again...");
-//                   resultArea.innerHTML = "No summaries available";
-//       }
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         let result = await this.client.findAllSummariesForUser(this.user.userId, this.errorHandler);
+         this.showMessage(`Got all your game scores!`);
+         // update state and values
+         this.dataStore.setState({
+            [FILTER_TYPE]:ONLY_MINE,
+            [LIST_OF_SUMMARIES]:result});
    }
 
    async onLogout(event) {
-           // Prevent the page from refreshing on form submit
-           event.preventDefault();
-           this.dataStore.setSilent("user", "");
-           this.dataStore.remove("userId");
-           this.dataStore.remove("userSummary");
-           document.location = "summary.html";
-
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         this.dataStore.remove(USER);
+         this.dataStore.remove(USER_ID);
+         this.dataStore.remove(USERS_SUMMARY);
+         document.location = "summary.html";
    }
 
    async onLogin(event) {
-              // Prevent the page from refreshing on form submit
-              event.preventDefault();
-              document.location = "userLogin.html";
-      }
+         // Prevent the page from refreshing on form submit
+         event.preventDefault();
+         document.location = "userLogin.html";
+   }
 
     summaryErrorHandler(message, error) {
-        console.dir(error);
-        if (error.response.status == 404) {
-            return;
-        } else {
-            this.errorHandler(message)
-        }
+         console.dir(error);
+         if (error.response.status == 404) {
+             return;
+         } else {
+             this.errorHandler(message)
+         }
     }
-
-
 }
 
 /**

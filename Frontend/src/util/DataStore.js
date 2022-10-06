@@ -41,8 +41,8 @@ export default class DataStore extends BaseClass {
         Object.entries(newState)
             .filter(([attribute, value]) => value !== undefined)
             .forEach(([attribute, value]) => {
-            this.state.setItem(attribute, JSON.stringify(value));
-        })
+                this.state.setItem(attribute, JSON.stringify(value));
+            });
         this.listeners.forEach(listener => listener());
     }
 

@@ -2,6 +2,20 @@ import BaseClass from "../util/baseClass";
 import DataStore from "../util/DataStore";
 import SummaryClient from "../api/summaryClient";
 
+// display states
+const DISPLAY_STATE = "userPageDisplay";
+const EDIT_STATE = "editFriendList";
+const LOGIN_STATUS = "loginStatus";
+// display state variations
+const EDIT_YES = "yes";
+const EDIT_NO = "no";
+const LOGIN = "login";
+const SIGN_UP = "signUp";
+const USER_INFO = "userInfo";
+const LOGIN_SUCCESS = "success";
+// const variables
+const USER = "user";
+
 /**
  * Logic needed for the user to log in or sign up.
  */
@@ -12,34 +26,27 @@ class UserLoginPage extends BaseClass {
         this.bindClassMethods(['onUserLogin', 'onRequestSignUp', 'onUserSignUp', 'render', 'onRemoveFriend',
         'onRequestEditFriends', 'onAddFriend', 'userNotFoundErrorHandler'], this);
         this.dataStore = new DataStore();
-
     }
 
     /**
      * Once the page has loaded, set up the event handlers
      */
     async mount() {
-        // event for the login form being submitted
+        // listeners
         document.getElementById('login-form').addEventListener('submit', this.onUserLogin);
-        // event for request to sign up
         document.getElementById('sign-up-request').addEventListener('click', this.onRequestSignUp);
-        // event listener for the sign up form
         document.getElementById('sign-up-form').addEventListener('submit', this.onUserSignUp);
         document.getElementById('edit-friends').addEventListener('click', this.onRequestEditFriends);
         document.getElementById('add-friend').addEventListener('click', this.onAddFriend);
         document.getElementById('remove-friend').addEventListener('click', this.onRemoveFriend);
-//        document.getElementById('user-logout').addEventListener('submit', this.onLogout);
-        // note:
-        // this line gets the restaurant ID from the URL so it isn't up to the user to type that in
-        // this.restaurantId = new URLSearchParams(document.location.search).get("restaurant");
         this.client = new SummaryClient();
         // if the user has already logged in - show user info otherwise login page
-        let user = this.dataStore.get("user");
-        this.dataStore.set("editFriendList", "no");
-        if (user == null) {
-            this.dataStore.set("userPageDisplay", "login");
+        this.user = this.dataStore.get(USER);
+        this.dataStore.set(EDIT_STATE, EDIT_NO );
+        if (this.user == undefined) {
+            this.dataStore.set(DISPLAY_STATE, LOGIN);
         } else {
-            this.dataStore.set("userPageDisplay", "userInfo");
+            this.dataStore.set(DISPLAY_STATE, USER_INFO);
         }
         // re-render whenever change made to datastore
         this.dataStore.addChangeListener(this.render);
@@ -49,9 +56,9 @@ class UserLoginPage extends BaseClass {
 
     async render() {
         // userPageDisplay signifies the state of the page -> login/signup/userInfo
-        let userPageDisplay = this.dataStore.get("userPageDisplay");
+        let userPageDisplay = this.dataStore.get(DISPLAY_STATE);
         // editFriendList signifies the state of whether to edit the friend list or not
-        let editFriendList = this.dataStore.get("editFriendList");
+        let editFriendList = this.dataStore.get(EDIT_STATE);
         let loginForm = document.getElementById("login-form");
         let signupForm = document.getElementById("user-sign-up");
         let userInfo = document.getElementById("user-information");
@@ -62,39 +69,39 @@ class UserLoginPage extends BaseClass {
         let noUserTitle = document.getElementById("no-user-title");
         let userTitle = document.getElementById("user-title");
 
-        if (userPageDisplay == "login") {
+        if (userPageDisplay == LOGIN) {
             loginForm.classList.add("active");
             signupForm.classList.remove("active");
             userInfo.classList.remove("active");
             noUserTitle.classList.add("active");
             userTitle.classList.remove("active");
-        } else if (userPageDisplay == "signup") {
+        } else if (userPageDisplay == SIGN_UP) {
             loginForm.classList.remove("active");
             signupForm.classList.add("active");
             userInfo.classList.remove("active");
             noUserTitle.classList.add("active");
             userTitle.classList.remove("active");
 
-        } else if (userPageDisplay == "userInfo") {
-            let currentUser = this.dataStore.get("user");
-            existingUserId.textContent = `${currentUser.userId}`;
-            existingUsername.textContent = `${currentUser.userName}`;
+        } else if (userPageDisplay == USER_INFO) {
+            this.user = this.dataStore.get(USER);
+            existingUserId.textContent = `${this.user.userId}`;
+            existingUsername.textContent = `${this.user.userName}`;
             loginForm.classList.remove("active");
             signupForm.classList.remove("active");
             noUserTitle.classList.remove("active");
             userTitle.classList.add("active");
             userFriendList.innerHTML = "";
-            if (currentUser.friendsList.length == 0) {
+            if (this.user.friendsList.length == 0) {
                 userFriendList.textContent = "No friends yet :(";
             } else {
                 userFriendList.innerHTML += `<ul>`;
-                currentUser.friendsList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
+                this.user.friendsList.forEach(friendId => {userFriendList.innerHTML += `<li>${friendId}</li>`
                 });
                 userFriendList.innerHTML += `</ul>`;
             }
             userInfo.classList.add("active");
 
-            if (editFriendList == "no") {
+            if (editFriendList == EDIT_NO) {
                 editFriendForm.classList.remove("active");
             } else {
                 editFriendForm.classList.add("active");
@@ -110,46 +117,37 @@ class UserLoginPage extends BaseClass {
         event.preventDefault();
         // get the userId from the input
         let userId = document.getElementById("userId-existing-input").value;
-
-        // store userId in local storage for use in summaryPage.js
-//        this.dataStore.set("userId", userId);
-        // todo is this causing the problem?
-
-        // use that userId to make a call to get the user
-        const user = await this.client.findUser(userId, this.userNotFoundErrorHandler);
+        const userFound = await this.client.findUser(userId, this.userNotFoundErrorHandler);
         // save the user to the datastore
-        if (user) {
-            this.dataStore.setState({"user":user, "userPageDisplay":"userInfo", "userId":userId, "loginStatus":"success"});
+        if (userFound) {
+            this.dataStore.setState({
+                [USER]:userFound,
+                [DISPLAY_STATE]:USER_INFO,
+                [LOGIN_STATUS]:LOGIN_SUCCESS});
+        } else {
+            this.dataStore.set(DISPLAY_STATE, SIGN_UP);
         }
     }
 
     async onRequestSignUp(event) {
         // Prevent the page from refreshing on form submit
         event.preventDefault();
-
-        this.dataStore.set("userPageDisplay", "signup");
+        this.dataStore.set(DISPLAY_STATE, SIGN_UP);
     }
 
     async onUserSignUp(event) {
         // Prevent the page from refreshing on form submit
         event.preventDefault();
-
         let newUserId = document.getElementById("userId-new-input").value;
         let newUsername = document.getElementById("username-new-input").value;
-
         const newUser = await this.client.addNewUser(
             newUserId,
             newUsername,
             this.errorHandler);
-
-//        this.dataStore.set("userId", newUserId);
-//        console.log(newUser);
-
-        this.dataStore.setState({"user":newUser, "userPageDisplay":"userInfo", "userId":newUserId, "posted":"no"});
-
-        // note:
-        // go back to a particular URL / is the root page    like cd in gitbash
-        // document.location = "/";
+        this.dataStore.setState({
+            [USER]:newUser,
+            [DISPLAY_STATE]:USER_INFO,
+            });
     }
 
    async onRequestEditFriends(event) {
@@ -157,63 +155,51 @@ class UserLoginPage extends BaseClass {
         event.preventDefault();
         let editFriendForm = document.getElementById("edit-friends-form");
         editFriendForm.reset();
-
-        this.dataStore.set("editFriendList", "yes");
+        this.dataStore.set(EDIT_STATE, EDIT_YES);
     }
 
    async onAddFriend(event) {
         // Prevent the page from refreshing on form submit
         event.preventDefault();
-
-        let userId = this.dataStore.get("user").userId;
         let friendId = document.getElementById("friends-user-id").value;
-        console.log(friendId)
-
         const updatedUser = await this.client.addFriend(
-            userId,
+            this.user.userId,
             friendId,
             this.errorHandler);
-        console.log(updatedUser);
-
-        this.dataStore.setState({"user":updatedUser, "editFriendList":"no"});
+        this.dataStore.setState({
+            [USER]:updatedUser,
+            [EDIT_STATE]:EDIT_NO});
     }
 
     async onRemoveFriend(event) {
         // Prevent the page from refreshing on form submit
         event.preventDefault();
-
-        let userId = this.dataStore.get("user").userId;
         let friendId = document.getElementById("friends-user-id").value;
-
         const updatedUser = await this.client.removeFriend(
-            userId,
+            this.user.userId,
             friendId,
             this.errorHandler);
-
-        this.dataStore.setState({"user":updatedUser, "editFriendList":"no"});
+        this.dataStore.setState({
+            [USER]:updatedUser,
+            [EDIT_STATE]:EDIT_NO});
     }
 
-    async onLogout(event) {
-    // todo now that there are remove functions that don't rtrigger listeners
-        // Prevent the page from refreshing on form submit
+//    async onLogout(event) {
 //        event.preventDefault();
-//        document.location = "summary.html";
-//        this.dataStore.removeState({"user", "userId"});
-        document.location.href = "summary.html";
-        this.dataStore.clear();
-    }
+//        this.dataStore.remove(USER);
+//        this.dataStore.remove(USER_ID);
+//        this.dataStore.remove(USERS_SUMMARY);
+//        document.location = "userLogin.html";
+//   }
 
     userNotFoundErrorHandler(message, error) {
-//            console.dir(error);
-            if (error.response.status == 404) {
-                this.dataStore.set("userPageDisplay", "signup");
-                return;
-            } else {
-                this.errorHandler(message)
-            }
+        if (error.response.status == 404) {
+            this.dataStore.set("userPageDisplay", "signup");
+            return;
+        } else {
+            this.errorHandler(message)
         }
-
-
+    }
 }
 
 /**
