@@ -9,6 +9,7 @@ import com.kenzie.appserver.controller.model.UpdateSummaryRequest;
 import com.kenzie.appserver.controller.model.UserCreateRequest;
 import com.kenzie.appserver.controller.model.UserResponse;
 import com.kenzie.appserver.repositories.GameRepository;
+import com.kenzie.appserver.repositories.model.GameSummaryId;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 import com.kenzie.capstone.service.client.ApiGatewayException;
 import com.kenzie.capstone.service.client.UserServiceClient;
@@ -49,11 +50,14 @@ public class GameSummaryServiceTest {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
+        String date = "date";
         String sessionNumber = "sessionNumber";
         String results = "results";
+        GameSummaryRecord record = new GameSummaryRecord(userId, game, date, results, sessionNumber);
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
+        when(gameRepository.save(any())).thenReturn(record);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
         ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor =
                 ArgumentCaptor.forClass(GameSummaryRecord.class);
@@ -107,7 +111,7 @@ public class GameSummaryServiceTest {
         userResponseLambda.setUserId(userId);
 
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.of(gameSummaryRecord));
+        when(gameRepository.findById(any(GameSummaryId.class))).thenReturn(Optional.of(gameSummaryRecord));
 
         //WHEN
         GameSummaryResponse gameSummaryResponse = gameSummaryService.getSummary(game, date, userId);
@@ -154,7 +158,7 @@ public class GameSummaryServiceTest {
         userResponseLambda.setFriendsList(friendsList);
 
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.empty());
+        when(gameRepository.findById(any())).thenReturn(Optional.empty());
 
         //THEN
         Assertions.assertThrows(
@@ -435,7 +439,7 @@ public class GameSummaryServiceTest {
     }
 
     @Test
-    void getFriendSummaries() {
+    void getFriendSummaries_cacheHit() {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
