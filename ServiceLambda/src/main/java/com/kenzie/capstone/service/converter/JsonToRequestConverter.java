@@ -25,5 +25,4 @@ public class JsonToRequestConverter {
             throw new IllegalArgumentException("Referral could not be deserialized");
         }
     }
-
 }

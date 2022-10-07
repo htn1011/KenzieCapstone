@@ -1,6 +1,5 @@
 package com.kenzie.capstone.service.dependency;
 
-
 import com.kenzie.capstone.service.dao.UserDao;
 import com.kenzie.capstone.service.util.DynamoDbClientProvider;
 
@@ -32,5 +31,4 @@ public class DaoModule {
     public UserDao provideExampleDao(@Named("DynamoDBMapper") DynamoDBMapper mapper) {
         return new UserDao(mapper);
     }
-
 }

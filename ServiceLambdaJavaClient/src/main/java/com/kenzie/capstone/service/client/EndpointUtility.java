@@ -31,7 +31,9 @@ public class EndpointUtility {
             deploymentName = "capstone-share-dle-service-dev";
         }
         if (deploymentName == null) {
-            throw new IllegalArgumentException("Could not find the deployment name in environment variables.  Make sure that you have set up your environment variables using the setupEnvironment.sh script.");
+            throw new IllegalArgumentException(
+                    "Could not find the deployment name in environment variables.  Make sure that you have set up " +
+                            "your environment variables using the setupEnvironment.sh script.");
         }
         return deploymentName;
     }
@@ -57,7 +59,9 @@ public class EndpointUtility {
             }
         }
         if (endpointId == null) {
-            throw new IllegalArgumentException("Could not locate the API Gateway endpoint.  Make sure that your API is deployed and that your AWS credentials are valid.");
+            throw new IllegalArgumentException(
+                    "Could not locate the API Gateway endpoint.  Make sure that your API is deployed and that your " +
+                            "AWS credentials are valid.");
         }
 
         return "https://" + endpointId + ".execute-api." + region + ".amazonaws.com/Prod/";
@@ -81,8 +85,10 @@ public class EndpointUtility {
             if (statusCode == 200) {
                 return httpResponse.body();
             } else {
-                throw new ApiGatewayException(statusCode, "POST request failed: " + statusCode + " status code received: "
-                        + httpResponse.body());
+                throw new ApiGatewayException(
+                        statusCode,
+                        "POST request failed: " + statusCode + " status code received: "
+                                + httpResponse.body());
             }
         } catch (IOException | InterruptedException e) {
             return e.getMessage();
@@ -107,8 +113,10 @@ public class EndpointUtility {
             if (statusCode == 200) {
                 return httpResponse.body();
             } else {
-                throw new ApiGatewayException(statusCode, "GET request failed: " + statusCode + " status code received: "
-                + httpResponse.body());
+                throw new ApiGatewayException(
+                        statusCode,
+                        "GET request failed: " + statusCode + " status code received: "
+                                + httpResponse.body());
             }
         } catch (IOException | InterruptedException e) {
             return e.getMessage();
@@ -133,8 +141,10 @@ public class EndpointUtility {
             if (statusCode == 200) {
                 return httpResponse.body();
             } else {
-                throw new ApiGatewayException(statusCode, "PUT request failed: " + statusCode + " status code received: "
-                        + httpResponse.body());
+                throw new ApiGatewayException(
+                        statusCode,
+                        "PUT request failed: " + statusCode + " status code received: "
+                                + httpResponse.body());
             }
         } catch (IOException | InterruptedException e) {
             return e.getMessage();

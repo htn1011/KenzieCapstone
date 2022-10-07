@@ -1,15 +1,26 @@
 package com.kenzie.capstone.service;
 
 import com.kenzie.capstone.service.dao.UserDao;
-import com.kenzie.capstone.service.model.*;
-import org.junit.jupiter.api.*;
+import com.kenzie.capstone.service.model.NoExistingUserException;
+import com.kenzie.capstone.service.model.User;
+import com.kenzie.capstone.service.model.UserAlreadyExistsException;
+import com.kenzie.capstone.service.model.UserCreateRequestLambda;
+import com.kenzie.capstone.service.model.UserRecord;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
 
@@ -55,7 +66,10 @@ public class UserServiceTest {
         doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, () -> userService.findUser(userId), "User does not exist");
+        Assertions.assertThrows(
+                NoExistingUserException.class,
+                () -> userService.findUser(userId),
+                "User does not exist");
     }
 
     @Test
@@ -74,7 +88,8 @@ public class UserServiceTest {
         userRecord.setUsername(userName);
         userRecord.setFriendsList(friendsList);
         when(userDao.findByUserId(userId)).thenReturn(null);
-        when(userDao.addNewUser(userCreateRequestLambda.getUserId(), userCreateRequestLambda.getUsername())).thenReturn(userRecord);
+        when(userDao.addNewUser(userCreateRequestLambda.getUserId(), userCreateRequestLambda.getUsername())).thenReturn(
+                userRecord);
 
         //WHEN
         User user = userService.addUser(userCreateRequestLambda);
@@ -107,7 +122,10 @@ public class UserServiceTest {
         when(userDao.findByUserId(userId)).thenReturn(userRecord);
 
         //THEN
-        Assertions.assertThrows(UserAlreadyExistsException.class, ()-> userService.addUser(userCreateRequestLambda), "User already exists throws exception");
+        Assertions.assertThrows(
+                UserAlreadyExistsException.class,
+                () -> userService.addUser(userCreateRequestLambda),
+                "User already exists throws exception");
     }
 
     @Test
@@ -151,7 +169,10 @@ public class UserServiceTest {
         when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, () -> userService.getFriends(userId), "User does not exist throws exception");
+        Assertions.assertThrows(
+                NoExistingUserException.class,
+                () -> userService.getFriends(userId),
+                "User does not exist throws exception");
         verify(userDao, times(1)).findByUserId(userId);
     }
 
@@ -201,7 +222,10 @@ public class UserServiceTest {
         when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, ()-> userService.addFriend(userId, friendId), "User does not exist");
+        Assertions.assertThrows(
+                NoExistingUserException.class,
+                () -> userService.addFriend(userId, friendId),
+                "User does not exist");
         verify(userDao, times(1)).findByUserId(userId);
     }
 
@@ -224,7 +248,10 @@ public class UserServiceTest {
         when(userDao.findByUserId(newFriend)).thenReturn(null);
 
         //THEN
-        Assertions.assertThrows(NoExistingUserException.class, () -> userService.addFriend(userId, newFriend), "Friend does not exist");
+        Assertions.assertThrows(
+                NoExistingUserException.class,
+                () -> userService.addFriend(userId, newFriend),
+                "Friend does not exist");
         verify(userDao, times(2)).findByUserId(any());
     }
 
@@ -258,11 +285,13 @@ public class UserServiceTest {
         //GIVEN
         String userId = "userId";
         String friendId = "friendId";
-//        doThrow(NoExistingUserException.class).when(userDao).findByUserId(userId);
         when(userDao.findByUserId(userId)).thenReturn(null);
 
         //THEN
-        assertThrows(NoExistingUserException.class, ()-> userService.removeFriend(userId, friendId), "UserId not found");
+        assertThrows(
+                NoExistingUserException.class,
+                () -> userService.removeFriend(userId, friendId),
+                "UserId not found");
         verify(userDao, times(1)).findByUserId(userId);
     }
 }

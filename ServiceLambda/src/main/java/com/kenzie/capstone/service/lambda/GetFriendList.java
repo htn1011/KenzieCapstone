@@ -9,14 +9,12 @@ import com.google.gson.GsonBuilder;
 import com.kenzie.capstone.service.UserService;
 import com.kenzie.capstone.service.dependency.DaggerServiceComponent;
 import com.kenzie.capstone.service.dependency.ServiceComponent;
-import com.kenzie.capstone.service.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class GetFriendList  implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     // lambda to get a user's friend list

@@ -35,12 +35,12 @@ public class UserServiceClient {
         }
         return new UserResponseLambda(user);
     }
-    // this will need to be changed to accept userId and username or would it be json for userrequestobject?
+
     public UserResponseLambda addNewUser(UserCreateRequestLambda userCreateRequestLambda) {
         String request;
         try {
             request = mapper.writeValueAsString(userCreateRequestLambda);
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ApiGatewayException("Unable to serialize request: " + e);
         }
         EndpointUtility endpointUtility = new EndpointUtility();
@@ -72,7 +72,7 @@ public class UserServiceClient {
         String request;
         try {
             request = mapper.writeValueAsString(updateFriendListRequest);
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ApiGatewayException("Unable to serialize request: " + e);
         }
         EndpointUtility endpointUtility = new EndpointUtility();
@@ -91,7 +91,7 @@ public class UserServiceClient {
         String request;
         try {
             request = mapper.writeValueAsString(updateFriendListRequest);
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ApiGatewayException("Unable to serialize request: " + e);
         }
         EndpointUtility endpointUtility = new EndpointUtility();
@@ -104,10 +104,5 @@ public class UserServiceClient {
             throw new ApiGatewayException("Unable to map deserialize JSON: " + e);
         }
         return new UserResponseLambda(user);
-        // remove a friend from a users list of friends
-        // reutrn updated friend list
-        // return null;
     }
-
-    // in client -> design response for expected and/or unexpected behavior
 }

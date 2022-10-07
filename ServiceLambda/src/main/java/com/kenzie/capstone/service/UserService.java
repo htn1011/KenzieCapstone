@@ -79,5 +79,4 @@ public class UserService {
         userDao.updateUser(updatedUser);
         return existingUser;
     }
-
 }

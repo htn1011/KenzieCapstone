@@ -21,7 +21,6 @@ import java.util.Map;
 
 public class AddNewFriend implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     // lambda to add new friend to user's friend list
-
     static final Logger log = LogManager.getLogger();
 
     @Override
@@ -51,7 +50,9 @@ public class AddNewFriend implements RequestHandler<APIGatewayProxyRequestEvent,
 
         try {
             UpdateFriendListRequest updateFriendListRequest = converter.convertToUpdateFriendListRequest(data);
-            User updatedUser = userService.addFriend(updateFriendListRequest.getUserId(), updateFriendListRequest.getFriendId());
+            User updatedUser = userService.addFriend(
+                    updateFriendListRequest.getUserId(),
+                    updateFriendListRequest.getFriendId());
             String output = gson.toJson(updatedUser);
 
             return response
@@ -62,8 +63,7 @@ public class AddNewFriend implements RequestHandler<APIGatewayProxyRequestEvent,
             return response
                     .withStatusCode(409)
                     .withBody(e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return response
                     .withStatusCode(400)
                     .withBody(gson.toJson(e.getMessage()));

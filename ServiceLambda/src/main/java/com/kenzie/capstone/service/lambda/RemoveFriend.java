@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RemoveFriend implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -45,12 +44,13 @@ public class RemoveFriend implements RequestHandler<APIGatewayProxyRequestEvent,
             return response
                     .withStatusCode(400)
                     .withBody("data is invalid");
-
         }
 
         try {
             UpdateFriendListRequest updateFriendListRequest = converter.convertToUpdateFriendListRequest(data);
-            User updatedUser = userService.removeFriend(updateFriendListRequest.getUserId(), updateFriendListRequest.getFriendId());
+            User updatedUser = userService.removeFriend(
+                    updateFriendListRequest.getUserId(),
+                    updateFriendListRequest.getFriendId());
             String output = gson.toJson(updatedUser);
 
             return response
