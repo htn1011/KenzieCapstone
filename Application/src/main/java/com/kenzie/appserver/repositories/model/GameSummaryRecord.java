@@ -12,7 +12,6 @@ import java.util.Objects;
 
 @DynamoDBTable(tableName = "GameSummaries")
 public class GameSummaryRecord {
-
     //https://medium.com/@leohoc/dynamodb-and-spring-data-a81c546a1305
     // using @Id and gameSummaryId obj to use composite key
     @Id
@@ -28,16 +27,12 @@ public class GameSummaryRecord {
     private String summarySortKey;
     // game::userId eg. wordle::Henry
     private String indexSortKey;
-
     // compsite key: userId and summarySortKey(Game::date)
     // index: date and indexSortKey(game::userId)
-
     // extra things in record -> ID obj and the two formatted sortkeys - only needed in DB.
     // is needed in cache - made GameSummary Obj in service that has these too
     // layer between controller models and record models
-
     public GameSummaryRecord() {
-        // this.gameSummaryId = new GameSummaryId(userId, summarySortKey);
     }
 
     public GameSummaryRecord(String userId, String game, String date, String results, String sessionNumber) {
@@ -52,15 +47,6 @@ public class GameSummaryRecord {
         // create the ID obj
         this.gameSummaryId = new GameSummaryId(userId, summarySortKey);
     }
-
-
-
-    // public GameSummaryId getGameSummaryId() {
-    //     return gameSummaryId;
-    // }
-    // public void setGameSummaryId(GameSummaryId gameSummaryId) {
-    //     this.gameSummaryId = gameSummaryId;
-    // }
 
     @DynamoDBHashKey(attributeName = "userId")
     public String getUserId() {

@@ -1,13 +1,11 @@
 package com.kenzie.appserver.controller;
 
-
 import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 import com.kenzie.appserver.controller.model.GameSummaryResponse;
-import com.kenzie.appserver.controller.model.InvalidUserException;
-import com.kenzie.appserver.controller.model.NoExistingGameSummaryException;
 import com.kenzie.appserver.controller.model.UpdateSummaryRequest;
 import com.kenzie.appserver.controller.model.UserCreateRequest;
 import com.kenzie.appserver.controller.model.UserResponse;
+
 import com.kenzie.appserver.service.GameSummaryService;
 import com.kenzie.capstone.service.client.ApiGatewayException;
 import com.kenzie.capstone.service.model.UserResponseLambda;
@@ -15,13 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-//import com.kenzie.appserver.controller.model.CreateSummaryRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/game/wordle")
@@ -30,7 +25,7 @@ public class GameController {
     // game mapping always wordle at this time - future consideration for different games
     private final String GAME = "wordle";
 
-    private GameSummaryService gameService;
+    private final GameSummaryService gameService;
 
     public GameController(GameSummaryService gameService) {
         this.gameService = gameService;
@@ -38,18 +33,8 @@ public class GameController {
 
     @PostMapping
     public ResponseEntity<GameSummaryResponse> postNewSummary(@RequestBody CreateSummaryRequest createSummaryRequest) {
-
-        // removed these checks because annotation prevent from being null
-            // if (createSummaryRequest.getGame() == null) {
-            //     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game");
-            // }
-            // if (createSummaryRequest.getSessionNumber() == null) {
-            //     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Session");
-            // }
-        // removed this check -> user validated in service -> if exception throw -> handle in the front end
-            // if (createSummaryRequest.getUserId().length() == 0) {
-            //     createSummaryRequest.setUserId(UUID.randomUUID().toString());
-            // }
+        // future consideration: is this the behavior we want?
+        // could this be handled in a different way other than an exception?
         if (createSummaryRequest == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request to create a new game summary");
         }
@@ -60,7 +45,8 @@ public class GameController {
                     URI.create("/game/wordle/" + response.getDate() + "/" + response.getUserId())).body(response);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary" + e.getMessage() + e, e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to post a new game summary"
+                    + e.getMessage() + e, e);
         }
     }
 
@@ -73,7 +59,8 @@ public class GameController {
             return ResponseEntity.ok(gameSummaryResponse);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to get an existing game summary" + e.getMessage() + e, e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to get an existing game summary"
+                    + e.getMessage() + e, e);
         }
     }
 
@@ -85,7 +72,8 @@ public class GameController {
             return ResponseEntity.ok(gameSummaryResponse);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to update an existing game summary" + e.getMessage() + e, e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed attempted to update an existing game summary"
+                    + e.getMessage() + e, e);
         }
     }
 
@@ -119,6 +107,7 @@ public class GameController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empty UserId");
         }
         // if no username is chosen, assign first 8 characters of the userId (8 is arbitrary length)
+        // future consideration: is this what we want it to do - how can we use this better?
         if (userCreateRequest.getusername() == null) {
             userCreateRequest.setUserName(userCreateRequest.getUserId().substring(0,8));
         }
@@ -126,7 +115,7 @@ public class GameController {
         return ResponseEntity.created(URI.create("/users/" + userResponse.getUserId())).body(userResponse);
     }
 
-    @GetMapping("/user/{userId}")  // not sure if this one is needed in the controller
+    @GetMapping("/user/{userId}")
     public ResponseEntity<UserResponse> findUser(@PathVariable("userId") String userId) {
         UserResponseLambda userResponse = gameService.verifyUser(userId);
 
@@ -164,7 +153,8 @@ public class GameController {
         return ResponseEntity.ok(userResponse);
     }
 
-
+    //https://www.baeldung.com/exception-handling-for-rest-with-spring
+    //https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
     // this will handle all ApiGatewayExceptions if they are caught within this class
     @ExceptionHandler({ApiGatewayException.class})
     public ResponseEntity<String> handleException(HttpServletRequest req, ApiGatewayException ex) {

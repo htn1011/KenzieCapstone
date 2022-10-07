@@ -1,7 +1,13 @@
 package com.kenzie.appserver.service;
 
 import com.kenzie.appserver.config.CacheStore;
-import com.kenzie.appserver.controller.model.*;
+import com.kenzie.appserver.controller.model.CreateSummaryRequest;
+import com.kenzie.appserver.controller.model.GameSummaryResponse;
+import com.kenzie.appserver.controller.model.InvalidUserException;
+import com.kenzie.appserver.controller.model.NoExistingGameSummaryException;
+import com.kenzie.appserver.controller.model.UpdateSummaryRequest;
+import com.kenzie.appserver.controller.model.UserCreateRequest;
+import com.kenzie.appserver.controller.model.UserResponse;
 import com.kenzie.appserver.repositories.GameRepository;
 import com.kenzie.appserver.repositories.model.GameSummaryRecord;
 import com.kenzie.capstone.service.client.ApiGatewayException;
@@ -13,9 +19,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GameSummaryServiceTest {
     private GameRepository gameRepository;
@@ -36,14 +49,14 @@ public class GameSummaryServiceTest {
         //GIVEN
         String game = "wordle";
         String userId = "userId";
-        String date = "date";
         String sessionNumber = "sessionNumber";
         String results = "results";
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
-        ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor = ArgumentCaptor.forClass(GameSummaryRecord.class);
+        ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor =
+                ArgumentCaptor.forClass(GameSummaryRecord.class);
 
         //WHEN
         GameSummaryResponse gameSummaryResponse = gameSummaryService.addSummary(createSummaryRequest);
@@ -68,14 +81,16 @@ public class GameSummaryServiceTest {
         //GIVEN
         String userId = "userId";
         String game = "wordle";
-        String date = "date";
         String results = "results";
         String sessionNumber = "sessionNumber";
         CreateSummaryRequest createSummaryRequest = new CreateSummaryRequest(game, userId, sessionNumber, results);
         when(userServiceClient.findExistingUser(userId)).thenThrow(new InvalidUserException(userId));
 
         //WHEN
-        Assertions.assertThrows(InvalidUserException.class, () -> gameSummaryService.addSummary(createSummaryRequest), "Userid does not exist");
+        Assertions.assertThrows(
+                InvalidUserException.class,
+                () -> gameSummaryService.addSummary(createSummaryRequest),
+                "Userid does not exist");
     }
 
     @Test
@@ -91,7 +106,6 @@ public class GameSummaryServiceTest {
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
 
-
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
         when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.of(gameSummaryRecord));
 
@@ -104,7 +118,10 @@ public class GameSummaryServiceTest {
         Assertions.assertEquals(gameSummaryRecord.getGame(), gameSummaryResponse.getGame(), "Game matches");
         Assertions.assertEquals(gameSummaryRecord.getDate(), gameSummaryResponse.getDate(), "Date matches");
         Assertions.assertEquals(gameSummaryRecord.getResults(), gameSummaryResponse.getResults(), "Results matches");
-        Assertions.assertEquals(gameSummaryRecord.getSessionNumber(), gameSummaryResponse.getSessionNumber(), "Session number matches");
+        Assertions.assertEquals(
+                gameSummaryRecord.getSessionNumber(),
+                gameSummaryResponse.getSessionNumber(),
+                "Session number matches");
     }
 
     @Test
@@ -116,7 +133,10 @@ public class GameSummaryServiceTest {
         when(userServiceClient.findExistingUser(userId)).thenThrow(new InvalidUserException(userId));
 
         //THEN
-        Assertions.assertThrows(InvalidUserException.class, () -> gameSummaryService.getSummary(game, date, userId), "User does not exist");
+        Assertions.assertThrows(
+                InvalidUserException.class,
+                () -> gameSummaryService.getSummary(game, date, userId),
+                "User does not exist");
     }
 
     @Test
@@ -137,7 +157,10 @@ public class GameSummaryServiceTest {
         when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.empty());
 
         //THEN
-        Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.getSummary(game, date, userId), "Game summary does not exist throws exception");
+        Assertions.assertThrows(
+                NoExistingGameSummaryException.class,
+                () -> gameSummaryService.getSummary(game, date, userId),
+                "Game summary does not exist throws exception");
     }
 
     @Test
@@ -155,7 +178,8 @@ public class GameSummaryServiceTest {
         userResponseLambda.setUserId(userId);
         when(userServiceClient.findExistingUser(userId)).thenReturn(userResponseLambda);
         when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.of(gameSummaryRecord));
-        ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor = ArgumentCaptor.forClass(GameSummaryRecord.class);
+        ArgumentCaptor<GameSummaryRecord> gameSummaryRecordArgumentCaptor =
+                ArgumentCaptor.forClass(GameSummaryRecord.class);
 
         //WHEN
         GameSummaryResponse gameSummaryResponse = gameSummaryService.updateSummary(updateSummaryRequest);
@@ -189,10 +213,13 @@ public class GameSummaryServiceTest {
         when(gameRepository.findByGameSummaryId(any())).thenReturn(Optional.empty());
 
         //THEN
-        Assertions.assertThrows(NoExistingGameSummaryException.class, () -> gameSummaryService.updateSummary(updateSummaryRequest), "Invalid game summary throws exception");
-
+        Assertions.assertThrows(
+                NoExistingGameSummaryException.class,
+                () -> gameSummaryService.updateSummary(updateSummaryRequest),
+                "Invalid game summary throws exception");
 
     }
+
     @Test
     void deleteSummaryTest() {
         //GIVEN
@@ -215,12 +242,22 @@ public class GameSummaryServiceTest {
         String date = "date";
         String results = "results";
         String sessionNumber = "sessionNumber";
-        GameSummaryResponse gameSummaryResponseHit = new GameSummaryResponse(game, userId, date, sessionNumber, results);
+        GameSummaryResponse gameSummaryResponseHit = new GameSummaryResponse(
+                game,
+                userId,
+                date,
+                sessionNumber,
+                results);
 
         String userId1 = "userId1";
         String results1 = "results1";
         String sessionNumber1 = "sessionNumber1";
-        GameSummaryResponse gameSummaryResponseHit1 = new GameSummaryResponse(game, userId1, date, sessionNumber1, results1);
+        GameSummaryResponse gameSummaryResponseHit1 = new GameSummaryResponse(
+                game,
+                userId1,
+                date,
+                sessionNumber1,
+                results1);
 
         List<GameSummaryResponse> gameSummaryResponseHitList = new ArrayList<>();
         gameSummaryResponseHitList.add(gameSummaryResponseHit);
@@ -233,11 +270,26 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(gameSummaryResponseList.size(), 2, "List should have 2 entries");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getUserId(), gameSummaryResponseList.get(0).getUserId(), "Userid should match");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getGame(), gameSummaryResponseList.get(0).getGame(), "Game should match");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getDate(), gameSummaryResponseList.get(0).getDate(), "Date should match");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getResults(), gameSummaryResponseList.get(0).getResults(), "Results should match");
-        Assertions.assertEquals(gameSummaryResponseHitList.get(0).getSessionNumber(), gameSummaryResponseList.get(0).getSessionNumber(), "Session number should match");
+        Assertions.assertEquals(
+                gameSummaryResponseHitList.get(0).getUserId(),
+                gameSummaryResponseList.get(0).getUserId(),
+                "Userid should match");
+        Assertions.assertEquals(
+                gameSummaryResponseHitList.get(0).getGame(),
+                gameSummaryResponseList.get(0).getGame(),
+                "Game should match");
+        Assertions.assertEquals(
+                gameSummaryResponseHitList.get(0).getDate(),
+                gameSummaryResponseList.get(0).getDate(),
+                "Date should match");
+        Assertions.assertEquals(
+                gameSummaryResponseHitList.get(0).getResults(),
+                gameSummaryResponseList.get(0).getResults(),
+                "Results should match");
+        Assertions.assertEquals(
+                gameSummaryResponseHitList.get(0).getSessionNumber(),
+                gameSummaryResponseList.get(0).getSessionNumber(),
+                "Session number should match");
         verify(cache, atLeastOnce()).get(any());
     }
 
@@ -275,7 +327,10 @@ public class GameSummaryServiceTest {
         Assertions.assertEquals(gameSummaryResponseList.get(0).getGame(), game, "Game should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getDate(), date, "Date should match");
         Assertions.assertEquals(gameSummaryResponseList.get(0).getResults(), results, "Results should match");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getSessionNumber(), sessionNumber, "Session number should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getSessionNumber(),
+                sessionNumber,
+                "Session number should match");
         verify(cache, atLeastOnce()).add(any(), any());
     }
 
@@ -287,12 +342,22 @@ public class GameSummaryServiceTest {
         String date = "date";
         String results = "results";
         String sessionNumber = "sessionNumber";
-        GameSummaryResponse gameSummaryResponseHit = new GameSummaryResponse(game, userId, date, sessionNumber, results);
+        GameSummaryResponse gameSummaryResponseHit = new GameSummaryResponse(
+                game,
+                userId,
+                date,
+                sessionNumber,
+                results);
 
         String date1 = "date1";
         String results1 = "results1";
         String sessionNumber1 = "sessionNumber1";
-        GameSummaryResponse gameSummaryResponseHit1 = new GameSummaryResponse(game, userId, date1, sessionNumber1, results1);
+        GameSummaryResponse gameSummaryResponseHit1 = new GameSummaryResponse(
+                game,
+                userId,
+                date1,
+                sessionNumber1,
+                results1);
 
         List<GameSummaryResponse> gameSummaryResponseHitList = new ArrayList<>();
         gameSummaryResponseHitList.add(gameSummaryResponseHit);
@@ -305,11 +370,26 @@ public class GameSummaryServiceTest {
         //THEN
         Assertions.assertNotNull(gameSummaryResponseList);
         Assertions.assertEquals(2, gameSummaryResponseList.size(), "List should have 2 entries");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getUserId(), gameSummaryResponseHitList.get(0).getUserId(), "Userid should match");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getGame(), gameSummaryResponseHitList.get(0).getGame(), "Game should match");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getDate(), gameSummaryResponseHitList.get(0).getDate(), "Date should match");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getResults(), gameSummaryResponseHitList.get(0).getResults(), "Results should match");
-        Assertions.assertEquals(gameSummaryResponseList.get(0).getSessionNumber(), gameSummaryResponseHitList.get(0).getSessionNumber(), "Session number should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getUserId(),
+                gameSummaryResponseHitList.get(0).getUserId(),
+                "Userid should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getGame(),
+                gameSummaryResponseHitList.get(0).getGame(),
+                "Game should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getDate(),
+                gameSummaryResponseHitList.get(0).getDate(),
+                "Date should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getResults(),
+                gameSummaryResponseHitList.get(0).getResults(),
+                "Results should match");
+        Assertions.assertEquals(
+                gameSummaryResponseList.get(0).getSessionNumber(),
+                gameSummaryResponseHitList.get(0).getSessionNumber(),
+                "Session number should match");
         verify(cache).get(any());
     }
 
@@ -347,7 +427,10 @@ public class GameSummaryServiceTest {
         Assertions.assertEquals(game, gameSummaryResponseList.get(0).getGame(), "Game should match");
         Assertions.assertEquals(date, gameSummaryResponseList.get(0).getDate(), "Date should match");
         Assertions.assertEquals(results, gameSummaryResponseList.get(0).getResults(), "Results should match");
-        Assertions.assertEquals(sessionNumber, gameSummaryResponseList.get(0).getSessionNumber(), "Session number should match");
+        Assertions.assertEquals(
+                sessionNumber,
+                gameSummaryResponseList.get(0).getSessionNumber(),
+                "Session number should match");
         verify(cache).add(any(), any());
     }
 
@@ -367,7 +450,12 @@ public class GameSummaryServiceTest {
         String sessionNumber1 = "sessionNumber1";
 
         GameSummaryResponse gameSummaryResponse = new GameSummaryResponse(game, friend, date, sessionNumber, results);
-        GameSummaryResponse gameSummaryResponse1 = new GameSummaryResponse(game, friend1, date, sessionNumber1, results1);
+        GameSummaryResponse gameSummaryResponse1 = new GameSummaryResponse(
+                game,
+                friend1,
+                date,
+                sessionNumber1,
+                results1);
         List<GameSummaryResponse> gameSummaryResponseList = new ArrayList<>();
         gameSummaryResponseList.add(gameSummaryResponse);
         gameSummaryResponseList.add(gameSummaryResponse1);
@@ -430,7 +518,9 @@ public class GameSummaryServiceTest {
         Assertions.assertNotNull(removeFriendResponse, "Response is not null");
         Assertions.assertEquals(userId, removeFriendResponse.getUserId(), "Userid should match");
         Assertions.assertEquals(userName, removeFriendResponse.getUserName(), "Username should match");
-        Assertions.assertFalse(removeFriendResponse.getFriendsList().contains(friendId), "Friend is not in friends list");
+        Assertions.assertFalse(
+                removeFriendResponse.getFriendsList().contains(friendId),
+                "Friend is not in friends list");
     }
 
     @Test
@@ -440,7 +530,9 @@ public class GameSummaryServiceTest {
         String userName = "userName";
         UserCreateRequest userCreateRequest = new UserCreateRequest(userId, userName);
 
-        UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(userCreateRequest.getUserId(), userCreateRequest.getusername());
+        UserCreateRequestLambda userCreateRequestLambda = new UserCreateRequestLambda(
+                userCreateRequest.getUserId(),
+                userCreateRequest.getusername());
 
         UserResponseLambda userResponseLambda = new UserResponseLambda();
         userResponseLambda.setUserId(userId);
@@ -487,7 +579,10 @@ public class GameSummaryServiceTest {
         when(userServiceClient.findExistingUser(userId)).thenThrow(apiGatewayException);
 
         //THEN
-        Assertions.assertThrows(InvalidUserException.class, ()-> gameSummaryService.verifyUser(userId), "Invalid userid throws exception");
+        Assertions.assertThrows(
+                InvalidUserException.class,
+                () -> gameSummaryService.verifyUser(userId),
+                "Invalid userid throws exception");
 
     }
 }

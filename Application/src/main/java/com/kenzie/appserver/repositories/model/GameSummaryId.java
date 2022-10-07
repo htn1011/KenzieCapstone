@@ -5,14 +5,14 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 
 public class GameSummaryId {
     private String userId;
-    private String SummarySortKey;
+    private String summarySortKey;
 
     public GameSummaryId() {
     }
 
     public GameSummaryId(String userId, String summarySortKey) {
         this.userId = userId;
-        SummarySortKey = summarySortKey;
+        this.summarySortKey = summarySortKey;
     }
 
     @DynamoDBHashKey(attributeName = "userId")
@@ -26,18 +26,18 @@ public class GameSummaryId {
 
     @DynamoDBRangeKey(attributeName = "summarySortKey")
     public String getSummarySortKey() {
-        return SummarySortKey;
+        return summarySortKey;
     }
 
     public void setSummarySortKey(String summarySortKey) {
-        SummarySortKey = summarySortKey;
+        this.summarySortKey = summarySortKey;
     }
 
     @Override
     public String toString() {
         return "GameSummaryId{" +
                 "userId='" + userId + '\'' +
-                ", SummarySortKey='" + SummarySortKey + '\'' +
+                ", SummarySortKey='" + summarySortKey + '\'' +
                 '}';
     }
 }

@@ -20,8 +20,6 @@ public interface GameRepository extends CrudRepository<GameSummaryRecord, GameSu
     // find specific gamesummary for user
     Optional<GameSummaryRecord> findByGameSummaryId(GameSummaryId gameSummaryId);
 
-    // Optional<GameSummaryRecord> findByUserIdAndSummarySortKey(String userId, String summarySortKey);
-
     // delete using the summaryIdClass
     void deleteById(GameSummaryId gameSummaryId);
 }

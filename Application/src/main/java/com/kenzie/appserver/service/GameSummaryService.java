@@ -157,11 +157,6 @@ public class GameSummaryService {
         return new UserResponse(userServiceClient.addNewUser(userCreateRequestLambda));
     }
 
-    // TODO implement delete method
-    // public UserResponse removeUser(String userId) {
-    //     return new UserResponse(userServiceClient.removeUser(userId));
-    // }
-
     public UserResponseLambda verifyUser(String userId) {
         UserResponseLambda existingUser;
         try {
