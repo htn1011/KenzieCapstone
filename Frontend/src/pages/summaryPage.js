@@ -155,6 +155,7 @@ class SummaryPage extends BaseClass {
          summaryList.forEach(summary => {
              const li = document.createElement("li");
              li.innerHTML += `<div class="card" id="oneSummary">`;
+             // consider wrapping strong around span instead - KK
              li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
              li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
              if (this.user && summary.userId == this.user.userId) {
