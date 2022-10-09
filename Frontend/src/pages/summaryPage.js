@@ -154,7 +154,7 @@ class SummaryPage extends BaseClass {
          const ul = document.createElement("ul");
          summaryList.forEach(summary => {
              const li = document.createElement("li");
-             li.innerHTML += `<div class="card">`;
+             li.innerHTML += `<div class="card" id="oneSummary">`;
              li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
              li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
              if (this.user && summary.userId == this.user.userId) {
@@ -235,11 +235,17 @@ class SummaryPage extends BaseClass {
          // Prevent the page from refreshing on form submit
          event.preventDefault();
          // get the date to filter by and format properly
-         let year = document.getElementById("filter-friend-summary-year").value;
-         let month = document.getElementById("get-friend-summary-month").value;
-         let day = document.getElementById("get-friend-summary-day").value;
-         let summaryDate = year + "-" + month + "-" + day;
+         // let year = document.getElementById("filter-friend-summary-year").value;
+         // let month = document.getElementById("get-friend-summary-month").value;
+         // let day = document.getElementById("get-friend-summary-day").value;
+         // let summaryDate = year + "-" + month + "-" + day;
+         // let result = await this.client.findAllSummariesForUserFriends(summaryDate, this.user.userId, this.errorHandler);
+         let year = document.getElementById("filter-summary-year").value;
+         let month = document.getElementById("get-summary-month").value;
+         let day = document.getElementById("get-summary-day").value;
+         let date = year + "-" + month + "-" + day;
          let result = await this.client.findAllSummariesForUserFriends(summaryDate, this.user.userId, this.errorHandler);
+
          this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
          // update state and values
          this.dataStore.setState({

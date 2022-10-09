@@ -88,6 +88,16 @@
     color: var(--primary-color);
 }
 
+#oneSummary {
+    color: var(--secondary-color);
+    background-color: #538d4e;
+    background-image: url("greenTile.jpg");
+    background-repeat: repeat;
+    background-size: 100px;
+    margin: 0;
+    counter-reset: section;
+}
+
 .validated-field:invalid {
     outline: 2px solid var(--highlight-color);
 }

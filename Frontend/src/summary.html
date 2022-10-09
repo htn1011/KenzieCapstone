@@ -31,6 +31,8 @@
 
 </style>
 
+<!-- KK state holder: class="state" -->
+
 <!-- body of page -->
 <body class="background">
 <!-- title header -->
@@ -39,15 +41,15 @@
     <h1 class="main" href="summary.html"> <img src=sharedle_logo1.png id="logoMain" alt="S"/>haredle</h1>
   </div>
   <!-- user logged in state -->
-  <div class="state" id="button-to-login">
+  <div class="state" id="button-to-login" style="padding-top: 15px; padding-left: 300px;">
     <button type="submit" id="summary-login">Login</button>
 <!--    <a class="main" href="userLogin.html">Login</a>-->
     <p>You must be logged in to post your own summaries and to access extra filtering options</p>
   </div>
-  <div class="state" id="user-welcome">
+  <div class="state" id="user-welcome" style="padding-top: 15px; padding-right: 100px; padding-left: 300px;">
     <h2 class="main"><strong>Welcome </strong> <span id="user-name-welcome"></span></h2>
     <h2 class="main"><strong>User Id: </strong> <span id="user-id-welcome"></span></h2>
-    <button type="submit" id="summary-logout">Logout</button>
+    <button type="submit" id="summary-logout">Logout</button >
     <button onclick="document.location.href='userLogin.html'">User Page</button>
 <!---->
   </div>
@@ -55,12 +57,12 @@
 <!-- user control sections, each div -->
 <!-- post new summary only available if logged in -->
 <div class="card state" id="post-new-Summary">
-  <h2><span id="post-message">Your Game summary for </span><span id="todays-date"></span></h2>
+  <h2><span id="post-message">Your game summary for </span><span id="todays-date"></span></h2>
   <!-- post new summary -->
 <!--  <div class="state" id>-->
     <form class="card-content state" id="create-summary-form" accept-charset=utf-8>
       <p class="form-field">
-        <label>Number of Wordle Guesses</label>
+        <label>Number of Wordle Guesses: </label>
         <!-- dropdown list of options -->
         <select name="number-guesses" id="create-summary-guesses">
           <option value="1">1</option>
@@ -71,10 +73,11 @@
           <option value="6">6</option>
           <option value="fail">Failed</option>
         </select>
+
       </p>
       <!-- additional user comments attached to summary result -->
       <p class="form-field">
-        <label>Result Comment</label>
+<!--        <label>Result Comment</label>-->
         <textarea name="description" placeholder="Describe your experience!" form="create-summary-form" id="create-summary-description"></textarea>
       </p>
 
@@ -85,7 +88,7 @@
   <div class="state" id="summary-posted">
     <p>Thanks for posting your game summary for today! Check the score board below to see how you measure up!</p>
     <div id="posted-summary-info">
-    <p>Your score for <span id="posted-summary-date"></span> is: <span id="posted-summary-results"></span></p>
+    <p><b>Your score for <span id="posted-summary-date"></span> is: <span id="posted-summary-results"></span></b></p>
     <button type="button" id="posted-edit-button">Edit</button>
     </div>
   </div>
@@ -96,45 +99,50 @@
 <div class="card" id="largeCard">
   <h2>Manage Scoreboard</h2>
   <!-- display all summaries by date -->
-  <div class="card">
+<!--  <div class="card">-->
     <form class="card-content" id="get-summaries-by-date-form" accept-charset=utf-8>
       <p>Filter Scoreboard by Wordle Day:</p>
       <p class="form-field">
-        <label>Year</label>
-        <input type="text" size="25" required class="validated-field" id="filter-summary-year">
-        <label>Month</label>
-        <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
-        <!--          <input type="text" required class="validated-field" id="filter-summary-month">-->
-        <label>Day</label>
-        <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day">
-        <!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
+        <span style="display:inline-block">
+          <input type="text" size="25" required class="validated-field" id="filter-summary-year" style="width: 35px;" placeholder="YYYY">
+
+          <input type="text" placeholder="MM" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
+
+          <input type="text" placeholder="DD" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day" >
+        </span>
       </p>
-      <button type="submit" id="submit-date-filter">Filter Scoreboard</button>
+      <button type="submit" id="submit-date-filter" style="margin-right: 10px;">Filter Scoreboard</button><button class="card state" type="submit" id="friend-filer">Show Only Friends</button>
+      <p></p>
     </form>
-  </div>
+<!--  </div>-->
   <!-- show only friend summaries only available if logged in-->
-  <div class="card state" id="friend-filer">
-    <form class="card-content" id="get-friend-summaries" accept-charset=utf-8>
-      <p>Show Only Friend Scores:</p>
-      <p class="form-field">
-        <label>Year</label>
-        <input type="text" size="25" required class="validated-field" id="filter-friend-summary-year">
-        <label>Month</label>
-        <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-friend-summary-month">
-        <!--          <input type="text" required class="validated-field" id="filter-summary-month">-->
-        <label>Day</label>
-        <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-friend-summary-day">
-        <!--          <input type="text" required class="validated-field" id="filter-summary-day">-->
-      </p>
-      <button type="submit" id="filter-only-friends">Filter Scoreboard</button>
-    </form>
-  </div>
+<!--  <div class="card state" id="friend-filer">-->
+<!--    <hr>-->
+<!--    <form class="card-content" id="get-friend-summaries" accept-charset=utf-8>-->
+<!--      <p>Show Only Friend Scores:</p>-->
+<!--      <p class="form-field">-->
+<!--        <label>Year</label>-->
+<!--        <input type="text" size="25" required class="validated-field" id="filter-friend-summary-year">-->
+<!--        <label>Month</label>-->
+<!--        <input type="number" placeholder="01-12" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-friend-summary-month">-->
+<!--        &lt;!&ndash;          <input type="text" required class="validated-field" id="filter-summary-month">&ndash;&gt;-->
+<!--        <label>Day</label>-->
+<!--        <input type="number" placeholder="01-31" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-friend-summary-day">-->
+<!--        &lt;!&ndash;          <input type="text" required class="validated-field" id="filter-summary-day">&ndash;&gt;-->
+<!--      </p>-->
+<!--      &lt;!&ndash; KK added card state to button &ndash;&gt;-->
+<!--      <button class="card state" type="submit" id="filter-only-friends">Filter Scoreboard</button>-->
+<!--    </form>-->
+<!--  </div>-->
   <!-- display all summaries for one user only available if logged in -->
   <div class="card state" id="only-me-filter">
+    <hr>
+    <p></p>
     <form class="card-content" id="get-summaries-by-user" accept-charset=utf-8>
-      <p>Show only my scores</p>
-      <button type="submit" id="filter-only-user">Filter for only my scores</button>
+<!--      <p>Show only my scores</p>-->
+      <button type="submit" id="filter-only-user">Show All My Scores</button>
     </form>
+    <p></p>
   </div>
 
 </div>
