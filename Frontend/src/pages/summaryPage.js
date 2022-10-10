@@ -156,8 +156,8 @@ class SummaryPage extends BaseClass {
              const li = document.createElement("div");
              let liContent = `<div class="card" id="oneSummary">`;
              // consider wrapping strong around span instead - KK
-             liContent += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
-             liContent += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
+             liContent += `<p>User ID: <strong><span id="summary-userId" style="font-size: 16pt">${summary.userId}</span></strong></p>`;
+             liContent += `<p>Results: <strong><span id="summary-results" style="font-size: 16pt">${summary.results}</span></strong></p>`;
              if (this.user && summary.userId == this.user.userId) {
                  liContent += `<button type="button" data-date="${summary.date}">Edit</button>`;
                  liContent += `</div>`;
@@ -207,8 +207,20 @@ class SummaryPage extends BaseClass {
          // for now/while the game is wordle session ID == date
          let sessionNumber = this.dataStore.get(TODAYS_DATE);
          // retrieve results from user input in field
-         let results = document.getElementById("create-summary-guesses").value + " "
-         + document.getElementById("create-summary-description").value;
+
+         // KK: guess vs guesses
+         let resultsRaw = document.getElementById("create-summary-guesses").value;
+
+         let results;
+
+         if (resultsRaw.charAt(0) === '1') {
+             results = document.getElementById("create-summary-guesses").value + " guess; "
+                 + document.getElementById("create-summary-description").value;
+         } else {
+             results = document.getElementById("create-summary-guesses").value + " guesses; "
+                 + document.getElementById("create-summary-description").value;
+         }
+
          const createdSummary = await this.client.postNewSummary(game, this.user.userId, sessionNumber, results, this.errorHandler);
          if (createdSummary) {
              this.showMessage(`Score posted for today's ${createdSummary.game}!`);

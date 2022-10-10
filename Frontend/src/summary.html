@@ -88,7 +88,7 @@
   <div class="state" id="summary-posted">
     <p>Thanks for posting your game summary for today! Check the score board below to see how you measure up!</p>
     <div id="posted-summary-info">
-    <p><b>Your score for <span id="posted-summary-date"></span> is: <span id="posted-summary-results"></span></b></p>
+    <p><b>Your score for <span id="posted-summary-date"></span> is: <span id="posted-summary-results" style="color: #538d4e"></span></b></p>
     <button type="button" id="posted-edit-button">Edit</button>
     </div>
   </div>
@@ -104,7 +104,7 @@
       <p>Filter Scoreboard by Wordle Day:</p>
       <p class="form-field">
         <span style="display:inline-block">
-          <input type="text" size="25" required class="validated-field" id="filter-summary-year" style="width: 35px;" placeholder="YYYY">
+          <input type="text" size="25" maxlength="4" required class="validated-field" id="filter-summary-year" style="width: 35px;" placeholder="YYYY">
 
           <input type="text" placeholder="MM" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
 
