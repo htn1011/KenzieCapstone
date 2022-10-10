@@ -78,7 +78,14 @@ class EditSummaryPage extends BaseClass {
         event.preventDefault();
         let guesses = document.getElementById("edit-summary-guesses").value;
         let comments = document.getElementById("edit-summary-description").value;
-        let updatedResults = guesses + " " + comments;
+        let updatedResults;
+        if (guesses === '1') {
+             updatedResults = guesses + " guess; " + comments;
+         } else {
+             updatedResults = guesses + " guesses; " + comments;
+         }
+
+//        let updatedResults = guesses + " " + comments;
         let updatedSummary = await this.client.updateGameSummary(this.summaryToUpdate, updatedResults, this.ErrorHandler);
         if (updatedSummary) {
             this.showMessage(`You have updated your ${this.summaryToUpdate.game} summary results for ${this.summaryToUpdate.date} from
