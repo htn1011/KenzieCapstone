@@ -89,8 +89,8 @@ class SummaryPage extends BaseClass {
         let userIdWelcome = document.getElementById("user-id-welcome");
         let usernameWelcome = document.getElementById("user-name-welcome");
         let postNewSummary = document.getElementById("post-new-Summary");
-        let friendFiler = document.getElementById("friend-filer");
-        let onlyMeFilter = document.getElementById("only-me-filter");
+        let friendFiler = document.getElementById("get-friend-summaries");
+        let onlyMeFilter = document.getElementById("filter-only-user");
         let todaysDateContainer = document.getElementById("todays-date");
         let postSummaryForm = document.getElementById("create-summary-form");
         let summaryPosted = document.getElementById("summary-posted");
@@ -151,24 +151,31 @@ class SummaryPage extends BaseClass {
               return;
          }
          // render the summaries into a list
-         const ul = document.createElement("ul");
+//         const ul = document.createElement("div");
          summaryList.forEach(summary => {
-             const li = document.createElement("li");
-             li.innerHTML += `<div class="card" id="oneSummary">`;
+             const li = document.createElement("div");
+             let liContent = `<div class="card" id="oneSummary">`;
              // consider wrapping strong around span instead - KK
-             li.innerHTML += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
-             li.innerHTML += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
+             liContent += `<p><strong>User ID</strong>: <span id="summary-userId">${summary.userId}</span></p>`;
+             liContent += `<p><strong>Results</strong>: <span id="summary-results">${summary.results}</span></p>`;
              if (this.user && summary.userId == this.user.userId) {
-                 li.innerHTML += `<button type="button" data-date="${summary.date}">Edit</button>`;
-                 li.innerHTML += `</div>`;
-                 li.querySelector("button").addEventListener('click', this.onRequestEdit);
+                 liContent += `<button type="button" data-date="${summary.date}">Edit</button>`;
+                 liContent += `</div>`;
+//                 li.querySelector("button").addEventListener('click', this.onRequestEdit);
              } else {
-                 li.innerHTML += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
-                 li.innerHTML += `</div>`;                  li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
+                 liContent += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
+                 liContent += `</div>`;
+//                 li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
              }
-             ul.append(li);
+             li.innerHTML = liContent;
+              if (this.user && summary.userId == this.user.userId) {
+                 li.querySelector("button").addEventListener('click', this.onRequestEdit);
+              } else {
+                 li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
+              }
+             resultArea.append(li);
          });
-         resultArea.append(ul);
+//         resultArea.append(ul);
          resultArea.classList.add("active");
     }
      async renderSummary(summary, container) {
@@ -245,9 +252,9 @@ class SummaryPage extends BaseClass {
          let month = document.getElementById("get-summary-month").value;
          let day = document.getElementById("get-summary-day").value;
          let date = year + "-" + month + "-" + day;
-         let result = await this.client.findAllSummariesForUserFriends(summaryDate, this.user.userId, this.errorHandler);
+         let result = await this.client.findAllSummariesForUserFriends(date, this.user.userId, this.errorHandler);
 
-         this.showMessage(`Got all your friend's game scores for ${summaryDate}!`);
+         this.showMessage(`Got all your friend's game scores for ${date}!`);
          // update state and values
          this.dataStore.setState({
             [FILTER_TYPE]:FRIENDS_FILTER,
