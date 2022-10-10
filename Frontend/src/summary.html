@@ -111,7 +111,8 @@
           <input type="text" placeholder="DD" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day" >
         </span>
       </p>
-      <button type="submit" id="submit-date-filter" style="margin-right: 10px;">Filter Scoreboard</button><button class="card state" type="submit" id="friend-filer">Show Only Friends</button>
+      <button type="submit" id="submit-date-filter" style="margin-right: 10px;">Filter Scoreboard</button><button class="state" type="submit" id="get-friend-summaries">Show Only Friends</button>
+      <button class="state" type="submit" id="filter-only-user">Show All My Scores</button>
       <p></p>
     </form>
 <!--  </div>-->
@@ -135,15 +136,16 @@
 <!--    </form>-->
 <!--  </div>-->
   <!-- display all summaries for one user only available if logged in -->
-  <div class="card state" id="only-me-filter">
-    <hr>
-    <p></p>
-    <form class="card-content" id="get-summaries-by-user" accept-charset=utf-8>
-<!--      <p>Show only my scores</p>-->
-      <button type="submit" id="filter-only-user">Show All My Scores</button>
-    </form>
-    <p></p>
-  </div>
+
+<!--  <div class="card state" id="only-me-filter">-->
+<!--    <hr>-->
+<!--    <p></p>-->
+<!--&lt;!&ndash;    <form class="card-content" id="get-summaries-by-user" accept-charset=utf-8>&ndash;&gt;-->
+<!--&lt;!&ndash;      <p>Show only my scores</p>&ndash;&gt;-->
+<!--      <button type="submit" id="filter-only-user">Show All My Scores</button>-->
+<!--&lt;!&ndash;    </form>&ndash;&gt;-->
+<!--    <p></p>-->
+<!--  </div>-->
 
 </div>
 
