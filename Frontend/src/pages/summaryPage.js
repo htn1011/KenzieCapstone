@@ -156,8 +156,8 @@ class SummaryPage extends BaseClass {
              const li = document.createElement("div");
              let liContent = `<div class="card" id="oneSummary">`;
              // consider wrapping strong around span instead - KK
-             liContent += `<p>User ID: <strong><span id="summary-userId" style="font-size: 16pt">${summary.userId}</span></strong></p>`;
-             liContent += `<p>Results: <strong><span id="summary-results" style="font-size: 16pt">${summary.results}</span></strong></p>`;
+             liContent += `<p>User ID: <strong><span id="summary-userId" style="font-size: 16pt; font-weight:bold;">${summary.userId}</span></strong></p>`;
+             liContent += `<p>Results: <strong><span id="summary-results" style="font-size: 16pt; font-weight:bold;">${summary.results}</span></strong></p>`;
              if (this.user && summary.userId == this.user.userId) {
                  liContent += `<button type="button" data-date="${summary.date}">Edit</button>`;
                  liContent += `</div>`;
