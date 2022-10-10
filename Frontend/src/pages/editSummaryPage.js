@@ -84,8 +84,6 @@ class EditSummaryPage extends BaseClass {
          } else {
              updatedResults = guesses + " guesses; " + comments;
          }
-
-//        let updatedResults = guesses + " " + comments;
         let updatedSummary = await this.client.updateGameSummary(this.summaryToUpdate, updatedResults, this.ErrorHandler);
         if (updatedSummary) {
             this.showMessage(`You have updated your ${this.summaryToUpdate.game} summary results for ${this.summaryToUpdate.date} from
