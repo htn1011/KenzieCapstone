@@ -44,7 +44,7 @@ class SummaryPage extends BaseClass {
         // Listeners
         document.getElementById('create-summary-form').addEventListener('submit', this.onCreateSummary);
         document.getElementById('get-summaries-by-date-form').addEventListener('submit', this.onGetAllSummariesByDate);
-        document.getElementById('get-friend-summaries').addEventListener('submit', this.onGetAllFriendSummaries);
+        document.getElementById('get-friend-summaries').addEventListener('click', this.onGetAllFriendSummaries);
         document.getElementById('filter-only-user').addEventListener('click', this.onGetSummariesByUser);
         document.getElementById('summary-logout').addEventListener('click', this.onLogout);
         document.getElementById('summary-login').addEventListener('click', this.onLogin);
@@ -97,6 +97,7 @@ class SummaryPage extends BaseClass {
         let postedSummaryDate = document.getElementById("posted-summary-date");
         let postedSummaryResults = document.getElementById("posted-summary-results");
         let postedSummaryButton = document.getElementById("posted-edit-button");
+        let backToTodayButton = document.getElementById("refresh-today");
         let today = this.dataStore.get(TODAYS_DATE);
         // check display state and render according to state
         let loginStatus = this.dataStore.get(LOGIN_STATUS);
@@ -107,6 +108,7 @@ class SummaryPage extends BaseClass {
             postNewSummary.classList.remove("active");
             friendFiler.classList.remove("active");
             onlyMeFilter.classList.remove("active");
+            backToTodayButton.classList.remove("active");
         } else if (loginStatus == LOGIN_SUCCESS) {
             // if there is a logged in user
             this.user = this.dataStore.get(USER);
@@ -132,6 +134,7 @@ class SummaryPage extends BaseClass {
             postNewSummary.classList.add("active");
             friendFiler.classList.add("active");
             onlyMeFilter.classList.add("active");
+            backToTodayButton.classList.add("active");
         }
         // get the filter type and the list of summaries
         let listFilter = this.dataStore.get(FILTER_TYPE);
@@ -151,21 +154,19 @@ class SummaryPage extends BaseClass {
               return;
          }
          // render the summaries into a list
-//         const ul = document.createElement("div");
          summaryList.forEach(summary => {
              const li = document.createElement("div");
              let liContent = `<div class="card" id="oneSummary">`;
              // consider wrapping strong around span instead - KK
              liContent += `<p>User ID: <strong><span id="summary-userId" style="font-size: 16pt">${summary.userId}</span></strong></p>`;
+             liContent += `<p>Game Date: <strong><span id="summary-date" style="font-size: 16pt">${summary.date}</span></strong></p>`;
              liContent += `<p>Results: <strong><span id="summary-results" style="font-size: 16pt">${summary.results}</span></strong></p>`;
              if (this.user && summary.userId == this.user.userId) {
                  liContent += `<button type="button" data-date="${summary.date}">Edit</button>`;
                  liContent += `</div>`;
-//                 li.querySelector("button").addEventListener('click', this.onRequestEdit);
              } else {
                  liContent += `<button type="button" data-userid="${summary.userId}">View this user's results</button>`;
                  liContent += `</div>`;
-//                 li.querySelector("button").addEventListener('click', this.onGetSummariesByOtherUser);
              }
              li.innerHTML = liContent;
               if (this.user && summary.userId == this.user.userId) {
@@ -175,7 +176,6 @@ class SummaryPage extends BaseClass {
               }
              resultArea.append(li);
          });
-//         resultArea.append(ul);
          resultArea.classList.add("active");
     }
      async renderSummary(summary, container) {
