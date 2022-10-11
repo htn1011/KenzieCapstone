@@ -27,11 +27,7 @@
   h2 {
     font-family: 'Nunito', sans-serif;
   }
-
-
 </style>
-
-<!-- KK state holder: class="state" -->
 
 <!-- body of page -->
 <body class="background">
@@ -43,7 +39,6 @@
   <!-- user logged in state -->
   <div class="state" id="button-to-login" style="padding-top: 15px; padding-left: 300px;">
     <button type="submit" id="summary-login">Login</button>
-<!--    <a class="main" href="userLogin.html">Login</a>-->
     <p>You must be logged in to post your own summaries and to access extra filtering options</p>
   </div>
   <div class="state" id="user-welcome" style="padding-top: 15px; padding-right: 100px; padding-left: 300px;">
@@ -59,7 +54,6 @@
 <div class="card state" id="post-new-Summary">
   <h2><span id="post-message">Your game summary for </span><span id="todays-date"></span></h2>
   <!-- post new summary -->
-<!--  <div class="state" id>-->
     <form class="card-content state" id="create-summary-form" accept-charset=utf-8>
       <p class="form-field">
         <label>Number of Wordle Guesses: </label>
@@ -77,14 +71,12 @@
       </p>
       <!-- additional user comments attached to summary result -->
       <p class="form-field">
-<!--        <label>Result Comment</label>-->
         <textarea name="description" placeholder="Describe your experience!" form="create-summary-form" id="create-summary-description"></textarea>
       </p>
 
       <button type="submit" id="createSummaryButton">Post Score</button>
 
     </form>
-<!--  </div>-->
   <div class="state" id="summary-posted">
     <p>Thanks for posting your game summary for today! Check the score board below to see how you measure up!</p>
     <div id="posted-summary-info">
@@ -93,9 +85,6 @@
     </div>
   </div>
 </div>
-
-
-
 <div class="card" id="largeCard">
   <h2>Manage Scoreboard</h2>
   <!-- display all summaries by date -->
@@ -104,9 +93,7 @@
       <p class="form-field">
         <span style="display:inline-block">
           <input type="text" size="25" maxlength="4" required class="validated-field" id="filter-summary-year" style="width: 35px;" placeholder="YYYY">
-
           <input type="text" placeholder="MM" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-month">
-
           <input type="text" placeholder="DD" style="width: 25px;" size="25" maxlength="2"  min="0" oninput="validity.valid||(value='');" id="get-summary-day" >
         </span>
       </p>
@@ -149,7 +136,6 @@
 <!--  </div>-->
 
 </div>
-
 <!-- summary display section -->
 <div class="card" id="result">
   <h2 id="resultHeader">Scoreboard: </h2>

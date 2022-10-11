@@ -68,7 +68,6 @@ class SummaryPage extends BaseClass {
             this.dataStore.set(LOGIN_STATUS, LOGIN_NEEDED);
         } else {
             this.dataStore.set(LOGIN_STATUS, LOGIN_SUCCESS);
-            // todo check if summary already exists for efficiency improvement
             let userSummary = await this.client.findGameSummaryFromUser(formattedDate, this.user.userId, this.summaryErrorHandler);
             if (userSummary) {
                 this.dataStore.set(USERS_SUMMARY, userSummary);
@@ -252,14 +251,7 @@ class SummaryPage extends BaseClass {
    }
 
    async onGetAllFriendSummaries(event) {
-         // Prevent the page from refreshing on form submit
          event.preventDefault();
-         // get the date to filter by and format properly
-         // let year = document.getElementById("filter-friend-summary-year").value;
-         // let month = document.getElementById("get-friend-summary-month").value;
-         // let day = document.getElementById("get-friend-summary-day").value;
-         // let summaryDate = year + "-" + month + "-" + day;
-         // let result = await this.client.findAllSummariesForUserFriends(summaryDate, this.user.userId, this.errorHandler);
          let year = document.getElementById("filter-summary-year").value;
          let month = document.getElementById("get-summary-month").value;
          let day = document.getElementById("get-summary-day").value;

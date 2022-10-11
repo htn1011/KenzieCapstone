@@ -107,9 +107,7 @@ class UserLoginPage extends BaseClass {
                 editFriendForm.classList.add("active");
             }
         }
-
     }
-
     // Event Handlers --------------------------------------------------------------------------------------------------
 
     async onUserLogin(event) {
