@@ -1,0 +1,303 @@
+{
+  "GameSummaries": [
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-13"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-13"},
+          "summarySortKey": {"S":"wordle::2022-10-13"},
+          "indexSortKey": {"S":"wordle::testUser2"},
+          "userId": {"S":"testUser2"},
+          "results": {"S":"4 guesses; that was a challenge!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-13"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-13"},
+          "summarySortKey": {"S":"wordle::2022-10-13"},
+          "indexSortKey": {"S":"wordle::testUser3"},
+          "userId": {"S":"testUser3"},
+          "results": {"S":"3 guesses; lol!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-13"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-13"},
+          "summarySortKey": {"S":"wordle::2022-10-13"},
+          "indexSortKey": {"S":"wordle::testUser4"},
+          "userId": {"S":"testUser4"},
+          "results": {"S":"6 guesses; eeekkk! that was close!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-13"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-13"},
+          "summarySortKey": {"S":"wordle::2022-10-13"},
+          "indexSortKey": {"S":"wordle::testUser5"},
+          "userId": {"S":"testUser5"},
+          "results": {"S":"2 guesses; wish I got it in 1!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-13"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-13"},
+          "summarySortKey": {"S":"wordle::2022-10-13"},
+          "indexSortKey": {"S":"wordle::testUser6"},
+          "userId": {"S":"testUser6"},
+          "results": {"S":"1 guess; SUUUPPPPERRRR"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser1"},
+          "userId": {"S":"testUser1"},
+          "results": {"S":"1 guess; SUUUPPPPERRRR"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser2"},
+          "userId": {"S":"testUser2"},
+          "results": {"S":"4 guesses; that was a challenge!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser3"},
+          "userId": {"S":"testUser3"},
+          "results": {"S":"1 guess; Gosh! that was lucky"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser4"},
+          "userId": {"S":"testUser4"},
+          "results": {"S":"3 guesses; lol!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser5"},
+          "userId": {"S":"testUser5"},
+          "results": {"S":"6 guesses; eeekkk! that was close!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-12"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-12"},
+          "summarySortKey": {"S":"wordle::2022-10-12"},
+          "indexSortKey": {"S":"wordle::testUser6"},
+          "userId": {"S":"testUser6"},
+          "results": {"S":"2 guesses; wish I got it in 1!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser1"},
+          "userId": {"S":"testUser1"},
+          "results": {"S":"1 guess; SUUUPPPPERRRR"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser2"},
+          "userId": {"S":"testUser2"},
+          "results": {"S":"4 guesses; that was a challenge!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser3"},
+          "userId": {"S":"testUser3"},
+          "results": {"S":"1 guess; Gosh! that was lucky"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser4"},
+          "userId": {"S":"testUser4"},
+          "results": {"S":"3 guesses; lol!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser5"},
+          "userId": {"S":"testUser5"},
+          "results": {"S":"6 guesses; eeekkk! that was close!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-11"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-11"},
+          "summarySortKey": {"S":"wordle::2022-10-11"},
+          "indexSortKey": {"S":"wordle::testUser6"},
+          "userId": {"S":"testUser6"},
+          "results": {"S":"2 guesses; wish I got it in 1!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser1"},
+          "userId": {"S":"testUser1"},
+          "results": {"S":"1 guess; SUUUPPPPERRRR"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser2"},
+          "userId": {"S":"testUser2"},
+          "results": {"S":"4 guesses; that was a challenge!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser3"},
+          "userId": {"S":"testUser3"},
+          "results": {"S":"1 guess; Gosh! that was lucky"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser4"},
+          "userId": {"S":"testUser4"},
+          "results": {"S":"3 guesses; lol!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser5"},
+          "userId": {"S":"testUser5"},
+          "results": {"S":"6 guesses; eeekkk! that was close!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date": {"S":"2022-10-10"},
+          "game": {"S": "wordle"},
+          "sessionNumber": {"S":"2022-10-10"},
+          "summarySortKey": {"S":"wordle::2022-10-10"},
+          "indexSortKey": {"S":"wordle::testUser6"},
+          "userId": {"S":"testUser6"},
+          "results": {"S":"2 guesses; wish I got it in 1!"}
+        }
+      }
+    }
+  ]
+}
