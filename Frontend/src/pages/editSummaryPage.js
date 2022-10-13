@@ -10,6 +10,7 @@ const EDIT_DISPLAY = "edit";
 // const variables
 const USER = "user";
 const UPDATE_SUMMARY = "updateSummary"
+const USERS_SUMMARY = "userSummary";
 
 
 /**
@@ -98,6 +99,7 @@ class EditSummaryPage extends BaseClass {
         await this.client.deleteSummaryBySummaryId(this.summaryToUpdate.date, this.summaryToUpdate.userId, this.ErrorHandler);
         this.showMessage(`You have deleted your ${this.summaryToUpdate.game} summary for ${this.summaryToUpdate.date}`);
         this.dataStore.remove(UPDATE_SUMMARY);
+        this.dataStore.remove(USERS_SUMMARY);
         document.location = "summary.html";
     }
 }
